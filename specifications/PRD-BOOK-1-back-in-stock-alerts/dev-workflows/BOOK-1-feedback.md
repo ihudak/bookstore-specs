@@ -226,3 +226,212 @@ impact: friction
 The re-review left 2 MAJOR, 13 MINOR and 5 NIT findings open, four of them product-input gaps. The orchestrator wrote them into the PR body as a workaround, which no later command reads. This has the same root as id BOOK-1-create-ard-manual-notes-findings-not-surfaced.
 
 **Suggested improvement:** State where an unresolved finding is recorded so the next phase can see it. For example, record each one as a `- [ ]` under the relevant `Open questions` heading, with the header count updated, or under the Refinement notes section once that count rule is settled. Alternatively, align spec-reviewer's expectation with the final-report-only rule.
+
+## 2026-10-07 — /epics — unfollowed-rule
+
+```yaml
+id: BOOK-1-epics-requirement-series-omit-smc
+date: 2026-10-07
+command: /epics
+plugin_version: 3.28.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: unfollowed-rule
+impact: friction
+```
+
+**Friction:** The rule is in `workflows-core:prd-format` (`~/.claude/plugins/cache/shipwright/workflows-core/1.32.0/references/prd-format.md:175`): "Epics' `## Covers`, `/epics`' `_coverage.md` … cite a requirement by its id … `[US#N]`, `[AC#N]`, `[SM#N]`, `[SMC#N]`, `[UC#N]`, `[FR#N]`". `/epics` Phase 0 (the `EPICS_PRD_NO_REQUIREMENTS` test, `commands/epics.md:270-276`) and Phase 3 (`requirements[]`, `:467`) enumerate only `[US#n]/[AC#n]/[SM#n]/[UC#n]/[FR#n]`. `pre-lint.md:85` likewise lists only `[US#N]/[AC#N]/[SM#N]` for `## Covers`. On BOOK-1 the PRD's counter-metric `[SMC#1]` would have been left out of the coverage ground truth. The orchestrator included it as type `metric` by judgement. The rule was missed because the command's own list is narrower than the format authority and contradicts it.
+
+**Suggested improvement:** In `epics.md`, replace the hard-coded series lists with "every series `workflows-core:prd-format` § Changing a requirement lists". Bring `pre-lint.md`'s Epic `## Covers` line in line with the series its PRD block already names.
+
+## 2026-10-07 — /epics — missing-capability
+
+```yaml
+id: BOOK-1-epics-open-findings-invisible-to-specify
+date: 2026-10-07
+command: /epics
+plugin_version: 3.28.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** `/epics` ended with 12 MINOR and 7 NIT `epic-reviewer` findings open. At least four need a decision the run did not take:
+- alerts' dev and Kubernetes ports, which four Epics depend on;
+- whether alerts joins ingest's per-service config and version fan-out;
+- the measurement source for `[SM#1]`;
+- a criterion that checks the user-chosen Delete All captions.
+
+They reach only the `/epics` final report. The rule "A finding left open that needs a decision is recorded in the artifact" (`escalation-rules.md:479`) is used by `/create-prd`, `/update-prd`, `/create-ard` and `/specify`, but not `/epics`. The Epic template has no open-questions section, so `/specify <EPIC>` will not see these findings. This is the same defect class as id BOOK-1-specify-open-findings-invisible-to-epics, one phase later.
+
+**Suggested improvement:** Add `/epics` to that rule's users. After the last review, write each decision-needing open finding into the affected Epic under a conditional `## Open questions` section. Add the section to `epic-writer`'s template and to `pre-lint`'s Epic block, and have `/specify` read it when it resolves an Epic.
+
+## 2026-10-07 — /epics — false-positive
+
+```yaml
+id: BOOK-1-epics-prelint-epic-frontmatter-collision
+date: 2026-10-07
+command: /epics
+plugin_version: 3.28.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: false-positive
+impact: polish
+```
+
+**Friction:** `pre-lint`'s auto-link collision check says "For Epic files, scan the entire file (the template has no frontmatter)" (`pre-lint.md:34`, repeated at `epics.md:710`). `epic-writer` now writes `kind`/`key`/`target` frontmatter (`workflows-core:addressing` §4), so the line `key: BOOK-1-0N` of every Epic matched `\b[A-Z]{2,10}-[0-9]+\b`, giving 6 false positives on one run.
+
+**Suggested improvement:** Scan Epic files below the frontmatter, as for the PRD and ARD, and delete the stale "no frontmatter" premise in both places.
+
+## 2026-10-07 — /epics — wrong-output
+
+```yaml
+id: BOOK-1-epics-prelint-placeholder-regex-misses-punctuation
+date: 2026-10-07
+command: /epics
+plugin_version: 3.28.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: wrong-output
+impact: friction
+```
+
+**Friction:** `epic-writer` left the placeholder `<alerts' dev port>` in three Epics (BOOK-1-02, -03, -06). `pre-lint`'s universal placeholder regex `<[a-z][a-z0-9 _./-]*>` (`pre-lint.md:18`) does not match it because of the apostrophe, so pre-lint passed it. `epic-reviewer` later raised the unfixed alerts port as a MINOR.
+
+**Suggested improvement:** Widen the pattern to something like `<[a-z][^<>\n]*>`, or add a second pattern that tolerates punctuation, with a fixture containing `<alerts' dev port>`. Separately, have `epic-writer` raise a value the ARD defers to design as a `[NEEDS CLARIFICATION]` or a dependency, never as an angle-bracket token.
+
+## 2026-10-07 — /epics — wrong-output
+
+```yaml
+id: BOOK-1-epics-clarification-suggestion-unchecked
+date: 2026-10-07
+command: /epics
+plugin_version: 3.28.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: wrong-output
+impact: friction
+```
+
+**Friction:** In Phase 6.1, `epic-writer`'s suggested answer to its own clarification (the BOOK-1-05 Delete All confirmation captions) misstated `[AD#11]`: "clears every other client's subscriptions and alerts", whereas a reserved subscription is one whose ISBN *or* email is reserved. The orchestrator presented it as offered and the user accepted it. Nothing in Phase 6.1 checks a suggested answer against the ARD or PRD it cites. `epic-reviewer` later raised the wording as a MAJOR, and the user had to decide the captions a third time.
+
+**Suggested improvement:** In Phase 6.1, have the orchestrator check each suggested answer against the `[AD#N]`/PRD ids it touches before offering it, and label any it could not check as unverified in the prompt.
+
+## 2026-10-07 — /epics — missing-capability
+
+```yaml
+id: BOOK-1-epics-style-fix-overwrites-user-answer
+date: 2026-10-07
+command: /epics
+plugin_version: 3.28.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** Phase 6.2 hands every MAJOR `prose-style-checker` violation to `doc-fixer`. One MAJOR targeted exactly the caption text the user had chosen in Phase 6.1 moments earlier. `/epics` has no guard against overwriting user-resolved text. The orchestrator asked the user before letting the fixer change it, which the command does not say to do.
+
+**Suggested improvement:** Carry a `user_resolved` list (the text Phase 6.1 folded in) into Phase 6.2 and Phase 7. A style or review finding on that text becomes a question to the user, never a silent fixer edit.
+
+## 2026-10-07 — /epics — docs-ux
+
+```yaml
+id: BOOK-1-epics-style-check-baseline-dialect-noise
+date: 2026-10-07
+command: /epics
+plugin_version: 3.28.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: docs-ux
+impact: polish
+```
+
+**Friction:** Phase 6.2 ran `prose-style-checker` on its vendor-neutral baseline (no overlay in the specs repo). It raised 19 NITs, mostly noise:
+- American-English spelling (catalogue, cancelled, behaviour, initialised) against a specs tree whose PRD, ARD and spec are all British English;
+- a spaced em dash in every file.
+
+Its re-check also contradicted itself: it said the line-24 captions had no violations, then raised a NIT on them.
+
+`fixed_headings` is built from `pre-lint`'s required Epic headings (`epics.md:682`), so it omits the conditional `## Contract` heading `epic-reviewer` reads.
+
+**Suggested improvement:** In Phase 6.2, pass the tree's dialect or skip the dialect and dash rules where no overlay is configured, and say so in the report. Build `fixed_headings` from `epic-writer`'s full template heading list, `## Contract` included.
+
+## 2026-10-07 — /epics — manual-workaround
+
+```yaml
+id: BOOK-1-epics-paste-full-output-slots
+date: 2026-10-07
+command: /epics
+plugin_version: 3.28.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: manual-workaround
+impact: polish
+```
+
+**Friction:** Several dispatches tell the orchestrator to "paste" a prior agent's full output, for example:
+- the scanner outputs into the `epic-writer` handoff and the `epic-reviewer` brief;
+- the style-checker output into `doc-fixer` (`epics.md:695`);
+- the requirements array into the review brief.
+
+On BOOK-1 that was about 25KB of scanner YAML plus a 99-row requirements array. The orchestrator extracted each agent's final message from its task transcript with a script and passed it by scratchpad path instead.
+
+**Suggested improvement:** Let every "paste" slot take a file path. Name a scratchpad location for each intermediate artifact (scanner output, requirements, ARD parse, review output, survivor list) so the handoff is a path, not a copy.
+
+## 2026-10-07 — /epics — missing-reference-doc
+
+```yaml
+id: BOOK-1-epics-landing-order-producer-after-consumers
+date: 2026-10-07
+command: /epics
+plugin_version: 3.28.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: missing-reference-doc
+impact: polish
+```
+
+**Friction:** The ARD's `### Landing order` puts `bookstore:ingest` last, but ingest produces the `[AD#11]` shared-schema row that alerts, books and clients consume. That conflicts with `epic-writer`'s contract rules, under which a consumer names the producing Epic in `## Dependencies`. So BOOK-1-01, -03 and -04 depend on the later BOOK-1-06. That is legal and fixture-tested, but `epic-reviewer` warned that trackers will show cycles. Neither `/epics` nor the components reference says what to do when the ARD's landing order disagrees with its own contract rows.
+
+**Suggested improvement:** Have `ard-resolution` or `/epics` Phase 2.5 test the landing order against the contract rows. Where a producer lands after a consumer, say so in the plan and the final report, and point at an ARD refine to reorder or split the shared-schema row.
+
+## 2026-10-07 — /epics — missing-capability
+
+```yaml
+id: BOOK-1-epics-ard-contract-omission-handling
+date: 2026-10-07
+command: /epics
+plugin_version: 3.28.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: missing-capability
+impact: polish
+```
+
+**Friction:** The ARD's Contracts table has no `exists` rows for three cross-component calls the Epics use:
+- storage→web (the book page reads stock);
+- clients→web (the Clients pages);
+- ingest's use of books' and clients' create calls (raised by `epic-reviewer`).
+
+`/epics` has no step for a cross-component call missing from the table. The orchestrator told `epic-writer` ad hoc not to invent `[AD#N]` rows for these calls.
+
+**Suggested improvement:** Add a Phase 2.5 step that lists the cross-component calls the code scan shows but the Contracts table lacks. Pass them to `epic-writer` and `epic-reviewer` as known omissions, and name `/product-workflows:create-ard <PRD>` (refine) in the final report to add the rows.
+
+## 2026-10-07 — /epics — missing-capability
+
+```yaml
+id: BOOK-1-epics-preflight-stale-merged-branches
+date: 2026-10-07
+command: /epics
+plugin_version: 3.28.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: missing-capability
+impact: polish
+```
+
+**Friction:** `specs-preflight` §3.5 B2 deleted the merged `spec/BOOK-1-back-in-stock-alerts` that HEAD stood on, but the merged local `idea/BOOK-1-back-in-stock-alerts` from an earlier run is still present. §3.4's retry walks other plugin branches only to push them, and no row deletes a merged plugin branch HEAD is not on. So merged plugin branches accumulate locally across a pipeline (idea → prd → ard → spec).
+
+**Suggested improvement:** In §3.4's "retry every other local plugin branch" walk, delete (`branch -d`, never `-D`) each plugin branch `branch-merged` finds merged into `<default-ref>`, with the same benign read-only-config handling B2 has, and report it.

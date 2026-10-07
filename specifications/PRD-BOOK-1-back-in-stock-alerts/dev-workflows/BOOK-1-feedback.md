@@ -435,3 +435,26 @@ impact: polish
 **Friction:** `specs-preflight` §3.5 B2 deleted the merged `spec/BOOK-1-back-in-stock-alerts` that HEAD stood on, but the merged local `idea/BOOK-1-back-in-stock-alerts` from an earlier run is still present. §3.4's retry walks other plugin branches only to push them, and no row deletes a merged plugin branch HEAD is not on. So merged plugin branches accumulate locally across a pipeline (idea → prd → ard → spec).
 
 **Suggested improvement:** In §3.4's "retry every other local plugin branch" walk, delete (`branch -d`, never `-D`) each plugin branch `branch-merged` finds merged into `<default-ref>`, with the same benign read-only-config handling B2 has, and report it.
+
+## 2026-10-07 — /epics — missing-capability
+
+```yaml
+id: BOOK-1-prompt-epic-drafts-not-handed-off
+date: 2026-10-07
+command: /epics
+plugin_version: 3.28.0
+origin: prompt
+author: ivan.gudak@dynatrace.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** `/epics` wrote six `epic.md` drafts and `_coverage.md` into the PRD folder and left them uncommitted. By design it "never branches and never commits the Epic drafts", and no other command hands them off. Its terminal `commit-artifacts` step still pushed the run's session artifacts straight to `main`. So the user saw a fresh `/epics` commit on the remote, but the Epics existed only in the local working tree.
+
+Every earlier phase (`/idea`, `/create-prd`, `/create-ard`, `/specify`) ends by offering a branch, a commit, a push and a PR. `/epics` is the one pipeline phase whose deliverable never reaches the remote. Its only mentions are a `### Git state` paragraph and a follow-up line. Meanwhile `/specify <EPIC>` gates only `prd.md`, so it would run against an Epic that is not on `main`, and its handoff stages `specification.md`, `_session.md` and `_glossary.md` but not `epic.md`.
+
+**User prompt:** but where are the epic markdown files???
+
+**Resolution:** I committed the six `EPIC-BOOK-1-0N-*/epic.md` drafts and `_coverage.md` on branch `epics/BOOK-1-back-in-stock-alerts`, pushed it, and opened PR #5 to `main`. I then switched the specs checkout back to a clean `main`.
+
+**Suggested improvement:** Give `/epics` the same consent-gated `handoff-to-main` every other phase has (an `epics/` or `epic/` prefix added to the plugin branch set), staging the `EPIC-` folders and `_coverage.md`. Alternatively, make `/specify <EPIC>` gate `epic.md` with `require-on-main` and stage it in its own handoff. In either case, stop reporting the run as handed off while its deliverable exists only locally.

@@ -458,3 +458,32 @@ Every earlier phase (`/idea`, `/create-prd`, `/create-ard`, `/specify`) ends by 
 **Resolution:** I committed the six `EPIC-BOOK-1-0N-*/epic.md` drafts and `_coverage.md` on branch `epics/BOOK-1-back-in-stock-alerts`, pushed it, and opened PR #5 to `main`. I then switched the specs checkout back to a clean `main`.
 
 **Suggested improvement:** Give `/epics` the same consent-gated `handoff-to-main` every other phase has (an `epics/` or `epic/` prefix added to the plugin branch set), staging the `EPIC-` folders and `_coverage.md`. Alternatively, make `/specify <EPIC>` gate `epic.md` with `require-on-main` and stage it in its own handoff. In either case, stop reporting the run as handed off while its deliverable exists only locally.
+
+## 2026-10-07 — /epics — missing-capability
+
+```yaml
+id: BOOK-1-prompt-epics-no-commit-rule-stale-from-vault
+date: 2026-10-07
+command: /epics
+plugin_version: 3.28.0
+origin: prompt
+author: ivan.gudak@dynatrace.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** `/epics` left its six Epic drafts uncommitted and unpushed, while the same run pushed its bookkeeping to `main` and printed `Specs repo: committed … — pushed`. That line reads as if the run's output reached the remote.
+
+The rule behind it is a holdover. The first `/epics` (2b3602d56, 2026-06-28, then `/impl:jira:epics`) wrote Jira Epic drafts into the user's Obsidian vault (`$VAULT_PATH/jira-drafts/`). There, "never branches, never commits … Vault git hygiene is the user's responsibility — they may or may not have the vault under version control" was correct.
+
+The specs-native pipeline design (2026-08-31, `git show 62e791e8:docs/superpowers/specs/2026-08-31-specs-native-pipeline-design.md`) moved the output to `EPIC-<PRD-KEY>-NN-<eslug>/epic.md` inside the PRD folder of `$SPECS_PATH`, a git repo the plugin manages and hands off for every other phase. The rule was carried over with "vault" replaced by "write target", so `epics.md:18` still says "they may or may not have it under version control", which can no longer be true.
+
+The workaround that followed is to say what it costs (`epics.md:1047`: the G1 advisory on every later run) rather than to hand the drafts off. There are two further gaps:
+- `phase-handoff`'s plugin branch set (`idea|prd|ard|spec|design|ready|brd|frames|kb`) has no prefix an Epic handoff could use.
+- `specs-repo-git` §2.1 calls `/epics` "the deliberate contrast", which is correct for the prompt-free bookkeeping commit but leaves no consent-gated path at all.
+
+**User prompt:** explain why Epics were not committed and not pushed?
+
+**Resolution:** I explained the cause with evidence: the vault-era no-commit rule (2b3602d56), carried unchanged through the specs-native move (62e791e8 design, `epics.md:18`, `:1047`, `specs-repo-git.md` §2.1), and the missing branch prefix. I also explained why only the bookkeeping was pushed: `commit-artifacts` stages only §2.1 paths. I changed no files; the drafts were already handed off by hand in PR #5.
+
+**Suggested improvement:** Retire the vault-era sentence. Give `/epics` a Phase 11 consent-gated `handoff-to-main` (new `epic/` or `epics/` prefix in §2.2) staging the `EPIC-` folders and `_coverage.md`, run before `commit-artifacts` as `/specify`'s is. Until then, have the final `Specs repo:` line add "; the Epic drafts remain uncommitted (/epics never commits them)", as §6 already does for a declined handoff.

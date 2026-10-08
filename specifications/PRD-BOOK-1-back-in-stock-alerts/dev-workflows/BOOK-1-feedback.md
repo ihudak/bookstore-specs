@@ -510,3 +510,88 @@ Typing the prefixed form is the natural mistake. Every folder the family creates
 **Resolution:** I answered that the Epic's ID is `BOOK-1-01`, as asserted by its `epic.md` (`kind: epic`, `key: BOOK-1-01`). `EPIC-` is the folder's kind prefix and `alerts-service` is its slug. I confirmed that the folder exists and that an `@<path>` to it resolves (found, `kind: epic`, `key: BOOK-1-01`). I also explained that `/design` on either address still stops at `DESIGN_NO_SPEC`, because no Epic-level `specification.md` exists on `main` or any branch, until `/product-workflows:specify BOOK-1-01` lands one. I changed no files.
 
 **Suggested improvement:** In `addressing.md` §3 step 2, before returning `invalid`, recognise a token of the form `<KIND>-<rest>`, where `<KIND>` is `BRD`, `PRD` or `EPIC` and `<rest>` passes `key-valid`. Only tokens that fail the grammar reach this step, so a genuine key beginning with a kind token (§2's `EPIC-008`) is unaffected. Resolve `<rest>` and accept it only where the found folder's name begins `<KIND>-<rest>-`. Print a one-line notice: `read EPIC-BOOK-1-01 as key BOOK-1-01 — EPIC- is the folder prefix, not part of the key`. If resolving is too permissive, have every `*_NEEDS_KEY` stop at least add `did you mean <rest>? (<KIND>- is the folder's kind prefix) — <matched folder>`, so the message never reads as "not found" when the folder exists.
+
+## 2026-10-08 — /specify — missing-capability
+
+```yaml
+id: BOOK-1-specify-ard-conformance-at-gate
+date: 2026-10-08
+command: /specify
+plugin_version: 3.29.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** Two of the six BLOCKERs in the first `spec-reviewer` pass on `/specify BOOK-1-01` were ARD-conformance failures. The grill had settled a 100-book bound on the sweep and a case-insensitive reserved-email match with the user, but checked neither against the exact rule text of `[AD#5]` ("each ISBN with a pending subscription") or `[AD#11]` (a literal suffix that changes only through a new decision landed in four services). Phase 2.5 carries the ARD in as ground truth, and `specify.md` treats ARD rows as grill ground truth explicitly only for a multi-component PRD-level run. Phase 5 has no step that tests a settled decision against the governing `[AD#N]`, so the reviewer found both and spent an Opus round on them.
+
+**Suggested improvement:** Add an ARD-conformance step to each Phase 5 confirmation gate, on Epic-level runs as well. For each decision settled in the stage, quote the governing `[AD#N]` rule text beside it. A decision that narrows or widens that text is either revised before the gate or recorded at once as an `ARD deviation` open question for the architect, not left for `spec-reviewer` to find.
+
+## 2026-10-08 — /specify — missing-reference-doc
+
+```yaml
+id: BOOK-1-specify-grill-reread-governing-ad
+date: 2026-10-08
+command: /specify
+plugin_version: 3.29.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: missing-reference-doc
+impact: friction
+```
+
+**Friction:** Besides the two ARD-conformance BLOCKERs, a third BLOCKER in the same review was a cross-story contradiction. The restock story's and the removal story's sweep criteria were each written against one dependency in isolation, so one situation (a removed book with a quantity of 0, an unpublished book with copies) got two different outcomes. `workflows-core`'s `grilling-technique.md` (`~/.claude/plugins/cache/shipwright/workflows-core/1.35.2/references/grilling-technique.md`) has no rule for either check: re-reading the governing decision when an answer fixes a bound or a match rule, or reconciling criteria that act on the same shared resource across stories.
+
+**Suggested improvement:** Add two rules to `grilling-technique.md`'s Mechanics, at engineering altitude. First: once an answer fixes a bound, a match rule, a limit or an enumeration, re-read the exact text of the governing architecture decision before the confirmation gate. An answer that departs from it is a recorded deviation, never a silent override. Second: before the gate of a stage that writes a criterion acting on a shared resource (a periodic check, a table, an endpoint), list the other stories' criteria on that resource and reconcile them, so one situation never has two outcomes.
+
+## 2026-10-08 — /specify — docs-ux
+
+```yaml
+id: BOOK-1-specify-post-verdict-edits-version
+date: 2026-10-08
+command: /specify
+plugin_version: 3.29.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: docs-ux
+impact: polish
+```
+
+**Friction:** After the re-review returned PASS WITH RECOMMENDATIONS, the review cap was spent and the user chose to apply the edit-only recommendations anyway. `escalation-rules`' "A recorded verdict names the version it was taken against" asks the final report to say so. The run also had to work out for itself where else to record it, `_session.md` and the pull-request body, so that the handed-off verdict did not read as covering the shipped text.
+
+**Suggested improvement:** In `/specify` Phase 6 (and `/design`'s), state where the version qualifier goes beyond the final report: `_session.md` and the `handoff-to-main` body_facts, in a fixed form such as `verdict: PASS WITH RECOMMENDATIONS (taken before <n> later edits, unreviewed)`. The pull request a reviewer merges then carries the same qualifier as the report.
+
+## 2026-10-08 — /specify — missing-capability
+
+```yaml
+id: BOOK-1-specify-scan-dependency-coupling
+date: 2026-10-08
+command: /specify
+plugin_version: 3.29.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: missing-capability
+impact: polish
+```
+
+**Friction:** A fault-isolation test setup written in the test-case stage assumed the books service could be made to fail while a storage stock write still succeeded. Only a late manual check found that storage's stock writes call books (`verifyBook`), which forced two test cases to be redesigned after the review. The Phase 4 `code-scanner` brief asks for capabilities and gaps, but not for which service calls which on its write paths.
+
+**Suggested improvement:** Have `/specify`'s Phase 4 `code-scanner` brief, and `/design`'s, ask for a short dependency-coupling list for the scanned repository: for each endpoint the work consumes or changes, which other services it calls, on reads and on writes. The grill can then check its fault-isolation setups, where one dependency fails while another succeeds, against that list before writing them.
+
+## 2026-10-08 — /specify — manual-workaround
+
+```yaml
+id: BOOK-1-specify-large-spec-renumbering
+date: 2026-10-08
+command: /specify
+plugin_version: 3.29.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: manual-workaround
+impact: polish
+```
+
+**Friction:** The fix cycle renumbered whole stories' acceptance criteria in a 72–80 KB specification. The run rebuilt the affected sections in scratch files and spliced them in with string replacements, because exact-match edits do not cope with a renumbering across a story. `/specify` gives no guidance for assembling or renumbering a specification of that size.
+
+**Suggested improvement:** Add a note to `/specify` Phase 5 and Phase 6 for specifications over about 60 KB: rewrite a renumbered story as a whole section, then re-run Phase 5.5's identifier and category checks. Optionally ship a small helper that renumbers `[ACxx]`/`[TCxx]` within a story and reports the mapping.

@@ -1,12 +1,12 @@
-# Resume — BOOK-1 / BOOK-1-01 (pe)
+# Resume — BOOK-1 / BOOK-1-01 (dev)
 
-- **Last completed:** /product-workflows:specify BOOK-1-01 — command complete (2026-10-08T09:00:28Z)
-- **Artifact:** specifications/PRD-BOOK-1-back-in-stock-alerts/EPIC-BOOK-1-01-alerts-service/specification.md (with _session.md, _glossary.md) — on branch spec/BOOK-1-01-alerts-service, PR #6 open
-- **Next step:** merge PR #6 (https://github.com/ihudak/bookstore-specs/pull/6), then /dev-workflows:design BOOK-1-01 (Dev); in breadth, /product-workflows:specify BOOK-1-02 for the next Epic in landing order
-- **Suggested session name:** BOOK-1-back-in-stock-alerts-pe
+- **Last completed:** /dev-workflows:design BOOK-1-01 — command complete (2026-10-08T11:26:05Z)
+- **Artifact:** specifications/PRD-BOOK-1-back-in-stock-alerts/EPIC-BOOK-1-01-alerts-service/design.md (with the amended specification.md, _design-session.md, _design-glossary.md) — on branch design/BOOK-1-01-alerts-service, PR #7 open
+- **Next step:** fix the deferred re-review MAJOR in design.md § Migration (the namespace-wide `kubectl rollout restart deployment -n bookstore` must become `deployment/storage` only), merge PR #7 (https://github.com/ihudak/bookstore-specs/pull/7), then /dev-workflows:implement BOOK-1-01 (Dev); in breadth, /product-workflows:specify BOOK-1-02 for the next Epic in landing order
+- **Suggested session name:** BOOK-1-back-in-stock-alerts-dev
 - **Carry-forward decisions:**
-  - The BOOK-1-01 spec carries 4 open questions for a product or architect ruling: the status every operation answers while alerts' own database is down; an ARD deviation on [AD#8] (occurredAt = when alerts learned; ended subscriptions and alerts answerable for 30 days, then 404) — flag: architect; a response-time limit for the polled reads; whether alerts' configuration entries change its behaviour and time limits.
-  - The spec's re-review verdict (PASS WITH RECOMMENDATIONS) was taken before the edit-only recommendations were applied; those edits are listed in its _session.md decision 25.
-  - Settled in the BOOK-1-01 spec and binding on its consumers' Epics: emails matched ignoring letter case and `+` carried percent-encoded; subscribe answers 503 when clients, books or storage gives no reply within 3 s, an error or busy; the sweep asks books first. The reserved-email rule stays [AD#11]'s literal suffix.
-  - Still open from /epics: alerts' dev and Kubernetes ports (BOOK-1-02, -03, -05 and -06 say `<alerts' dev port>`); whether alerts joins ingest's config/version fan-out; [SM#1]'s measurement source; requests naming the client current at send time.
-  - ARD omissions still open (no exists rows for storage→web, clients→web, ingest→books/clients create; ingest's [AD#11] landing order) — /product-workflows:create-ard BOOK-1 refine pending; PRD wording and [AC#12]/[AC#14] bulk-reset exception — /product-workflows:update-prd BOOK-1 pending (follow-ups.md).
+  - Re-review findings deferred (cap spent), listed in PR #7's body and the session log decision 23: the rollout-restart MAJOR; MINORs — fixedRate catch-up bursts (use a Trigger), assert `NoAnswer.timedOut` in the adapter test, `socketTimeout=5` on the test container URL plus an in-flight-statement test, explicit transactions for every write, sweep scale limit restated (≈ 480 at P ≈ 30 s) with an [AD#5] capacity note for the architect, rollback signal blind to sweep load at launch; NITs — `deployment/alerts` in redeploy.cmd, [U02] AC05 TC04 citation.
+  - Alerts' ports are settled for the sibling Epics: Kubernetes service `alerts-svc:91` (`DT_ALERTS_SERVER`), debug 5010, nodePorts 30010 / 32010; dev `localhost:8091`.
+  - The BOOK-1-01 spec now carries 3 open questions: the [AD#8] deviation (architect), the proposed [U04] read-latency criterion [ER3] (PM), and the sweep's scale bound [ER12] (PM).
+  - Alerts is not added to ingest's `serviceId: all` config fan-out or its version polling — a follow-up for ingest's Epic (BOOK-1-06).
+  - ARD omissions and the PRD wording / [AC#12]/[AC#14] bulk-reset exception from earlier runs are still pending (follow-ups.md).

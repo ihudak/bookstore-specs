@@ -595,3 +595,37 @@ impact: polish
 **Friction:** The fix cycle renumbered whole stories' acceptance criteria in a 72–80 KB specification. The run rebuilt the affected sections in scratch files and spliced them in with string replacements, because exact-match edits do not cope with a renumbering across a story. `/specify` gives no guidance for assembling or renumbering a specification of that size.
 
 **Suggested improvement:** Add a note to `/specify` Phase 5 and Phase 6 for specifications over about 60 KB: rewrite a renumbered story as a whole section, then re-run Phase 5.5's identifier and category checks. Optionally ship a small helper that renumbers `[ACxx]`/`[TCxx]` within a story and reports the mapping.
+
+## 2026-10-08 — /design — unfollowed-rule
+
+```yaml
+id: BOOK-1-design-overlap-read-misses-operational-blast-radius
+date: 2026-10-08
+command: /design
+plugin_version: 4.22.3
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: unfollowed-rule
+impact: friction
+```
+
+**Friction:** One rule asks for every inline edit that answers a review finding to be read against the rest of the artifact that governs the same condition (`~/.claude/plugins/cache/shipwright/workflows-core/1.35.2/references/escalation-rules.md:449-475`, § An inline fix is read against what it overlaps). `/design` Phase 6 restates it as "each interface, seam and test-strategy line it adds or changes against those that govern the same behaviour" (`~/.claude/plugins/cache/shipwright/dev-workflows/4.22.3/commands/design.md`, Phase 6). After a PASS WITH RECOMMENDATIONS, the user chose to apply the findings. One fix added a namespace-wide `kubectl rollout restart deployment -n bookstore` to the design's rollout. That command would also restart the postgres, mysql and ingest Deployments, and ingest's sidecar calls `delete-all` on six services. The overlap read checked the spec and design text and missed it. The one re-review caught it as a MAJOR, the review cap was spent, and the MAJOR went into the pull request deferred. The rule was missed because neither list names an operational step (a rollout, delete, migration, exec or bootstrap) read against the resources its selector matches. The `/design` restatement also narrows the generic rule to interfaces, seams and tests.
+
+**Suggested improvement:** Extend the list in `escalation-rules.md` § An inline fix is read against what it overlaps with this entry: "each operational command or manifest step it adds — a rollout, delete, scale, migration, exec or bootstrap — read against every resource its selector matches, stateful workloads and side-effecting sidecars included". Use this run's namespace-wide restart as the example. Widen `/design` Phase 6's restatement to match, so it covers fixes the user chose to apply after a non-BLOCK verdict too.
+
+## 2026-10-08 — /design — missing-reference-doc
+
+```yaml
+id: BOOK-1-design-prelint-unscoped-kubectl
+date: 2026-10-08
+command: /design
+plugin_version: 4.22.3
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: missing-reference-doc
+impact: friction
+```
+
+**Friction:** `/design`'s structural pre-lint (`~/.claude/plugins/cache/shipwright/workflows-core/1.35.2/references/pre-lint.md`, design block) has no check for an unscoped operational command in a design's rollout or verification steps. A namespace-wide `kubectl rollout restart deployment -n <ns>` with no resource name went through pre-lint and used up the run's one re-review, which was spent finding it.
+
+**Suggested improvement:** Add an advisory check to `pre-lint.md`'s design block. It greps `design.md` for `kubectl (rollout restart|delete|scale)` forms that carry only `-n`/`--namespace` or `--all`, with no resource name and no `-l` selector, and reports each as a MAJOR warning for the author before the Opus review. The defect class is fixed and grep-expressible.

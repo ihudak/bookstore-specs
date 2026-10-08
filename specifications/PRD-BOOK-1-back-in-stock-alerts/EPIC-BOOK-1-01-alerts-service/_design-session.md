@@ -56,6 +56,8 @@
 
 23. **Phase 6 re-review — PASS WITH RECOMMENDATIONS** (0 BLOCKER, 1 MAJOR, 8 MINOR, 2 NIT); review cap spent; findings deferred to the final report. MAJOR: the namespace-wide `kubectl rollout restart deployment -n bookstore` added by decision 22 also restarts postgres, mysql and ingest (whose populate-configs sidecar calls delete-all on six services) — restart `deployment/storage` only. (review)
 
+24. **Post-merge fix of the re-review MAJOR** (PR #7 merged at e1156c3 without it; user chose a follow-up PR): § Migration's rollout restarts `deployment/storage` only; § Risks gains the namespace-wide-restart data-wipe risk (postgres, mysql, ingest's populate-configs sidecar); the `deployment/alerts` in `redeploy.cmd` NIT fixed. Unreviewed — after the review cap. (user)
+
 ## Interface candidates
 
 _(live candidate shapes recorded as they arise; struck when eliminated)_

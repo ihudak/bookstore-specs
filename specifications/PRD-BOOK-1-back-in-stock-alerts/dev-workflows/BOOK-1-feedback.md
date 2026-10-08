@@ -487,3 +487,26 @@ The workaround that followed is to say what it costs (`epics.md:1047`: the G1 ad
 **Resolution:** I explained the cause with evidence: the vault-era no-commit rule (2b3602d56), carried unchanged through the specs-native move (62e791e8 design, `epics.md:18`, `:1047`, `specs-repo-git.md` §2.1), and the missing branch prefix. I also explained why only the bookkeeping was pushed: `commit-artifacts` stages only §2.1 paths. I changed no files; the drafts were already handed off by hand in PR #5.
 
 **Suggested improvement:** Retire the vault-era sentence. Give `/epics` a Phase 11 consent-gated `handoff-to-main` (new `epic/` or `epics/` prefix in §2.2) staging the `EPIC-` folders and `_coverage.md`, run before `commit-artifacts` as `/specify`'s is. Until then, have the final `Specs repo:` line add "; the Epic drafts remain uncommitted (/epics never commits them)", as §6 already does for a declined handoff.
+
+## 2026-10-08 — /design — missing-capability
+
+```yaml
+id: BOOK-1-design-kind-prefixed-address-rejected
+date: 2026-10-08
+command: /design
+plugin_version: 1.35.2
+origin: prompt
+author: ivan.gudak@dynatrace.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** `/dev-workflows:design EPIC-BOOK-1-01` stopped in Phase 0 with `DESIGN_NEEDS_KEY: … 'EPIC-BOOK-1-01' is not a key (workflows-core:addressing §1)` (`dev-workflows` `commands/design.md:72`). The user read this as "the Epic was not found". In fact the folder `EPIC-BOOK-1-01-alerts-service/` exists, and the token is just that folder's kind prefix plus its valid key `BOOK-1-01`. The stop names neither the folder nor the bare key, and it does not say that `EPIC-` is a folder prefix rather than part of the ID.
+
+Typing the prefixed form is the natural mistake. Every folder the family creates is named `<KIND>-<KEY>-<slug>` (`addressing.md` §2), so the prefixed form is what users see in the tree, in branch names and in PR titles. `resolve-address` (§3 step 2) sends any token that fails `key-valid` straight to `invalid`, with no recognition of a kind-prefixed key.
+
+**User prompt:** @/workspace/specs/specifications/PRD-BOOK-1-back-in-stock-alerts/EPIC-BOOK-1-01-alerts-service/ you didn't find epic EPIC-BOOK-1-01? What then the ID of the Epic I reference to?
+
+**Resolution:** I answered that the Epic's ID is `BOOK-1-01`, as asserted by its `epic.md` (`kind: epic`, `key: BOOK-1-01`). `EPIC-` is the folder's kind prefix and `alerts-service` is its slug. I confirmed that the folder exists and that an `@<path>` to it resolves (found, `kind: epic`, `key: BOOK-1-01`). I also explained that `/design` on either address still stops at `DESIGN_NO_SPEC`, because no Epic-level `specification.md` exists on `main` or any branch, until `/product-workflows:specify BOOK-1-01` lands one. I changed no files.
+
+**Suggested improvement:** In `addressing.md` §3 step 2, before returning `invalid`, recognise a token of the form `<KIND>-<rest>`, where `<KIND>` is `BRD`, `PRD` or `EPIC` and `<rest>` passes `key-valid`. Only tokens that fail the grammar reach this step, so a genuine key beginning with a kind token (§2's `EPIC-008`) is unaffected. Resolve `<rest>` and accept it only where the found folder's name begins `<KIND>-<rest>-`. Print a one-line notice: `read EPIC-BOOK-1-01 as key BOOK-1-01 — EPIC- is the folder prefix, not part of the key`. If resolving is too permissive, have every `*_NEEDS_KEY` stop at least add `did you mean <rest>? (<KIND>- is the folder's kind prefix) — <matched folder>`, so the message never reads as "not found" when the folder exists.

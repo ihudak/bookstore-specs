@@ -10,7 +10,7 @@ key: BOOK-1-01
 - **Created**: 2026-10-08
 - **Author**: ivan.gudak
 - **Published**: no
-- **Open questions**: 4
+- **Open questions**: 3
 
 ## Problem statement
 
@@ -47,7 +47,8 @@ A client who finds a book with no available copies has nowhere to leave their in
 
 ### Open questions
 
-- [ ] What does each operation of the alerts service answer while it cannot read or write its own records — for example 503 Service Unavailable, changing nothing — and does an available or withdrawn notice answered that way count as lost, for the alerts service's own check to recover? It puts the notice's own answer in [U02] AC08 and [U03] AC07 in doubt.
+- [x] What does each operation of the alerts service answer while it cannot read or write its own records — for example 503 Service Unavailable, changing nothing — and does an available or withdrawn notice answered that way count as lost, for the alerts service's own check to recover? It puts the notice's own answer in [U02] AC08 and [U03] AC07 in doubt. — Answered in [ER1]: 503 Service Unavailable, changing nothing; a notice so answered counts as lost and the alerts service's own check recovers it.
+- [ ] Does the alerts service's own check run every 30 seconds whatever the number of books waited on, or up to a stated number — [ER12] proposes 300 books while the books and storage services each answer within about 1 second? Above the number adopted, a check takes longer than the interval, and [U02] AC03–AC04 and [U03] AC03–AC04 no longer hold; it puts Scope's check item and those four criteria in doubt.
 - [ ] ARD deviation: [AD#8] — this specification takes an alert's occurredAt to be when the alerts service learned of the return or removal, up to 30 seconds after it on the alerts service's own check ([U02] AC09, [U03] AC08), where [AD#8] says when the book came back or was removed; and it answers cancel and dismiss with 404 once a subscription ended, or an alert was recorded, more than 30 days ago ([U04] AC07, [U05] AC04), where [AD#8] answers 204 for an ended or dismissed one with no window — because no notice carries a time, and ended records kept forever would grow without bound — flag: architect. Settled by refining [AD#8] with `/product-workflows:create-ard BOOK-1`, or by changing those four criteria.
 
 ## User stories
@@ -1166,4 +1167,21 @@ The alerts service shall answer the version and configuration operations every B
 
 #### Open questions
 
-- [ ] Does the alerts service apply the configuration entries set through its configuration operations as every other BookStore service does, and do the time limits of [U01] AC09, [U02] AC02–AC04 and [U03] AC02–AC04 then hold only while no such entry is turned on — or is their effect on the alerts service out of scope? It puts [U07] AC07 in doubt.
+- [x] Does the alerts service apply the configuration entries set through its configuration operations as every other BookStore service does, and do the time limits of [U01] AC09, [U02] AC02–AC04 and [U03] AC02–AC04 then hold only while no such entry is turned on — or is their effect on the alerts service out of scope? It puts [U07] AC07 in doubt. — Answered in [ER2]: the entries apply to the client-facing operations only; [U02] AC02–AC04 and [U03] AC02–AC04 hold whatever is configured, and [U01] AC09 holds while no entry is turned on.
+
+## Engineering review
+
+Recorded by `/dev-workflows:design BOOK-1-01` on 2026-10-08 against `design.md` in this folder. A proposal changes no `[Uxx]`, `[ACxx]` or `[TCxx]` until the PM adopts it.
+
+- **[ER1] Own records unreadable — answered (Scope open question).** While the alerts service cannot read or write its own records, every one of its operations answers 503 Service Unavailable, changing nothing, within about 5 seconds of its database failing. An available or withdrawn notice answered that way counts as lost, and the alerts service's own check recovers it once its records are readable again, so [U02] AC08 and [U03] AC07 hold as written.
+- **[ER2] Configuration entries — answered ([U07] open question).** The alerts service applies the configuration entries set through its configuration operations as every other BookStore service does, on its client-facing operations — subscribe, the reads of alerts and pending subscriptions, the unread count, mark-read, cancel and dismiss — and never on the available and withdrawn notices, the reset or its own check. The time limits of [U02] AC02–AC04 and [U03] AC02–AC04 therefore hold whatever is configured, and [U01] AC09's 10 seconds holds while no entry is turned on.
+- **[ER3] Read latency — proposed criterion ([U04] open question, still open).** Proposed [U04] AC09, *Answer the polled reads quickly*: "While up to 50 reads per second of the unread count, the alerts and the pending subscriptions arrive together — about 1,000 open store pages polling every 20 seconds ([AD#9]) — and no configuration entry is turned on, the alerts service shall answer 95 % of them within 200 milliseconds." The design targets it and checks it after release; the open question stays open until the PM adopts or changes it.
+- **[ER4] [AD#8] deviation — left to the architect (Scope open question, still open).** The design implements [U02] AC09, [U03] AC08, [U04] AC07 and [U05] AC04 as written and records both departures from [AD#8] under `design.md` § ARD deviations.
+- **[ER5] [U01] AC08 — storage answering not-found.** The storage service answers not-found for an ISBN only when its own call to the books service finds no book. If that happens after the books service found the book, the book was removed between the two calls, and subscribe answers 404 Not Found, as in [U01] AC08 TC03. Validated; no change proposed.
+- **[ER6] [U01] AC07 — a subscribe racing a restock or a removal.** A subscribe whose stock check saw no copies can be recorded just after a restock or removal notice ended the book's other subscriptions. The new subscription then stays pending while copies exist, or after the book is gone, until the alerts service's next check alerts or withdraws it, within about 23 seconds. [U01] AC07's 409 therefore holds for copies that exist when the stock check runs, not for a restock committed during the call. No change proposed; recorded so no test asserts otherwise.
+- **[ER7] [U02] AC08 TC01 and [U03] AC07 TC01 — "before the alerts service's next check could run".** With the check every 20 seconds, the design's tests switch the scheduled check off and run it by hand, so restoring the database before the next check is deterministic. Validated; no change proposed.
+- **[ER8] [U01] AC09 — the 10-second bound.** Each call to the clients, books and storage service is bounded at 3 seconds, connecting included, so the three take at most about 9 seconds. Validated.
+- **[ER9] [U01] AC06 — the plus sign.** The email reaches the clients service percent-encoded (`%2B`); the existing services' unencoded query strings are not copied. Validated.
+- **[ER10] [U02] AC08 TC02 and [U03] AC07 TC02 — "after recording has started and before it finishes".** Recording an ISBN's alerts is one database statement, so a failure part-way falls inside that statement and undoes all of it; the tests force a failure inside the statement. Validated.
+- **[ER11] [U02] AC09 TC03 — the occurredAt window.** The alerts service's own check observes a restock within about 23 seconds of it, inside the test's 30 seconds. Validated.
+- **[ER12] Scope, [U02] AC03–AC04, [U03] AC03–AC04 — the check's scale (proposed change; Scope open question).** The alerts service's own check starts every 20 seconds and checks books in parallel — more of them at once as more are waited on, up to 32 — and stops waiting on a service that keeps timing out. While the books and storage services each answer within about 1 second, a book is checked about every 20 seconds for up to about 320 books waited on (far more at their usual speed); beyond that a check outlasts 20 seconds, the next starts when it ends, and the 30-second interval and the 40-second limits of [U02] AC03–AC04 and [U03] AC03–AC04 no longer hold. Proposed: Scope's "whatever the number of books waited on" to read "for up to 300 books waited on" — the criteria test 100. The open question under Scope stays open until the PM adopts or changes it.

@@ -346,3 +346,87 @@ impact: polish
 **Friction:** The review's section 12 rows name the bundle's filenames (`BOOK-2-01-decisions.md`, `BOOK-2-01-customer-questions.md`, `BOOK-2-01-code-grounding.md`). That is correct from the customer's side, since those are the names they were sent. *Apply the required corrections* classifies targets by working-tree name, and never says to map a bundle name back through the manifest's map. The run mapped each one by hand.
 
 **Suggested improvement:** In *Apply the required corrections*, state that a row naming a bundle file is resolved to its working artifact through `bundle-<YYYYMMDD>/`'s manifest. Map the bundle copy to the working file it was rendered from: `<KEY>-decisions.md` to `decisions.md`, `<KEY>-brd-defect-log.md` to the parent's `brd/brd-defect-log.md`, and so on. Report a name the manifest does not list as an anomaly.
+
+## 2026-10-12 — /create-prd — ambiguous-prompt
+
+```yaml
+id: BOOK-2-01-create-prd-route-template-fails-pre-lint
+date: 2026-10-12
+command: /create-prd
+plugin_version: 3.32.1
+origin: auto
+author: ihudak@gmail.com
+category: ambiguous-prompt
+impact: friction
+```
+
+**Friction:** The BRD-route grill tells the run to record a contradiction with a `[CD#n]` and name its route as `/product-workflows:brd-reconcile <SLICE-KEY> @<review-file>`. The same wording appears again for the `[AS#n]` triage and in the final report (`~/.claude/plugins/cache/shipwright/product-workflows/3.32.1/commands/create-prd.md`, Phase 3). Written into `prd.md`, that string fails Phase 3.6's own pre-lint twice:
+- `<review-file>` matches the placeholder scan, a BLOCKER;
+- the slice key inside inline code matches the auto-link check, also a BLOCKER, since inline code is not exempt.
+
+The run had to reword the route as "on this slice" and drop the key, so the PRD no longer carries the exact command.
+
+**Suggested improvement:** Choose one fix:
+- say in `create-prd.md` how the in-PRD route is written (the bare command in a code span, with the key and review file named in words); or
+- exempt the canonical route template from `workflows-core:pre-lint`'s placeholder and auto-link checks, with a fixture that holds the string.
+
+## 2026-10-12 — /create-prd — missing-reference-doc
+
+```yaml
+id: BOOK-2-01-create-prd-ac-grouping-unspecified
+date: 2026-10-12
+command: /create-prd
+plugin_version: 3.32.1
+origin: auto
+author: ihudak@gmail.com
+category: missing-reference-doc
+impact: polish
+```
+
+**Friction:** `workflows-core:prd-format` asks for `[AC#N]` "under each story" in a separate `## Acceptance Criteria` section, but never says how criteria are grouped there. The run repeated the `### [US#N]:` headings under that section. Pre-lint then read each story as defined twice and raised duplicate-id BLOCKERs. The fix, bold `**[US#N] title**` labels, was found only by reading another PRD (BOOK-1).
+
+**Suggested improvement:** In `~/.claude/plugins/cache/shipwright/workflows-core/1.38.1/references/prd-format.md`, add one line with an example under the Acceptance Criteria spine bullet: group criteria under a bold `**[US#N] title**` label, never a `### [US#N]:` heading, because the heading is the story's one definition. Have pre-lint's duplicate message name the same fix.
+
+## 2026-10-12 — /create-prd — docs-ux
+
+```yaml
+id: BOOK-2-01-create-prd-phase1-confirm-no-choices
+date: 2026-10-12
+command: /create-prd
+plugin_version: 3.32.1
+origin: auto
+author: ihudak@gmail.com
+category: docs-ux
+impact: polish
+```
+
+**Friction:** Phase 1 step 1 says to "Confirm" the folder, profile and seed, but gives no choice array. The run improvised "Confirm both / Correct something". When "Correct something" came back twice with no notes, it took three question rounds to learn that the correction was the profile, `--hybrid`.
+
+**Suggested improvement:** Give Phase 1 step 1 a `choices` array that names the usual corrections, for example `["Proceed (Recommended)", "Change the profile (--full / --hybrid / --lean)", "Cancel"]`. The free-text escape stays for anything else.
+
+## 2026-10-12 — /create-prd — missing-capability
+
+```yaml
+id: BOOK-2-01-create-prd-contradicted-cd-already-happened
+date: 2026-10-12
+command: /create-prd
+plugin_version: 3.32.1
+origin: auto
+author: ihudak@gmail.com
+category: missing-capability
+impact: polish
+```
+
+**Friction:** Mid-grill, the operator reported that a follow-up meeting had reversed two customer-signed decisions (the go-live clean-up, `[CD#2]` and `[CD#3]`). Later they reported that the reversed outcome had already been carried out in production. The command covers a contradiction the run believes, and routes it through `/brd-package` and `/brd-reconcile`. It says nothing about:
+- a decision the customer already took outside the register (a meeting);
+- one whose outcome has already happened.
+
+The run had to improvise:
+- the PRD carries the register's version;
+- the meeting and the production fact are logged under Assumptions & open questions;
+- the operator's position, which changed three times, was pinned down in follow-up questions.
+
+**Suggested improvement:** Add to the BRD-route contradiction paragraph:
+- when the operator reports a customer decision taken outside the register, offer stop-and-reconcile first, since `/brd-reconcile`'s free-text mode can read meeting notes;
+- when the contradicted outcome has already happened, record it as a fact the customer must be told, not as an open preference;
+- log only the operator's final position.

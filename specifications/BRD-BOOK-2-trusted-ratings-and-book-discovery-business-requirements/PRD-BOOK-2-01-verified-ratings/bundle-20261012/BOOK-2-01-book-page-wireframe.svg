@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="400" viewBox="0 0 680 400" font-family="Helvetica, Arial, sans-serif">
+  <title>Sketch of the book page</title>
+  <rect x="0" y="0" width="680" height="400" fill="#ffffff"/>
+
+  <!-- browser-style frame -->
+  <rect x="10" y="10" width="660" height="380" rx="8" fill="#ffffff" stroke="#555555" stroke-width="2"/>
+  <path d="M10 18 a8 8 0 0 1 8 -8 h644 a8 8 0 0 1 8 8 v26 h-660 z" fill="#eeeeee" stroke="#555555" stroke-width="2"/>
+  <circle cx="30" cy="27" r="5" fill="#bbbbbb"/>
+  <circle cx="48" cy="27" r="5" fill="#bbbbbb"/>
+  <circle cx="66" cy="27" r="5" fill="#bbbbbb"/>
+  <text x="340" y="32" font-size="14" fill="#333333" text-anchor="middle">Quillmark online store: book page</text>
+
+  <!-- book details: the fields the book page shows today -->
+  <text x="50" y="98" font-size="24" font-weight="bold" fill="#222222">[Book title]</text>
+  <text x="50" y="130" font-size="16" fill="#444444">by [Author]</text>
+  <text x="50" y="158" font-size="16" fill="#444444">Price: [Price]</text>
+  <text x="50" y="186" font-size="16" fill="#444444">Language: [Language]</text>
+  <text x="50" y="214" font-size="16" fill="#444444">ISBN: [ISBN]</text>
+
+  <!-- rating line -->
+  <text x="50" y="262" font-size="20" fill="#222222"><tspan fill="#c98a00">★</tspan> 4.2</text>
+  <text x="120" y="262" font-size="18" fill="#1a5fb4">(37 ratings)</text>
+  <line x1="120" y1="267" x2="211" y2="267" stroke="#1a5fb4" stroke-width="1.2"/>
+
+  <!-- annotation note -->
+  <rect x="400" y="275" width="250" height="78" rx="4" fill="#fff4b8" stroke="#b39500" stroke-width="1.5"/>
+  <text x="414" y="303" font-size="15" fill="#3a3000">Clicking the count opens the</text>
+  <text x="414" y="325" font-size="15" fill="#3a3000">list of this book's ratings.</text>
+
+  <!-- arrow from note to the count -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <polygon points="0 0, 10 4, 0 8" fill="#b39500"/>
+    </marker>
+  </defs>
+  <path d="M400 300 C 330 300, 260 290, 222 268" fill="none" stroke="#b39500" stroke-width="2" marker-end="url(#arrowhead)"/>
+</svg>

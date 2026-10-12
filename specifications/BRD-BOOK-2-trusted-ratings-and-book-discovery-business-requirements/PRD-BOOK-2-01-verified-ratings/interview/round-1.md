@@ -212,12 +212,14 @@ Does requirement 3.8 ask the supplier to build a new monitor, or to support one 
 Do the monitoring's purchases and ratings count toward averages, the shelf and suggestions?
 
 - **State:** held for the customer — `interview/customer-questions.md`, Round 1, question 26
+- **State:** answered by the customer — nothing frozen. The customer declined it as moot in `customer-review-20261012.md`, because [CD#11] withdrew [BR#10] and its requirement defect [DEF#10] is `withdrawn`. To be put again if 3.8 returns (closed 20261012, with round 2)
 
 ### 27. [C] — [BR#10]
 
 Which customer and books does the monitoring use?
 
 - **State:** held for the customer — `interview/customer-questions.md`, Round 1, question 27
+- **State:** answered by the customer — nothing frozen. The customer declined it as moot in `customer-review-20261012.md`, because [CD#11] withdrew [BR#10] and its requirement defect [DEF#11] is `withdrawn`. To be put again if 3.8 returns, split as [SR#1] proposes ([CD#13]) (closed 20261012, with round 2)
 
 ### 28. [G] — [BR#11]
 
@@ -239,9 +241,11 @@ Is the sketch's note a requirement of this release?
 What does the list of a book's ratings show for each rating?
 
 - **State:** held for the customer — `interview/customer-questions.md`, Round 1, question 30
+- **State:** answered by the customer — nothing frozen. The customer declined it as moot in `customer-review-20261012.md`, because [CD#12] withdrew [BR#11] and its requirement defect [DEF#14] is `withdrawn`. To be put again if the list returns (closed 20261012, with round 2)
 
 ## Account
 
 requirement defects: [DEF#1], [DEF#3], [DEF#4], [DEF#5], [DEF#6], [DEF#7], [DEF#8], [DEF#9], [DEF#10], [DEF#11], [DEF#13], [DEF#14] asked
 code defects: none
 Status: open — waiting on held for the customer
+Status: closed 20261012 — the last held questions, 26, 27 and 30, closed with nothing frozen: their requirements were withdrawn by [CD#11] and [CD#12]

@@ -409,7 +409,7 @@ Ground tier: `claude-opus-5-5`.
       lines: [302, 319, 327, 331, 338]
       note: The "synthetic load generator" writes carts, storage, orders, payments and ratings in a loop. It never reads a book page, suggestions or any ranking of ratings, and it runs at its own loop's pace, not on a per-minute schedule.
     - path: .
-      note: No synthetic-monitor definition is in this repository — `git grep -n -i -E 'synthetic|http.?monitor|browser.?monitor|clickpath|monaco' <commit> -- '*.yaml' '*.yml' '*.json' '*.java' '*.ts' '*.sh' '*.tf' ':!web/package-lock.json'` found no match. Nor is any time-scheduled trigger — `git grep -n -i -E 'kind: *CronJob|^ *schedule:|cron:' <commit> -- '*.yaml' '*.yml'` found no match. Dynatrace synthetic monitors are usually configured in the Dynatrace environment, not in application source. Whether any exist there cannot be settled from this repository.
+      note: No synthetic-monitor definition is in this repository — `git grep -n -i -E 'synthetic|http.?monitor|browser.?monitor|clickpath|monaco' <commit> -- '*.yaml' '*.yml' '*.json' '*.java' '*.ts' '*.sh' '*.tf' ':!web/package-lock.json'` found no match. Nor is any time-scheduled trigger — `git grep -n -i -E 'kind: *CronJob|^ *schedule:|cron:' <commit> -- '*.yaml' '*.yml'` found no match. Synthetic monitors are usually configured in an external monitoring tool, not in application source. Whether any exist there cannot be settled from this repository.
     - path: web/base/noagent/Dockerfile
       lines: [14, 16]
       note: The web app is served by `ng serve`. A bare curl of a route receives the app's HTML without running the Angular bundle, so no page data loads and nothing behaves the way a customer would.

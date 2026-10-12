@@ -1,9 +1,9 @@
 # Decision register: BOOK-2-01
 
 id: [VD#1]
-statement: Ratings cannot be deleted in bulk: the storefront offers no delete-all, and the load generator does not delete ratings.
-options_considered: ["Remove bulk deletion: drop delete-all from the storefront API and UI, and stop the load generator deleting ratings", "Keep bulk delete as an operator-only maintenance action outside the storefront, and stop the load generator deleting ratings", "Leave bulk deletion as it is today"]
-chosen: "Remove bulk deletion: drop delete-all from the storefront API and UI, and stop the load generator deleting ratings"
+statement: Shoppers cannot delete ratings: the storefront offers no rating Delete or Delete All, and the ratings API drops its delete-all. Operators remove a single rating through the API's existing per-rating delete, which no storefront screen calls. The one-off go-live clean-up ([CD#2], [CD#3]) is not bulk deletion in this sense, and the load generator is unchanged.
+options_considered: ["Remove shopper deletion: drop the storefront's Delete and Delete All and the API's delete-all; keep the API's per-rating delete as the operators' removal path, called by no storefront screen; leave the load generator unchanged", "As the first, and also build an operator removal of every rating of one customer and change the load generator's four rating-deletion paths", "Keep bulk delete as an operator-only maintenance action outside the storefront", "Leave deletion as it is today"]
+chosen: "Remove shopper deletion: drop the storefront's Delete and Delete All and the API's delete-all; keep the API's per-rating delete as the operators' removal path, called by no storefront screen; leave the load generator unchanged"
 argumentation: |
   Requirement 3.2 makes a given rating final, and 3.4 and 3.6 publish averages and counts over all
   ratings. Any path that deletes ratings in bulk — the storefront's Delete All, or the load
@@ -14,11 +14,13 @@ argumentation: |
   would favour an operator-only path.
 
   Reopened 20261012: by [CD#2], [CD#3], [CD#5], [CD#6] and [CD#16], from the customer's returned review (customer-review-20261012.md). [CD#5] withdraws 3.2's finality, on which this reasoning opens; [CD#2] and [CD#3] call for one-off removals at go-live (ratings from customers with no qualifying order, and every repeat but the latest), which a blanket ban on bulk deletion forbids; [CD#6] settles that a customer cannot remove their own rating, so the exception for individual removal "if the customer allows it" no longer stands; and [CD#16] establishes that the load generator never runs against Quillmark's live store, so the claim that its wipe resets the averages shoppers see does not hold and the decision must say what it means for test environments instead.
+
+  Re-decided 20261012, round 2: the causes move the answer, and the review's section 6, points (a) to (f), is the position it is argued against. With finality withdrawn ([CD#5]), the reason is no longer that a given rating is final: it is that an average shoppers see moves only when a customer gives or changes their own rating. So no shopper can remove a rating ([CD#6]); the storefront's per-rating Delete goes with its Delete All, and the API's delete-all goes too (points (a), (b), (f)). Operators still need to remove a rating for an erasure request or fraud (point (c)). The API's existing per-rating delete serves that with no new code, and once both buttons go no storefront screen calls it. Removing every rating of one customer is that delete repeated: no requirement row asks for a dedicated endpoint, since the review's addition carries no [BR#n] (reconciliation-20261012.md), so none is built. The storefront has no sign-in ([CD#14]), so nothing can tell an operator's API call from a shopper's. Keeping the API out of shoppers' reach needs sign-in, which this release does not have. That risk is accepted and stated, which answers the open point the review left with the delivery team. The one-off go-live clean-up in [CD#2] and [CD#3] is run once by operators at go-live and offered on no storefront screen, so it is not the deletion this decision forbids (point (d)). The load generator never runs against Quillmark's live store ([CD#16]), so it is left unchanged (point (e)). In test environments its delete-all calls fail once the endpoint is gone, and [BR#1] and [BR#2] refuse most of its random ratings. The generator already catches and logs both failures (ingest `IngestRepository.java` lines 15-19 and `RatingRepository.java` lines 40-51), so it keeps running, and the four deletion paths the review cites no longer bear on this decision. The answer would change if Quillmark adds sign-in, which would let the operator path move behind it, or if test environments need the generator to keep resetting ratings.
 evidence: [[CG#4]]
 altitude: architecture
-status: reopened
+status: decided
 consumed_by: none
-round: 1
+round: 2
 
 id: [VD#2]
 statement: Every path that writes a rating refuses a missing star value or one outside the whole numbers 1 to 5, and the rating input offers only whole stars 1 to 5.
@@ -56,9 +58,9 @@ consumed_by: none
 round: 1
 
 id: [VD#4]
-statement: A change to a rating may alter only its stars; the customer and the book a rating belongs to never change.
-options_considered: ["Only the stars may change; a rating's customer e-mail and ISBN are fixed on every path", "Keep today's edit, which can change the stars, the customer e-mail and the ISBN"]
-chosen: "Only the stars may change; a rating's customer e-mail and ISBN are fixed on every path"
+statement: A change to a rating may alter its stars and its comment; the customer e-mail and the ISBN never change, on any path, operator paths included. A rating recorded against the wrong book is removed through the operators' removal path ([VD#1]), never moved to another book.
+options_considered: ["Stars and comment may change; the customer e-mail and ISBN are fixed on every path, and a rating against the wrong book is removed, never reassigned", "Only the stars may change; the comment, the customer e-mail and the ISBN are fixed on every path", "Keep today's edit, which can change the stars, the comment, the customer e-mail and the ISBN"]
+chosen: "Stars and comment may change; the customer e-mail and ISBN are fixed on every path, and a rating against the wrong book is removed, never reassigned"
 argumentation: |
   Requirement 3.7 speaks of a customer changing their rating of a book, so the rater and the book
   are the rating's identity, not editable data. An edit that could move a rating to another customer
@@ -69,11 +71,13 @@ argumentation: |
   be a separate correction path, not the shopper's edit.
 
   Reopened 20261012: by [CD#17], from the customer's returned review (customer-review-20261012.md). The customer decided that rating comments are kept, hidden from shoppers, still taken by the forms, and that a change to a rating may alter its comment, which contradicts "only its stars" may change.
+
+  Re-decided 20261012, round 2: [CD#17] keeps comments and lets a change alter them, so "only its stars" no longer holds and the comment joins the stars. The reason the customer e-mail and the ISBN stay fixed is unchanged: they are the rating's identity, and moving either would undo [BR#1]'s buyer check and [BR#2]'s one rating per customer and book after the fact. The customer's correction (customer-review-20261012.md, section 6) also settles the operator case this reasoning left open. A rating recorded against the wrong book is removed through [VD#1]'s per-rating delete and never reassigned, so no separate correction path is built. The update form still shows the e-mail and the ISBN, but no longer lets them be edited. The answer would change only if Quillmark wanted a rating's comment fixed once given, which its answer on comments rules out.
 evidence: [[CG#10], [CG#4]]
 altitude: product
-status: reopened
+status: decided
 consumed_by: none
-round: 1
+round: 2
 
 id: [CD#1]
 statement: "A qualifying order for rating a book is one for that book that is completed and paid, and not since cancelled."
@@ -301,3 +305,44 @@ altitude: product
 status: decided
 consumed_by: none
 round: 1
+
+id: [VD#5]
+statement: Orders are unchanged in this release. A customer's eligibility is checked against the orders the store holds when a rating is given or changed ([CD#1]); a rating stays if its order is later cancelled or deleted, and a customer whose qualifying order no longer exists cannot change their rating.
+options_considered: ["Leave orders unchanged: deleting an order removes the right to change a rating, never a rating already given", "Keep a copy of the purchase in the ratings service when a rating is given", "Stop the storefront deleting orders: drop the order Delete and Delete All"]
+chosen: "Leave orders unchanged: deleting an order removes the right to change a rating, never a rating already given"
+argumentation: |
+  The review's challenge to the derivation matrix (customer-review-20261012.md, section 5,
+  challenge 2) is right that the storefront's order Delete and Delete All erase the only record that
+  a purchase happened. That does not reach a rating already given: [CD#1] checks eligibility when a
+  rating is given or changed, and the review's own section 4 says a rating stays if its order is
+  later cancelled. What it reaches is a later change by a customer whose order was deleted, and that
+  change is refused. Changing how the store keeps orders would reopen order handling, which the
+  requirements' section 5 keeps out of this release, and copying purchases into the ratings service
+  would duplicate the orders service's data for that one edge case. The ratings service reads
+  orders through the orders API that exists today, so the orders service itself does not change.
+  This settles the second open point the review left with the delivery team (its section 10). The
+  answer would change if Quillmark wants a customer's right to change their rating to outlive a
+  deleted order, which would favour keeping a copy of the purchase in the ratings service.
+evidence: [[CG#2]]
+altitude: product
+status: decided
+consumed_by: none
+round: 2
+
+id: [VD#6]
+statement: The storefront's Ratings list stays, without the comment column ([CD#17]) and without its Delete and Delete All ([VD#1], [CD#6]). It keeps each rater's e-mail and the Update action, because the typed e-mail is the rater's identity in this release ([CD#14]).
+options_considered: ["Keep the list without comments and without deletion; the e-mail and Update stay", "Also hide the e-mail column and remove Update from the list", "Remove the Ratings list from the storefront"]
+chosen: "Keep the list without comments and without deletion; the e-mail and Update stay"
+argumentation: |
+  The review leaves this screen to the delivery team (its sections 6 and 10). Comments must not be
+  shown ([CD#17]) and shoppers may not delete ([CD#6], [VD#1]), so both go. The e-mail and Update
+  stay. With no sign-in ([CD#14]), a customer changes their rating by finding it in this list under
+  their e-mail, which is the change requirement 3.7 asks the store to allow. Removing the list or
+  the action would leave no way to make that change. Showing raters' e-mails is the exposure the
+  typed-e-mail identity already accepts. The answer would change once the store has sign-in, when
+  the list can show a customer only their own ratings.
+evidence: [[CG#10], [CG#12]]
+altitude: product
+status: decided
+consumed_by: none
+round: 2

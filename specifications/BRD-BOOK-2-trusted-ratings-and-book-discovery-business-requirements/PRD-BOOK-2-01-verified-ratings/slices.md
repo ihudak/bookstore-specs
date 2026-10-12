@@ -29,6 +29,6 @@ any of them elsewhere. The operator took it in one confirmation. It wrote:
     [CG#10]). Building both rows here does not settle which one stands. That is the slice's open
     question to decide. Settled 20261012 by [CD#5]: 3.7 governs, and [BR#3] is withdrawn.
   - [BR#10]'s synthetic monitor is a FALSE-FRIEND at the pinned commit ([CG#11]). Whether a
-    Dynatrace synthetic monitor exists in the tenant cannot be settled from the repository
+    synthetic monitor exists in an external monitoring tool cannot be settled from the repository
     ([DEF#12]). Settled 20261012 by [CD#11]: 3.8 is withdrawn from this release, and [DEF#12]
     with it.

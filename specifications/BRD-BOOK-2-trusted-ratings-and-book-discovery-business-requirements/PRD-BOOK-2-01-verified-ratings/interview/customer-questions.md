@@ -210,6 +210,7 @@ Options:
 - **Findings:** [CG#11] FALSE-FRIEND
 - **Altitude:** product
 - **Requirement defect:** [DEF#10]
+- **State:** answered by the customer — nothing frozen. The customer declined it as moot in `customer-review-20261012.md`, because [CD#11] withdrew [BR#10] and its requirement defect [DEF#10] is `withdrawn`. To be put again if 3.8 returns (closed 20261012, with round 2)
 
 ## Round 1, question 27
 
@@ -227,6 +228,7 @@ Options:
 - **Findings:** [CG#11] FALSE-FRIEND
 - **Altitude:** product
 - **Requirement defect:** [DEF#11]
+- **State:** answered by the customer — nothing frozen. The customer declined it as moot in `customer-review-20261012.md`, because [CD#11] withdrew [BR#10] and its requirement defect [DEF#11] is `withdrawn`. To be put again if 3.8 returns, split as [SR#1] proposes ([CD#13]) (closed 20261012, with round 2)
 
 ## Round 1, question 29
 
@@ -262,3 +264,4 @@ Options:
 - **Altitude:** product
 - **Requirement defect:** [DEF#14]
 - **Defect image:** source/assets/book-page-wireframe.svg
+- **State:** answered by the customer — nothing frozen. The customer declined it as moot in `customer-review-20261012.md`, because [CD#12] withdrew [BR#11] and its requirement defect [DEF#14] is `withdrawn`. To be put again if the list returns (closed 20261012, with round 2)

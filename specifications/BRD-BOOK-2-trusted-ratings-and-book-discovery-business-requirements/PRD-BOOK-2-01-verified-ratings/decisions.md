@@ -23,7 +23,7 @@ argumentation: |
 evidence: [[CG#4]]
 altitude: architecture
 status: decided
-consumed_by: none
+consumed_by: ARD
 round: 3
 
 id: [VD#2]
@@ -287,7 +287,7 @@ argumentation: |
 evidence: [[CG#2], [CG#3], [CG#4], [CG#5], [CG#11]]
 altitude: architecture
 status: decided
-consumed_by: none
+consumed_by: ARD
 round: 1
 
 id: [CD#17]

@@ -61,7 +61,7 @@ Ground tier: `claude-opus-5-5`.
   commit: e439178550371f2bc4f5a9acfee9a1c4f2289ae4
   altitude: product
   horizon: current
-  consumed_by: none
+  consumed_by: ARD
   outcome: extend
   notes: |
     Control: I ran `git grep -n -i 'client' <commit> -- ratings`. It matched ratings/src/main/java/com/dynatrace/ratings/controller/RatingController.java:122, one of 39 hits. I also re-ran the original's absence search, `'order\|purchas\|bought\|paid'` over `ratings web/src/app/ratings`: no match, exit 1. I checked that the same BRE alternation does match under orders/, so the empty result is not a syntax failure.
@@ -97,7 +97,7 @@ Ground tier: `claude-opus-5-5`.
   commit: e439178550371f2bc4f5a9acfee9a1c4f2289ae4
   altitude: product
   horizon: current
-  consumed_by: none
+  consumed_by: ARD
   outcome: contradict
   notes: |
     Rewritten in place by verification: pre-rewrite verdict REWRITTEN.
@@ -130,7 +130,7 @@ Ground tier: `claude-opus-5-5`.
   commit: e439178550371f2bc4f5a9acfee9a1c4f2289ae4
   altitude: product
   horizon: current
-  consumed_by: none
+  consumed_by: ARD
   outcome: agree
   notes: |
     The original and the blind result both rest on update and delete paths being present, not on anything being absent, so neither owes a control. The blind result also cites RatingController.java:87 and :92 and rating.service.ts:36-37. These back up paths the original already cites rather than adding anything new, so the outcome is agree, not extend. I read all of these lines at the pinned commit.
@@ -163,7 +163,7 @@ Ground tier: `claude-opus-5-5`.
   commit: e439178550371f2bc4f5a9acfee9a1c4f2289ae4
   altitude: implementation
   horizon: current
-  consumed_by: none
+  consumed_by: ARD
   outcome: contradict
   notes: |
     Rewritten in place by verification: pre-rewrite verdict AMENDED (unchanged verdict; the search behind the correction was repaired with a positive control).
@@ -195,7 +195,7 @@ Ground tier: `claude-opus-5-5`.
   commit: e439178550371f2bc4f5a9acfee9a1c4f2289ae4
   altitude: product
   horizon: current
-  consumed_by: none
+  consumed_by: ARD
   outcome: agree
   notes: |
     Control: `git grep -n -i 'rating' <commit> -- web/src/app/ratings/rating-list` matched rating-list.component.html:18 (`{{rating.rating}}`). I re-ran the original's absence search, `rating` over `books common web/src/app/books`: no match.
@@ -226,7 +226,7 @@ Ground tier: `claude-opus-5-5`.
   commit: e439178550371f2bc4f5a9acfee9a1c4f2289ae4
   altitude: product
   horizon: current
-  consumed_by: none
+  consumed_by: ARD
   outcome: agree
   notes: |
     Control: the original's count grep over `ratings books web/src/app/books web/src/app/ratings common` matched ratings/src/main/java/com/dynatrace/ratings/controller/VersionController.java:32, as the record states. It also matched books VersionController.java:32 and the books `country` field. The 'rating' arm matched rating-list.component.html:18.
@@ -245,7 +245,7 @@ Ground tier: `claude-opus-5-5`.
   commit: e439178550371f2bc4f5a9acfee9a1c4f2289ae4
   altitude: product
   horizon: current
-  consumed_by: none
+  consumed_by: ARD
   outcome: agree
   notes: |
     Control: `git grep -n -i 'NotVended' <commit>` matched web/src/app/books/book-list/book-list.component.html:22. I re-ran the original's repo-wide absence search, `not yet rated\|unrated\|no ratings`: no match.
@@ -270,7 +270,7 @@ Ground tier: `claude-opus-5-5`.
   commit: e439178550371f2bc4f5a9acfee9a1c4f2289ae4
   altitude: product
   horizon: current
-  consumed_by: none
+  consumed_by: ARD
   outcome: agree
   notes: |
     Control: the 'rating' grep matched rating-list.component.html:18. I re-ran the original's absence search over `books common web/src/app/books`: no match.
@@ -302,7 +302,7 @@ Ground tier: `claude-opus-5-5`.
   commit: e439178550371f2bc4f5a9acfee9a1c4f2289ae4
   altitude: product
   horizon: current
-  consumed_by: none
+  consumed_by: ARD
   outcome: contradict
   notes: |
     Rewritten in place by verification: pre-rewrite verdict AMENDED (unchanged verdict; the searches behind the corrections were repaired with positive controls).
@@ -353,7 +353,7 @@ Ground tier: `claude-opus-5-5`.
   commit: e439178550371f2bc4f5a9acfee9a1c4f2289ae4
   altitude: architecture
   horizon: current
-  consumed_by: none
+  consumed_by: ARD
   outcome: extend
   notes: |
     Why extend: three own_evidence items are new.

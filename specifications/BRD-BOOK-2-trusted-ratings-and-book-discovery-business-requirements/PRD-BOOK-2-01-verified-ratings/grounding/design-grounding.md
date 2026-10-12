@@ -5,7 +5,7 @@ key: BOOK-2-01
 
 # Design grounding: BOOK-2-01
 
-## 2026-10-12 — /prd-ground
+## 2026-10-12 — grounding run
 
 Design grounding skipped: `BOOK-2-01` has no `design/` folder, so there was no exported frame set to
 reconcile against the inventory. This run produced no `[DG#n]`. That is not the same as a design pass

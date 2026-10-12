@@ -37,6 +37,7 @@ Options:
 - **Findings:** [CG#2] REWRITTEN
 - **Altitude:** product
 - **State:** answered by the customer — [CD#2], from `customer-review-20261012.md` (reconciled 20261012)
+- **State:** answered by the customer — [CD#19], from Quillmark's follow-up meeting of 20261012 (recorded by hand 20261012)
 
 ## Round 1, question 5
 
@@ -56,6 +57,7 @@ Options:
 - **Altitude:** product
 - **Requirement defect:** [DEF#3]
 - **State:** answered by the customer — [CD#3], from `customer-review-20261012.md` (reconciled 20261012)
+- **State:** answered by the customer — [CD#20], from Quillmark's follow-up meeting of 20261012 (recorded by hand 20261012)
 
 ## Round 1, question 6
 

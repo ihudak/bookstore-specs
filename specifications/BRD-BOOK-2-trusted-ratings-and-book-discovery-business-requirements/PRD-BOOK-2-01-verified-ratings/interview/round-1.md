@@ -45,6 +45,7 @@ bought the book?
 
 - **State:** held for the customer — `interview/customer-questions.md`, Round 1, question 3
 - **State:** answered by the customer — [CD#2], from `customer-review-20261012.md` (reconciled 20261012)
+- **State:** answered by the customer — [CD#19], from Quillmark's follow-up meeting of 20261012 (recorded by hand 20261012)
 
 ### 4. [G] — [BR#2]
 
@@ -60,6 +61,7 @@ What happens to the repeat ratings already given?
 
 - **State:** held for the customer — `interview/customer-questions.md`, Round 1, question 5
 - **State:** answered by the customer — [CD#3], from `customer-review-20261012.md` (reconciled 20261012)
+- **State:** answered by the customer — [CD#20], from Quillmark's follow-up meeting of 20261012 (recorded by hand 20261012)
 
 ### 6. [C] — [BR#2], [BR#3]
 

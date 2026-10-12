@@ -8,7 +8,7 @@ key: BOOK-2
 | id | class | raised on | names | reason | resolution |
 |---|---|---|---|---|---|
 | [DEF#1] | ambiguity | [BR#1] | | 'has bought' does not say whether an order that is placed, paid or delivered qualifies, or whether a cancelled order still does | resolved-by: BOOK-2-01/[CD#1] |
-| [DEF#2] | unsourced | [BR#1] | | asserts that the store today lets only a customer who bought a book rate it; grounding must confirm this before it is built on | open |
+| [DEF#2] | unsourced | [BR#1] | | asserts that the store today lets only a customer who bought a book rate it; grounding must confirm this before it is built on | resolved-by: BOOK-2-01/[CG#2] |
 | [DEF#3] | ambiguity | [BR#2] | | section 3's preamble says one customer can rate the same book again and again today; 3.2 does not say what happens to the repeat ratings already given (keep all, keep one, or remove), and the averages in 3.4 and 3.6 depend on the answer | resolved-by: BOOK-2-01/[CD#3] |
 | [DEF#4] | duplicate | [BR#2] | [BR#3] | one numbered item, 3.2, split into one row per obligation: one rating per customer and book, and that rating's finality | resolved-by: BOOK-2-01/[CD#4] |
 | [DEF#5] | conflict | [BR#3] | [BR#9] | 3.2 makes a given rating final, but 3.7 lets the customer change it at any time and replaces the old rating with the new one, so both cannot hold | withdrawn |

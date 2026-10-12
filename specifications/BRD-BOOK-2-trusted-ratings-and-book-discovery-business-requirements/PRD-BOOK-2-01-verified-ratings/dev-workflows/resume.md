@@ -1,6 +1,6 @@
 # Resume — BOOK-2-01 (pm)
 
-- **Last completed:** /product-workflows:brd-interview BOOK-2-01 — round 1 opened and recorded; stays open on held [C] questions (2026-10-12T14:55:45Z)
-- **Artifact:** decisions.md ([VD#1]–[VD#4]), interview/customer-questions.md (15 held [C]), interview/round-1.md — on branch brd/BOOK-2-01-verified-ratings, PR #15
-- **Next step:** /product-workflows:brd-package BOOK-2-01, once PR #15 is merged
-- **Carry-forward decisions:** The [BR#3]/[BR#9] conflict ([DEF#5]) is asked as round 1 question 8, and [VD#4] (only the stars may change) holds whichever way it is answered. Unsourced [DEF#2], [DEF#12] and [DEF#15] stay open in the parent's defect log, because no question source raises them. [DEF#2] and [DEF#15] are settled by [CG#2] and [CG#12] and can be resolved by hand. Whether a synthetic monitor exists outside the repository for [BR#10] is asked of the customer as question 25.
+- **Last completed:** /product-workflows:brd-package BOOK-2-01 — command complete; package built at the Full tier and handed off (2026-10-12T17:45:52Z)
+- **Artifact:** bundle-20261012/ (13 files), customer-review-prompt-20261012.md, customer-delivery-note-20261012.md, self-review-20261012.md — on branch brd/BOOK-2-01-verified-ratings, PR #17
+- **Next step:** merge PR #17 and send the delivery note; when Quillmark's review comes back, /product-workflows:brd-reconcile BOOK-2-01 @<review-file>
+- **Carry-forward decisions:** 6 [SR#n] were escalated to the customer: [SR#1], [SR#2], [SR#5], [SR#8], [SR#10] and [SR#11]. Their answers come back in the review's section 7 under those ids, beside the 15 held round-1 questions. 5 were accepted as agreed and recorded for repair outside the package, each with a fixed-by marker in self-review-20261012.md: [SR#3], [SR#4], [SR#7] and [SR#9] go to /brd-interview, and [SR#6] goes to /prd-ground --rebaseline. Before the next round, the facts the review surfaced need findings: the rating comment field, order deletion and cancellation, and the missing delivery state. Unsourced [DEF#2], [DEF#12] and [DEF#15] are still open in the parent's defect log.

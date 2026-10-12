@@ -180,3 +180,80 @@ impact: blocker
 So every slice grounded by this release is unpackageable until someone hand-edits a file `/prd-ground` owns. The run was stopped before the disposition walk and the wording was fixed by hand through a PR.
 
 **Suggested improvement:** Have `/prd-ground` (and `grounding-verifier`'s notes) write the grounding files in customer-readable prose, stating rules by name rather than by `§`, naming no command, agent or working filename, as `brd-package-reviewer` is already told to. Or define an allowed rendering in `/brd-package`'s de-Obsidianising pass for plugin-written grounding notes. Either way, have `/brd-package` Phase 0 pre-scan the documents it will bundle, so the stop arrives before the operator disposes every `[SR#n]`, not after.
+
+## 2026-10-12 — /brd-package — ambiguous-prompt
+
+```yaml
+id: BOOK-2-01-brd-package-fixed-admissibility-not-shown
+date: 2026-10-12
+command: /brd-package
+plugin_version: 3.30.4
+origin: auto
+author: ihudak@gmail.com
+category: ambiguous-prompt
+impact: friction
+```
+
+**Friction:** The Phase 4 disposition picker offers `fixed` for every finding. But `fixed` is admissible only where the target is one of the five artifacts the command may change (`~/.claude/plugins/cache/shipwright/product-workflows/3.30.4/commands/brd-package.md`, the disposition table's `fixed` row). In this run all 11 `[SR#n]` targeted artifacts outside the five: register records, question-set entries and the grounding derivation matrix. The operator picked `fixed` twice (SR#6, SR#10), and both times it had to be explained and re-asked. They also picked `escalated-to-customer` on SR#6, where the code settles the question, so the tagging test makes escalation inadmissible. That choice was re-asked too. The picker shows the operator nothing about which of the four values a given finding admits, so the closed vocabulary becomes three rounds of trial and error.
+
+**Suggested improvement:** Keep the four-value array closed, but before each question compute admissibility from the finding's `target`. Print one line in the finding block, either "`fixed` is unavailable: <target> is written by <command or role>" or "`fixed` is available". Where `fixed` is unavailable, say in the question text that an agreed finding takes `accepted-risk` with a `fixed-by:` marker. Add a line noting that a finding the code settles is delivery-side and is not escalated.
+
+## 2026-10-12 — /brd-package — unfollowed-rule
+
+```yaml
+id: BOOK-2-01-brd-package-finding-not-shown-before-question
+date: 2026-10-12
+command: /brd-package
+plugin_version: 3.30.4
+origin: auto
+author: ihudak@gmail.com
+category: unfollowed-rule
+impact: friction
+```
+
+**Friction:** The rule: "Present each finding to the operator, one at a time, never batched, with its class, its target, its attack and its `what_would_settle_it` statement, and take exactly one disposition" (`~/.claude/plugins/cache/shipwright/product-workflows/3.30.4/commands/brd-package.md`, Phase 4). The SR#4 question was sent in the same turn as the previous finding's record update, before SR#4's class, target, attack and settle text had been shown. The operator answered blind. The run noticed, showed the finding and asked again; the second answer differed from the first, and that one stands. The rule was missed because it is one sentence above a long picker and table block. Nothing ties the display to the question, so a run that pipelines "record the last disposition, ask the next" can skip the display.
+
+**Suggested improvement:** Make the finding block and the question one fixed template in Phase 4: a block rendering class, target, attack and what-would-settle-it, followed directly by the picker. State that the picker is never issued without that block immediately before it in the same message.
+
+## 2026-10-12 — /brd-package — missing-capability
+
+```yaml
+id: BOOK-2-01-brd-package-no-shipped-bundle-scans
+date: 2026-10-12
+command: /brd-package
+plugin_version: 3.30.4
+origin: auto
+author: ihudak@gmail.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** The plugin-free scan, the citation-resolution check (rule 8) and the set-resolution check (rule 9) are specified only as prose; the plugin ships no tooling for them. The run wrote ad-hoc Python for all three, and for prompt and bundle assembly. The ad-hoc code went wrong twice:
+- The relation-3 commit check matched the all-digit date `20261012` in the delivery note as a commit and reported a false mismatch, which only judgment caught.
+- The first bundle build aborted on a line-wrapped string match and left a partial `bundle-<YYYYMMDD>/` that had to be removed by hand before the rebuild, since a dated bundle is never rewritten.
+
+Each run reimplements the checks, so two runs can scan the same bundle differently.
+
+**Suggested improvement:** Ship a deterministic scan script under `product-workflows/scripts/`. It should cover:
+- the plugin-free classes, treating the `source/<file> › § n` locator position as exempt;
+- relation 1 and relation 3 of the citation check, with partitioning and the qualified-field discharges;
+- the three set relations, with commit tokens restricted to hex strings containing a letter or of 12 or more characters.
+
+Have Phase 8 build into a temporary directory and move it to `bundle-<YYYYMMDD>/` only once assembly succeeds.
+
+## 2026-10-12 — /brd-package — ambiguous-prompt
+
+```yaml
+id: BOOK-2-01-brd-package-rule1-prose-references
+date: 2026-10-12
+command: /brd-package
+plugin_version: 3.30.4
+origin: auto
+author: ihudak@gmail.com
+category: ambiguous-prompt
+impact: polish
+```
+
+**Friction:** Phase 8 rule 1 says every reference from one bundle document to another names the bundled filename. The de-Obsidianise pass (rule 2) rewrites only links, though. Two plugin-written prose references pointed at sibling documents without naming them: code-grounding's "the grounding baselines document", and design-grounding's working path to the BRD wireframe. Whether a rendered copy may append the bundled filename to such prose is unspecified. The run appended `BOOK-2-01-baselines.md` and `BOOK-2-01-book-page-wireframe.svg` on its own judgment.
+
+**Suggested improvement:** State in Phase 8 whether rule 1 covers prose references in plugin-written documents. If it does, name the pass that renders them (append the bundled filename beside the original words). If it does not, say the manifest's map is the only bridge.

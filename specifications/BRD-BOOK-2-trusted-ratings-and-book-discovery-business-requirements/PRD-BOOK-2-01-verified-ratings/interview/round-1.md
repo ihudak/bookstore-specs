@@ -36,6 +36,7 @@ Does the store today let only a customer who has bought a book rate it, as requi
 Which orders entitle a customer to rate a book ("has bought")?
 
 - **State:** held for the customer — `interview/customer-questions.md`, Round 1, question 2
+- **State:** answered by the customer — [CD#1], from `customer-review-20261012.md` (reconciled 20261012)
 
 ### 3. [C] — [BR#1]
 
@@ -43,6 +44,7 @@ When the buyers-only rule takes effect, what happens to ratings already given by
 bought the book?
 
 - **State:** held for the customer — `interview/customer-questions.md`, Round 1, question 3
+- **State:** answered by the customer — [CD#2], from `customer-review-20261012.md` (reconciled 20261012)
 
 ### 4. [G] — [BR#2]
 
@@ -57,12 +59,14 @@ Does the store today stop a customer rating the same book twice?
 What happens to the repeat ratings already given?
 
 - **State:** held for the customer — `interview/customer-questions.md`, Round 1, question 5
+- **State:** answered by the customer — [CD#3], from `customer-review-20261012.md` (reconciled 20261012)
 
 ### 6. [C] — [BR#2], [BR#3]
 
 Do the two obligations split from requirement 3.2 stand independently?
 
 - **State:** held for the customer — `interview/customer-questions.md`, Round 1, question 6
+- **State:** answered by the customer — [CD#4], from `customer-review-20261012.md` (reconciled 20261012)
 
 ### 7. [G] — [BR#3]
 
@@ -77,12 +81,14 @@ Is a rating final once given, today?
 Requirement 3.2 (final) against 3.7 (changeable at any time): which governs?
 
 - **State:** held for the customer — `interview/customer-questions.md`, Round 1, question 8
+- **State:** answered by the customer — [CD#5], from `customer-review-20261012.md` (reconciled 20261012)
 
 ### 9. [C] — [BR#3]
 
 May a customer remove their own rating?
 
 - **State:** held for the customer — `interview/customer-questions.md`, Round 1, question 9
+- **State:** answered by the customer — [CD#6], from `customer-review-20261012.md` (reconciled 20261012)
 
 ### 10. [V] — [BR#3]
 
@@ -105,6 +111,7 @@ Is a rating a whole number of stars from 1 to 5 today?
 Is the 1-to-5 whole-star scale a requirement, or a description of today's scale?
 
 - **State:** held for the customer — `interview/customer-questions.md`, Round 1, question 12
+- **State:** answered by the customer — [CD#7], from `customer-review-20261012.md` (reconciled 20261012)
 
 ### 13. [V] — [BR#4]
 
@@ -125,6 +132,7 @@ Does the book page show a book's average rating today?
 Do the two obligations split from requirement 3.4 stand as separate requirements?
 
 - **State:** held for the customer — `interview/customer-questions.md`, Round 1, question 15
+- **State:** answered by the customer — [CD#8], from `customer-review-20261012.md` (reconciled 20261012)
 
 ### 16. [V] — [BR#5], [BR#8]
 
@@ -152,6 +160,7 @@ Does the store show "Not yet rated" anywhere today?
 Does "Not yet rated" replace the number of ratings too?
 
 - **State:** held for the customer — `interview/customer-questions.md`, Round 1, question 19
+- **State:** answered by the customer — [CD#9], from `customer-review-20261012.md` (reconciled 20261012)
 
 ### 20. [G] — [BR#8]
 
@@ -165,6 +174,7 @@ Does the list of books show each book's average today?
 Which lists of books does requirement 3.6 cover?
 
 - **State:** held for the customer — `interview/customer-questions.md`, Round 1, question 21
+- **State:** answered by the customer — [CD#10], from `customer-review-20261012.md` (reconciled 20261012)
 
 ### 22. [G] — [BR#9]
 
@@ -195,6 +205,7 @@ Does the store run synthetic monitoring that buys a book and then rates it?
 Does requirement 3.8 ask the supplier to build a new monitor, or to support one Quillmark runs?
 
 - **State:** held for the customer — `interview/customer-questions.md`, Round 1, question 25
+- **State:** answered by the customer — [CD#11], from `customer-review-20261012.md` (reconciled 20261012)
 
 ### 26. [C] — [BR#10]
 
@@ -221,6 +232,7 @@ Does clicking the rating count on the book page open the book's ratings today?
 Is the sketch's note a requirement of this release?
 
 - **State:** held for the customer — `interview/customer-questions.md`, Round 1, question 29
+- **State:** answered by the customer — [CD#12], from `customer-review-20261012.md` (reconciled 20261012)
 
 ### 30. [C] — [BR#11]
 

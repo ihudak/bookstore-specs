@@ -7,21 +7,21 @@ key: BOOK-2
 
 | id | class | raised on | names | reason | resolution |
 |---|---|---|---|---|---|
-| [DEF#1] | ambiguity | [BR#1] | | 'has bought' does not say whether an order that is placed, paid or delivered qualifies, or whether a cancelled order still does | open |
+| [DEF#1] | ambiguity | [BR#1] | | 'has bought' does not say whether an order that is placed, paid or delivered qualifies, or whether a cancelled order still does | resolved-by: BOOK-2-01/[CD#1] |
 | [DEF#2] | unsourced | [BR#1] | | asserts that the store today lets only a customer who bought a book rate it; grounding must confirm this before it is built on | open |
-| [DEF#3] | ambiguity | [BR#2] | | section 3's preamble says one customer can rate the same book again and again today; 3.2 does not say what happens to the repeat ratings already given (keep all, keep one, or remove), and the averages in 3.4 and 3.6 depend on the answer | open |
-| [DEF#4] | duplicate | [BR#2] | [BR#3] | one numbered item, 3.2, split into one row per obligation: one rating per customer and book, and that rating's finality | open |
-| [DEF#5] | conflict | [BR#3] | [BR#9] | 3.2 makes a given rating final, but 3.7 lets the customer change it at any time and replaces the old rating with the new one, so both cannot hold | open |
-| [DEF#6] | ambiguity | [BR#4] | | it has no 'must', which section 1 makes the mark of a requirement, yet it is numbered as one; readers differ on whether it requires a 1-5 whole-star scale or only describes today's scale | open |
-| [DEF#7] | duplicate | [BR#5] | [BR#6] | one numbered item, 3.4, split into one row per obligation: the average rating and the number of ratings | open |
-| [DEF#8] | ambiguity | [BR#7] | | it does not say whether 'Not yet rated' also replaces the rating count that 3.4 shows beside the average, or whether the page still shows a count of 0 | open |
-| [DEF#9] | ambiguity | [BR#8] | | 'The list of books' does not say which lists: the catalogue only, or also search results, the book-page suggestions (4.1) and the Top rated shelf (4.3) | open |
-| [DEF#10] | ambiguity | [BR#10] | | it does not say whether the monitoring customer's purchases and ratings count toward the averages (3.4, 3.6), the Top rated shelf (4.3, 4.4) and the also-bought suggestions (4.1), or are kept out of them | open |
-| [DEF#11] | ambiguity | [BR#10] | | it does not say which customer and books the monitoring uses, or whether its purchases are paid orders; at once a minute it needs a new customer or book each time, because 3.2 lets a customer rate a book only once | open |
-| [DEF#12] | unsourced | [BR#10] | | 'Our synthetic monitoring' presumes the customer already runs synthetic monitoring that can act as a customer; grounding must confirm what exists before this is built on | open |
-| [DEF#13] | ambiguity | [BR#11] | | stated only in `source/assets/book-page-wireframe.svg` — binding force unknown | open |
-| [DEF#14] | ambiguity | [BR#11] | | it does not say what the list shows for each rating (the stars alone, or also who gave it and when), and written reviews are out of scope (section 5) | open |
-| [DEF#15] | unsourced | [BR#11] | | it speaks of 'the list of this book's ratings' as if the store already has one; grounding must confirm whether that list exists or is new work | open |
+| [DEF#3] | ambiguity | [BR#2] | | section 3's preamble says one customer can rate the same book again and again today; 3.2 does not say what happens to the repeat ratings already given (keep all, keep one, or remove), and the averages in 3.4 and 3.6 depend on the answer | resolved-by: BOOK-2-01/[CD#3] |
+| [DEF#4] | duplicate | [BR#2] | [BR#3] | one numbered item, 3.2, split into one row per obligation: one rating per customer and book, and that rating's finality | resolved-by: BOOK-2-01/[CD#4] |
+| [DEF#5] | conflict | [BR#3] | [BR#9] | 3.2 makes a given rating final, but 3.7 lets the customer change it at any time and replaces the old rating with the new one, so both cannot hold | withdrawn |
+| [DEF#6] | ambiguity | [BR#4] | | it has no 'must', which section 1 makes the mark of a requirement, yet it is numbered as one; readers differ on whether it requires a 1-5 whole-star scale or only describes today's scale | resolved-by: BOOK-2-01/[CD#7] |
+| [DEF#7] | duplicate | [BR#5] | [BR#6] | one numbered item, 3.4, split into one row per obligation: the average rating and the number of ratings | resolved-by: BOOK-2-01/[CD#8] |
+| [DEF#8] | ambiguity | [BR#7] | | it does not say whether 'Not yet rated' also replaces the rating count that 3.4 shows beside the average, or whether the page still shows a count of 0 | resolved-by: BOOK-2-01/[CD#9] |
+| [DEF#9] | ambiguity | [BR#8] | | 'The list of books' does not say which lists: the catalogue only, or also search results, the book-page suggestions (4.1) and the Top rated shelf (4.3) | resolved-by: BOOK-2-01/[CD#10] |
+| [DEF#10] | ambiguity | [BR#10] | | it does not say whether the monitoring customer's purchases and ratings count toward the averages (3.4, 3.6), the Top rated shelf (4.3, 4.4) and the also-bought suggestions (4.1), or are kept out of them | withdrawn |
+| [DEF#11] | ambiguity | [BR#10] | | it does not say which customer and books the monitoring uses, or whether its purchases are paid orders; at once a minute it needs a new customer or book each time, because 3.2 lets a customer rate a book only once | withdrawn |
+| [DEF#12] | unsourced | [BR#10] | | 'Our synthetic monitoring' presumes the customer already runs synthetic monitoring that can act as a customer; grounding must confirm what exists before this is built on | withdrawn |
+| [DEF#13] | ambiguity | [BR#11] | | stated only in `source/assets/book-page-wireframe.svg` — binding force unknown | withdrawn |
+| [DEF#14] | ambiguity | [BR#11] | | it does not say what the list shows for each rating (the stars alone, or also who gave it and when), and written reviews are out of scope (section 5) | withdrawn |
+| [DEF#15] | unsourced | [BR#11] | | it speaks of 'the list of this book's ratings' as if the store already has one; grounding must confirm whether that list exists or is new work | withdrawn |
 | [DEF#16] | ambiguity | [BR#12] | | 'customers who bought this book also bought' (any purchase by the same customers) and 'most often bought together with it' (purchases in one order) are different measures, and readers can select and rank by either | open |
 | [DEF#17] | ambiguity | [BR#13] | | 'not for sale' does not say whether it means out of stock, withdrawn from the catalogue, or both; this affects both rows split from 4.2 | open |
 | [DEF#18] | duplicate | [BR#13] | [BR#14] | one numbered item, 4.2, split into one row per place it covers: the book-page suggestions and the Top rated shelf | open |

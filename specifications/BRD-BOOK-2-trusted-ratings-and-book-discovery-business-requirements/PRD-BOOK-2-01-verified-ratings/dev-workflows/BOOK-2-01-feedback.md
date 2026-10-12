@@ -278,3 +278,71 @@ impact: friction
 **User prompt:** why not committed, not PRed?
 
 **Resolution:** Explained that nothing was committed or PRed for three reasons: there was no commit request, recording the review is `/brd-reconcile`'s job, and `bundle-<date>/` is reserved. At the user's choice, moved the review out of `bundle-20261012/` to `/workspace/customer-returns/BOOK-2-01 Customer Review 20261012.md`, outside every repository. The reconcile command is left for the user to run.
+
+## 2026-10-12 — /brd-reconcile — missing-capability
+
+```yaml
+id: BOOK-2-01-brd-reconcile-moot-held-questions-dead-end
+date: 2026-10-12
+command: /brd-reconcile
+plugin_version: 3.30.5
+origin: auto
+author: ihudak@gmail.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** One returned review both withdrew two requirements and declined their questions as moot. It withdrew 3.8 and the Figure 1 note, frozen as [CD#11] and [CD#12], and declined round 1, questions 26, 27 and 30 as "Not answered: moot". The *Confirm every candidate* phase routes a declared refusal to *Reject*, so those questions stay *held for the customer* and round 1 stays open. The one exception covers only a held entry whose `- **Re-puts:**` line names a withdrawn record. These entries carry no such line: their requirement went `rejected` in the ledger in the same run. The run therefore ends `advance_ready: no`, and the only re-entry offered to close the round is *Package again*. That would put three questions to the customer about requirements they have just withdrawn. No command path retires such a question.
+
+**Suggested improvement:** Widen the *Reject* exception in *Confirm every candidate* and step 1 of *Freeze the customer decisions*. A held `[C]` whose every `[BR#n]` this run moved to `rejected` (or whose requirement a frozen `[CD#n]` withdrew) should close as *answered by the customer*. That closure names the withdrawing `[CD#n]` and records that nothing was frozen from the reply, as the withdrawn-`Re-puts:` case already does. It mints no `[CD#n]` and writes no "declined". In *Next steps*, never offer *Package again* when the only held questions belong to rejected requirements. Alternatively, add a "moot — requirement withdrawn in this review" decline reason to `references/customer-review-schema.md` §5, and say how the reader returns it.
+
+## 2026-10-12 — /brd-reconcile — missing-capability
+
+```yaml
+id: BOOK-2-01-brd-reconcile-agent-authored-reasons-unflagged
+date: 2026-10-12
+command: /brd-reconcile
+plugin_version: 3.30.5
+origin: auto
+author: ihudak@gmail.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** The returned review's section 1 states that its section 7 and 8 reasons were written by the customer's own AI review agent from an interview, while the answers are the customer's. A `[CD#n]`'s `argumentation` is defined as the customer's own reason, quoted (property 5, `decision-register-format.md` §2). The command has no anomaly class for a reason the review itself attributes to another author. The run surfaced it only as a free-form anomaly and froze 18 records quoting those reasons, and nothing in the register shows that the voice is not the customer's.
+
+**Suggested improvement:** Add an anomaly class to *Ingest the review* for "reasons authored by someone other than the customer, as section 1 states". Require one operator confirmation before the walk, and write a note into the reconciliation record naming every `[CD#n]` whose argumentation it covers. Optionally offer the missing-reason picker's *Ask the customer for the reason* for every candidate it touches.
+
+## 2026-10-12 — /brd-reconcile — ambiguous-prompt
+
+```yaml
+id: BOOK-2-01-brd-reconcile-sr-answer-option-mapping
+date: 2026-10-12
+command: /brd-reconcile
+plugin_version: 3.30.5
+origin: auto
+author: ihudak@gmail.com
+category: ambiguous-prompt
+impact: polish
+```
+
+**Friction:** An answered escalated `[SR#n]` records the fixed pair `["as the package states", "as the finding argues"]`. Customers answer such a finding with a fact ("Settled: the load generator never runs live") rather than by siding with either. Mapping onto the pair, or to the outside-the-options form, took judgement on all six answers, and three were frozen outside the options. The command gives no rule for when a fact-settling answer takes which form.
+
+**Suggested improvement:** In *Confirm every candidate*, say how a factual answer to an `[SR#n]` maps onto the pair. Name the pair member when the fact confirms the package's premise or the finding's *what would settle it*, and the outside-the-options form when it decides something neither side argued. Give one worked example of each.
+
+## 2026-10-12 — /brd-reconcile — ambiguous-prompt
+
+```yaml
+id: BOOK-2-01-brd-reconcile-section12-bundle-filenames
+date: 2026-10-12
+command: /brd-reconcile
+plugin_version: 3.30.5
+origin: auto
+author: ihudak@gmail.com
+category: ambiguous-prompt
+impact: polish
+```
+
+**Friction:** The review's section 12 rows name the bundle's filenames (`BOOK-2-01-decisions.md`, `BOOK-2-01-customer-questions.md`, `BOOK-2-01-code-grounding.md`). That is correct from the customer's side, since those are the names they were sent. *Apply the required corrections* classifies targets by working-tree name, and never says to map a bundle name back through the manifest's map. The run mapped each one by hand.
+
+**Suggested improvement:** In *Apply the required corrections*, state that a row naming a bundle file is resolved to its working artifact through `bundle-<YYYYMMDD>/`'s manifest. Map the bundle copy to the working file it was rendered from: `<KEY>-decisions.md` to `decisions.md`, `<KEY>-brd-defect-log.md` to the parent's `brd/brd-defect-log.md`, and so on. Report a name the manifest does not list as an anomaly.

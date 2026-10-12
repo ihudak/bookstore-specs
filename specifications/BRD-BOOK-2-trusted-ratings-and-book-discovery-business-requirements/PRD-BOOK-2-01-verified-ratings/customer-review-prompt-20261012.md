@@ -1,3 +1,5 @@
+> **Banner, 20261012 — superseded in part by `/brd-reconcile` (`reconciliation-20261012.md`).** This file records the BOOK-2-01 customer review prompt as sent on 20261012, and nothing beneath this banner has changed. Quillmark's returned review (`customer-review-20261012.md`) answered its part 7. Customer decisions [CD#1] to [CD#18] are frozen in `decisions.md`, and [VD#1] and [VD#4] are reopened there: [VD#1] by [CD#2], [CD#3], [CD#5], [CD#6] and [CD#16], and [VD#4] by [CD#17]. Three requirements are withdrawn: 3.2's finality ([BR#3], by [CD#5]), 3.8 ([BR#10], by [CD#11]) and the Figure 1 note ([BR#11], by [CD#12]). Round 1, questions 26, 27 and 30 were declined and remain held for the customer. The current position is recorded in `decisions.md`, `coverage-ledger.md`, `interview/customer-questions.md`, the parent's `brd/brd-defect-log.md` and `reconciliation-20261012.md`. The copy of this prompt inside `bundle-20261012/` is the unbannered original sent to the customer, and is the one to quote from.
+
 # BOOK-2-01 — customer review prompt
 
 You have been sent a review package from your supplier for **BOOK-2-01**, the part of Quillmark

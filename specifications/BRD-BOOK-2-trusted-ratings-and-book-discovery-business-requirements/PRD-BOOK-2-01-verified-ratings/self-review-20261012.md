@@ -1,3 +1,5 @@
+> **Banner, 20261012 — superseded in part by `/brd-reconcile` (`reconciliation-20261012.md`).** This file records the self-review of the BOOK-2-01 package as it stood on 20261012, and nothing beneath this banner has changed. The six findings escalated to the customer are answered: [SR#1] by [CD#13], [SR#2] by [CD#14], [SR#5] by [CD#15], [SR#8] by [CD#16], [SR#10] by [CD#17] and [SR#11] by [CD#18]. [VD#1] (the target of [SR#3], [SR#7] and [SR#8]) and [VD#4] (the target of [SR#9]) are reopened in `decisions.md`. The current position is recorded in `decisions.md` and `reconciliation-20261012.md`.
+
 # Self-review 20261012: BOOK-2-01
 
 Adversarial review of the BOOK-2-01 package before it goes to the customer. Internal to the delivery

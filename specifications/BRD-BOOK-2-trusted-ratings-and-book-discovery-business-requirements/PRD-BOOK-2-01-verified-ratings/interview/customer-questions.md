@@ -19,6 +19,7 @@ Options:
 - **Findings:** [CG#2] REWRITTEN
 - **Altitude:** product
 - **Requirement defect:** [DEF#1]
+- **State:** answered by the customer — [CD#1], from `customer-review-20261012.md` (reconciled 20261012)
 
 ## Round 1, question 3
 
@@ -35,6 +36,7 @@ Options:
 
 - **Findings:** [CG#2] REWRITTEN
 - **Altitude:** product
+- **State:** answered by the customer — [CD#2], from `customer-review-20261012.md` (reconciled 20261012)
 
 ## Round 1, question 5
 
@@ -53,6 +55,7 @@ Options:
 - **Findings:** [CG#3] FALSE-FRIEND
 - **Altitude:** product
 - **Requirement defect:** [DEF#3]
+- **State:** answered by the customer — [CD#3], from `customer-review-20261012.md` (reconciled 20261012)
 
 ## Round 1, question 6
 
@@ -69,6 +72,7 @@ Options:
 - **Findings:** [CG#3] FALSE-FRIEND, [CG#4] REWRITTEN
 - **Altitude:** product
 - **Requirement defect:** [DEF#4]
+- **State:** answered by the customer — [CD#4], from `customer-review-20261012.md` (reconciled 20261012)
 
 ## Round 1, question 8
 
@@ -85,6 +89,7 @@ Options:
 - **Findings:** [CG#4] REWRITTEN, [CG#10] AMENDED
 - **Altitude:** product
 - **Requirement defect:** [DEF#5]
+- **State:** answered by the customer — [CD#5], from `customer-review-20261012.md` (reconciled 20261012)
 
 ## Round 1, question 9
 
@@ -99,6 +104,7 @@ Options:
 
 - **Findings:** [CG#4] REWRITTEN
 - **Altitude:** product
+- **State:** answered by the customer — [CD#6], from `customer-review-20261012.md` (reconciled 20261012)
 
 ## Round 1, question 12
 
@@ -116,6 +122,7 @@ Options:
 - **Findings:** [CG#5] AMENDED
 - **Altitude:** product
 - **Requirement defect:** [DEF#6]
+- **State:** answered by the customer — [CD#7], from `customer-review-20261012.md` (reconciled 20261012)
 
 ## Round 1, question 15
 
@@ -132,6 +139,7 @@ Options:
 - **Findings:** [CG#6] REWRITTEN, [CG#7] REWRITTEN
 - **Altitude:** product
 - **Requirement defect:** [DEF#7]
+- **State:** answered by the customer — [CD#8], from `customer-review-20261012.md` (reconciled 20261012)
 
 ## Round 1, question 19
 
@@ -147,6 +155,7 @@ Options:
 - **Findings:** [CG#8] REWRITTEN, [CG#7] REWRITTEN
 - **Altitude:** product
 - **Requirement defect:** [DEF#8]
+- **State:** answered by the customer — [CD#9], from `customer-review-20261012.md` (reconciled 20261012)
 
 ## Round 1, question 21
 
@@ -163,6 +172,7 @@ Options:
 - **Findings:** [CG#9] REWRITTEN
 - **Altitude:** product
 - **Requirement defect:** [DEF#9]
+- **State:** answered by the customer — [CD#10], from `customer-review-20261012.md` (reconciled 20261012)
 
 ## Round 1, question 25
 
@@ -180,6 +190,7 @@ Options:
 
 - **Findings:** [CG#11] FALSE-FRIEND
 - **Altitude:** product
+- **State:** answered by the customer — [CD#11], from `customer-review-20261012.md` (reconciled 20261012)
 
 ## Round 1, question 26
 
@@ -235,6 +246,7 @@ Options:
 - **Altitude:** product
 - **Requirement defect:** [DEF#13]
 - **Defect image:** source/assets/book-page-wireframe.svg
+- **State:** answered by the customer — [CD#12], from `customer-review-20261012.md` (reconciled 20261012)
 
 ## Round 1, question 30
 

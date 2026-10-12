@@ -25,7 +25,8 @@ any of them elsewhere. The operator took it in one confirmation. It wrote:
   them separately. Each now reads `covered-here`, and the open question stays with the interview:
   - [BR#19]'s synthetic monitor is a FALSE-FRIEND at the pinned commit ([CG#9]). Whether a
     Dynatrace synthetic monitor exists in the tenant cannot be settled from the repository
-    ([DEF#25]). Sibling BOOK-2-01's [BR#10] is in the same position.
+    ([DEF#25]). Sibling BOOK-2-01's [BR#10] was in the same position until BOOK-2-01 [CD#11] withdrew it from
+    the release (20261012).
   - [BR#17] (count only buyers' ratings) depends on BOOK-2-01's [BR#1], which the code does not
     enforce today. [DEF#22] asks what it excludes beyond that.
   - Open ambiguities: [DEF#16] (which also-bought measure [BR#12] ranks by); [DEF#17] (whether

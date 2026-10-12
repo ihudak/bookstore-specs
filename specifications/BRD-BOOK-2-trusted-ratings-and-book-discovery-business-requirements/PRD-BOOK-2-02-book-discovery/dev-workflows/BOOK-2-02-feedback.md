@@ -71,3 +71,20 @@ impact: polish
 **Friction:** At Phase 9 the user first picked "Just write the files — I'll handle git", then interrupted ("stop. ask that again") and picked the branch-and-PR option on the re-ask. The *Declined by the user* outcome line had already been printed, so the transcript carries two contradictory `Phase handoff:` lines for one offer. The handoff record does not say why the user interrupted, so the evidence that the command caused it is thin.
 
 **Suggested improvement:** Optionally, have `phase-handoff` §4.1 say that a re-asked consent choice supersedes the outcome line already printed for the same offer. The Final report then repeats only the last one.
+
+## 2026-10-12 — /brd-split — wrong-output
+
+```yaml
+id: BOOK-2-02-brd-split-stale-tracking-ref-branch-suffix
+date: 2026-10-12
+command: /brd-split
+plugin_version: 3.30.4
+origin: auto
+author: ihudak@gmail.com
+category: wrong-output
+impact: polish
+```
+
+**Friction:** This is the second occurrence in one session. The handoff branch became `brd/BOOK-2-02-book-discovery-2`, although the intended name was free on the host. `refs/remotes/origin/brd/BOOK-2-02-book-discovery` was a stale tracking ref: the remote branch had been deleted when PR #12 merged. `phase-handoff` §2.2 rule 1 tests that ref, rule 3 finds it merged, and rule 4 forces the `-2` suffix. The sibling slice's run minutes earlier hit the same case (PR #13 on `brd/BOOK-2-01-verified-ratings-2`, logged in BOOK-2-01's feedback). So it now reproduces on every slice whose earlier PR merged with delete-branch-on-merge, which is the ordinary GitHub setup.
+
+**Suggested improvement:** In `~/.claude/plugins/cache/shipwright/workflows-core/1.36.5/references/phase-handoff.md` §2.2, have rule 1 confirm a remote-tracking ref against the host when no local branch backs it. Use `git ls-remote --exit-code --heads origin refs/heads/<name>`, the probe `specs-repo-git` §4 step 5 already uses, and treat a ref the host no longer has as absent. As an alternative, prune stale tracking refs before the collision test. Then use the `-2` suffix only when the name exists live on the host or as a local branch.

@@ -26,15 +26,15 @@ Quillmark wants this fixed in the next release of its online store.
 
 ## Goal
 
-Shoppers can trust the star ratings in Quillmark's online store, because every rating that counts is between 1 and 5 whole stars and comes from a customer who had bought the book when the store last checked it (when the rating was given or changed, or at go-live for a rating that predates this release). Each customer holds one rating per book, which they can change but not repeat or remove. The book page shows each book's average rating with the number of ratings it rests on, and the catalogue list shows each book's average rating.
+Shoppers can trust the star ratings in Quillmark's online store, because every rating that counts is between 1 and 5 whole stars and comes from a customer who had bought the book when the rating was given or last changed. No rating predates this release: every existing rating was removed before go-live. Each customer holds one rating per book, which they can change but not repeat or remove. The book page shows each book's average rating with the number of ratings it rests on, and the catalogue list shows each book's average rating.
 
 ## Target audience
 
 - **Shoppers browsing the store** — read a book's average rating and rating count on the book page and the catalogue list to decide what to buy.
 - **Customers who bought a book** — give a rating to a book they bought, and change it later if they change their mind.
-- **Quillmark operators** — remove a rating to meet an erasure request or to clean up fraud, and run the one-off clean-up of existing ratings at go-live.
+- **Quillmark operators** — remove a rating to meet an erasure request or to clean up fraud.
 
-Quillmark's Head of E-commerce owns the rating rules and how they are shown. The Operations Lead owns the operating side of rating removal and the go-live clean-up.
+Quillmark's Head of E-commerce owns the rating rules and how they are shown. The Operations Lead owns the operating side of rating removal.
 
 ## User Stories
 
@@ -72,7 +72,9 @@ Traces to: [CD#6], [VD#1], [VD#4]; the operator-removal addition in section 4 of
 
 As a Quillmark operator, I want existing ratings brought in line with the new rules once, at go-live, so that every average shoppers see from the first day rests only on ratings the rules allow.
 
-Traces to: [BR#1], [BR#2]; [CD#2], [CD#3], [VD#1]. Contested by a later meeting with Quillmark, and the live store's ratings have already been removed: see `## Assumptions & open questions`, item 1.
+Traces to: [BR#1], [BR#2]; [CD#2], [CD#3], [VD#1].
+
+**Withdrawn:** Quillmark replaced the go-live clean-up with removing every existing rating before go-live, already done in its live store ([CD#19], [CD#20], superseding [CD#2] and [CD#3]), so no existing rating is left to bring in line.
 
 ### [US#7]: Know that only Quillmark sees my comment
 
@@ -95,7 +97,7 @@ Traces to: [CD#17]; the comments addition in section 4 of Quillmark's review.
 - [AC#7] When a customer submits the add form for a book they have already rated, the store changes their existing rating to the new stars, and to the new comment as [AC#30] states, exactly as an Update would. A book never holds two ratings from the same customer.
 - [AC#8] The store saves a change, made through Update or through the add form, only when the customer has a qualifying order for the book at the moment of the change. Otherwise it refuses the change with the message of [AC#2], and the existing rating stays exactly as it was and keeps counting.
 - [AC#9] A change is held to the star scale of [AC#3] and [AC#4].
-- [AC#10] Guard: a rating given or changed after go-live, or kept by the go-live clean-up, stays, and keeps counting in its book's average and count, when its qualifying order is cancelled or deleted after go-live.
+- [AC#10] Guard: a rating given or changed after go-live stays, and keeps counting in its book's average and count, when its qualifying order is cancelled or deleted after go-live.
 - [AC#11] Guard: the Ratings list keeps each rating's rater e-mail and its Update action.
 - [AC#29] Guard: from the Ratings list, a customer can still select Update on a rating and change its stars and its comment.
 - [AC#30] On a change, made through Update or through the add form, an empty comment field leaves the rating's stored comment as it is, and a comment entered in the field replaces it.
@@ -118,14 +120,14 @@ Traces to: [CD#17]; the comments addition in section 4 of Quillmark's review.
 
 - [AC#21] Guard: an operator can still remove any single rating, and so can remove every rating one customer has given.
 - [AC#22] A removed rating no longer counts in its book's average or count. **Withdrawn:** restates [AC#16] and [AC#20], which already cover a removed rating.
-- [AC#23] No storefront screen lets anyone remove a rating, either one at a time or all at once. After go-live, no route, an operator's included, removes every rating at once: a rating leaves the store only through single-rating removal ([AC#21]) or the go-live clean-up ([AC#25] to [AC#27]).
+- [AC#23] No storefront screen lets anyone remove a rating, either one at a time or all at once. After go-live, no route, an operator's included, removes every rating at once: a rating leaves the store only through single-rating removal ([AC#21]).
 - [AC#24] No path, an operator's included, changes the customer e-mail or the book of an existing rating. A rating recorded against the wrong book is removed under [AC#21], never moved to another book.
 
 **[US#6] Bring existing ratings in line with the rules at go-live**
 
-- [AC#25] At go-live, the clean-up removes every existing rating whose customer has no qualifying order for the book.
-- [AC#26] After [AC#25], for each customer and book that still hold more than one rating, the clean-up keeps only the latest and removes the rest.
-- [AC#27] The clean-up runs once, at go-live, started by operators. No storefront screen offers it.
+- [AC#25] At go-live, the clean-up removes every existing rating whose customer has no qualifying order for the book. **Withdrawn:** with [US#6]; no rating predates this release ([CD#19]).
+- [AC#26] After [AC#25], for each customer and book that still hold more than one rating, the clean-up keeps only the latest and removes the rest. **Withdrawn:** with [US#6]; no rating predates this release ([CD#20]).
+- [AC#27] The clean-up runs once, at go-live, started by operators. No storefront screen offers it. **Withdrawn:** with [US#6]; there is no clean-up to run ([CD#19]).
 
 **[US#7] Know that only Quillmark sees my comment**
 
@@ -146,7 +148,6 @@ Traces to: [CD#17]; the comments addition in section 4 of Quillmark's review.
 - The average rating and the rating count on the book page, with "Not yet rated" for an unrated book ([US#3]).
 - The average rating, or "Not yet rated", on the catalogue list ([US#4]).
 - Operator removal of a rating for erasure requests and fraud ([US#5]).
-- The one-off clean-up of existing ratings at go-live ([US#6]), contested (`## Assumptions & open questions`, item 1).
 
 **Out of scope**
 
@@ -160,10 +161,11 @@ Traces to: [CD#17]; the comments addition in section 4 of Quillmark's review.
 - Any change to orders, checkout, payment or order cancellation, including recording delivery ([VD#5], [CD#18]; Quillmark's section 5).
 - Notifications of any kind, and a mobile app (Quillmark's section 5).
 - Changes to the store's test-traffic generator ([VD#1]).
+- Any clean-up of existing ratings: every rating the store held was removed before go-live ([CD#19], [CD#20]).
 
 ## Success Metrics
 
-- [SM#1] Buyers-only integrity: the share of ratings counted in any book's average that passed the buyers-only rule when the store last checked them. A rating kept by the go-live clean-up passes when its customer had a qualifying order at go-live ([AC#25]); any later rating passes when its customer had a qualifying order when it was last given or changed ([AC#1], [AC#8]). Target: 100%, checked at go-live and monthly for the first three months after go-live.
+- [SM#1] Buyers-only integrity: the share of ratings counted in any book's average that passed the buyers-only rule when the store last checked them. A rating passes when its customer had a qualifying order when it was last given or changed ([AC#1], [AC#8]). Target: 100%, checked at go-live and monthly for the first three months after go-live.
 - [SM#2] One rating per customer and book: the number of customer and book pairs that hold more than one rating. Target: 0, at go-live and at every monthly check over the first three months after go-live.
 - [SM#3] Buyer participation: the number of distinct customer and book pairs whose rating was given or changed in the month, so that repeated changes to one rating count once. Baseline: the first full calendar month after go-live. Target: at or above the baseline in each of the two months that follow.
 - [SMC#1] Counterbalances [SM#3]: ratings refused by the buyers-only rule. Not to be optimized: a rise is investigated, for example as a sign of a confusing form, and never brought down by accepting ratings from customers without a qualifying order.
@@ -177,11 +179,11 @@ Traces to: [CD#17]; the comments addition in section 4 of Quillmark's review.
 
 ## Non-functional requirements
 
-- The rating rules hold however a rating reaches the store, not only through the storefront's forms: buyers only ([AC#1], [AC#8]), one rating per customer and book ([AC#7]), whole stars from 1 to 5 ([AC#4], [AC#9]), a fixed customer and book ([AC#24]), and, apart from the go-live clean-up, removal one rating at a time only ([AC#23]). A rating that arrives by any other route is treated on exactly the same terms: refused where the storefront refuses it, and a repeat rating applied as a change under [AC#7] and [AC#8].
+- The rating rules hold however a rating reaches the store, not only through the storefront's forms: buyers only ([AC#1], [AC#8]), one rating per customer and book ([AC#7]), whole stars from 1 to 5 ([AC#4], [AC#9]), a fixed customer and book ([AC#24]), and removal one rating at a time only ([AC#23]). A rating that arrives by any other route is treated on exactly the same terms: refused where the storefront refuses it, and a repeat rating applied as a change under [AC#7] and [AC#8].
 
 ## Assumptions & open questions
 
-1. **Contradiction — the go-live clean-up ([US#6]).** At a follow-up meeting after its review, Quillmark agreed that every existing rating is removed at go-live, rather than only the ratings of customers with no qualifying order ([CD#2]) and every earlier repeat ([CD#3]). The delivery team reported this while authoring this PRD, and it is not yet in the decision register, so this PRD carries [CD#2] and [CD#3] as the register states them. If the meeting's position stands, [US#6] changes: every book starts at "Not yet rated", the comments customers already wrote go with their ratings, and [VD#1]'s reasoning that the go-live clean-up is not bulk deletion, which rests on [CD#2] and [CD#3], must be decided again. Route: `/product-workflows:brd-package` on this slice puts the question to Quillmark, and `/product-workflows:brd-reconcile` on this slice, given Quillmark's reply, records its answer as a decision superseding [CD#2] and [CD#3]. `/product-workflows:brd-interview` on this slice then decides [VD#1] again, and `/product-workflows:update-prd` refreshes this PRD. Owners at Quillmark: the Head of E-commerce (the rating rules) and the Operations Lead (the go-live clean-up). **Already done in the live store:** the delivery team reports, on 2026-10-12, that every rating in Quillmark's live store has already been removed, as the meeting agreed. So in the live store [US#6]'s clean-up finds no existing rating to act on, every book starts at "Not yet rated", the comments customers had written are gone with their ratings, although section 4 of the review kept comments already stored ([CD#17]), and [SM#1] and [SM#2] hold trivially at go-live. [CD#2] and [CD#3] still stand in the register until Quillmark's answer is reconciled. Should they stand, Quillmark must also say what "latest" in [CD#3] means for [AC#26] (the rating given last, or the one given or changed last), and what becomes of an existing rating outside whole stars 1 to 5, which neither decision covers; in the live store both questions are moot, since no rating remains there.
+1. **Settled: no rating predates this release** ([CD#19], [CD#20]). At a follow-up meeting after its review, Quillmark replaced the go-live clean-up of [CD#2] and [CD#3] with removing every existing rating before go-live, and its live store's ratings were removed on 2026-10-12. Every book starts at "Not yet rated", and the comments customers had written went with their ratings. [US#6] is withdrawn, and [VD#1] was decided again in round 3 without a go-live clean-up.
 2. **Accepted: the rater is whoever's e-mail is typed** ([CD#14]). The store has no sign-in in this release, so someone could type a buyer's e-mail and rate, or change the rating of, a book that buyer bought. Quillmark accepted this in section 8 of its review.
 3. **The operators' removal path is not protected from shoppers** ([VD#1]). With no sign-in, the store cannot tell an operator's removal from the same request made by anyone else outside the storefront screens. No screen offers removal ([AC#23]), but the path itself can be reached. Quillmark asked how this path is kept from shoppers (section 10 of its review), and [VD#1] accepts the risk until sign-in exists. That answer goes, with [VD#5] and [VD#6], to the owners section 9 of the review names.
 4. **Raters' e-mails stay visible on the Ratings list** ([VD#6]). Any shopper can see which e-mail gave which rating. This is part of the typed-e-mail identity Quillmark accepted, and it can change once the store has sign-in.
@@ -193,13 +195,13 @@ Traces to: [CD#17]; the comments addition in section 4 of Quillmark's review.
 - This slice's requirement inventory and coverage ledger: `brd/brd-inventory.md`, `coverage-ledger.md`
 - Decision register: `decisions.md`
 - Quillmark's review and its reconciliation: `customer-review-20261012.md`, `reconciliation-20261012.md`
-- Interview rounds: `interview/round-1.md`, `interview/round-2.md`
+- Interview rounds: `interview/round-1.md`, `interview/round-2.md`, `interview/round-3.md`
 - Code grounding of `bookstore` at `e439178`: `grounding/code-grounding.md`
 - Sibling slice for book suggestions and the Top rated shelf: [BOOK-2-02](../PRD-BOOK-2-02-book-discovery/)
 
 ## Documentation impact
 
 - **Shopper help:** who can rate a book, how to change a rating, that comments are seen by Quillmark only, what the average and the count mean, and what "Not yet rated" means.
-- **Operator guide:** removing a rating for an erasure request or for fraud, including every rating of one customer, and running the one-off clean-up at go-live.
+- **Operator guide:** removing a rating for an erasure request or for fraud, including every rating of one customer.
 - **Reference for the store's ratings operations:** removing every rating at once is no longer offered, and a rating that breaks the rules is refused.
 - The product documentation set holds no pages yet, so each of these is new.

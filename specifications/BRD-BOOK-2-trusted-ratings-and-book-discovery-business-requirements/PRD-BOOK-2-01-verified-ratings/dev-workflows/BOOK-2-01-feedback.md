@@ -257,3 +257,24 @@ impact: polish
 **Friction:** Phase 8 rule 1 says every reference from one bundle document to another names the bundled filename. The de-Obsidianise pass (rule 2) rewrites only links, though. Two plugin-written prose references pointed at sibling documents without naming them: code-grounding's "the grounding baselines document", and design-grounding's working path to the BRD wireframe. Whether a rendered copy may append the bundled filename to such prose is unspecified. The run appended `BOOK-2-01-baselines.md` and `BOOK-2-01-book-page-wireframe.svg` on its own judgment.
 
 **Suggested improvement:** State in Phase 8 whether rule 1 covers prose references in plugin-written documents. If it does, name the pass that renders them (append the bundled filename beside the original words). If it does not, say the manifest's map is the only bridge.
+
+## 2026-10-12 — /brd-package — ambiguous-prompt
+
+```yaml
+id: BOOK-2-01-brd-package-review-file-placement-unstated
+date: 2026-10-12
+command: /brd-package
+plugin_version: 1.36.6
+origin: prompt
+author: ihudak@gmail.com
+category: ambiguous-prompt
+impact: friction
+```
+
+**Friction:** The customer review prompt that /brd-package writes (`BOOK-2-01-customer-review-prompt-20261012.md`, part 10) says to write exactly one new file, but never says where to save it. Neither the prompt nor the delivery note says the returned file reaches the specs repo through `/product-workflows:brd-reconcile <KEY> @<review-file>`. The prompt was run in the operator's own session (a demo, with the customer role-played). The agent offered the bundle folder as a save location and, at the user's pick, wrote the review into `bundle-20261012/`. That folder is reserved: `commit-artifacts` never stages it, and it holds the handed-off package that must stay byte-identical. The agent then left the file uncommitted, with no PR and no pointer to the reconcile step. The user expected it committed and PRed.
+
+**Suggested improvement:** In the review prompt's part 10, and in the delivery note, say where the returned file goes. It is saved outside the bundle folder and outside the specs repository, then handed to the delivery team, who record it with `/product-workflows:brd-reconcile <KEY> @<file>`. That step copies it in as `customer-review-<YYYYMMDD>.md` and commits it with a PR. Never save it inside `bundle-<YYYYMMDD>/`. Where the prompt runs inside the specs checkout itself, tell the agent to save outside it and print the reconcile command for the operator, without running it.
+
+**User prompt:** why not committed, not PRed?
+
+**Resolution:** Explained that nothing was committed or PRed for three reasons: there was no commit request, recording the review is `/brd-reconcile`'s job, and `bundle-<date>/` is reserved. At the user's choice, moved the review out of `bundle-20261012/` to `/workspace/customer-returns/BOOK-2-01 Customer Review 20261012.md`, outside every repository. The reconcile command is left for the user to run.

@@ -430,3 +430,23 @@ The run had to improvise:
 - when the operator reports a customer decision taken outside the register, offer stop-and-reconcile first, since `/brd-reconcile`'s free-text mode can read meeting notes;
 - when the contradicted outcome has already happened, record it as a fact the customer must be told, not as an open preference;
 - log only the operator's final position.
+
+## 2026-10-12 — /release-notes — missing-reference-doc
+
+```yaml
+id: BOOK-2-01-release-notes-pre-release-state-unspecified
+date: 2026-10-12
+command: /release-notes
+plugin_version: 1.14.3
+origin: auto
+author: ihudak@gmail.com
+category: missing-reference-doc
+impact: polish
+```
+
+**Friction:** The PRD's live Goal states a fact about the store's starting state at release: "No rating predates this release: every existing rating was removed before go-live". Shoppers see it on day one, because every book starts at "Not yet rated". `release-notes-writer` left it out of the note. Neither `~/.claude/plugins/cache/shipwright/docs-workflows/1.14.3/references/release-note-types.md` nor `~/.claude/plugins/cache/shipwright/docs-workflows/1.14.3/agents/release-notes-writer.md` says whether a data action taken outside the release, such as a reset or removal done before go-live, belongs in its note. The omission was nobody's decision, and another run on the same PRD could include the fact.
+
+**Suggested improvement:** Add one rule to `release-note-types.md` §6 (general rules), and cite it from the writer:
+- a starting-state fact the PRD states goes in the note only when it changes what a reader sees on day one;
+- it is written as one plain sentence after the feature's prose, for example "Every book starts at **Not yet rated**";
+- otherwise it is left out.

@@ -342,7 +342,7 @@ Ground tier: `claude-opus-5-5`.
       lines: [2, 9]
       note: ingest is deployed as a plain one-replica Deployment, not as a CronJob or any other schedule
     - path: .
-      note: searched `git grep -n -i -E 'synthetic|browser.?monitor|http.?monitor|clickpath' <commit>` outside markdown — no match. A Dynatrace synthetic monitor, if one exists, is configured in the Dynatrace tenant, which this repository does not contain, so its existence cannot be established here
+      note: searched `git grep -n -i -E 'synthetic|browser.?monitor|http.?monitor|clickpath' <commit>` outside markdown — no match. A synthetic monitor, if one exists, is configured in an external monitoring tool, which this repository does not contain, so its existence cannot be established here
     - path: ingest/src/main/java/com/dynatrace/ingest/controller/IngestController.java
       lines: [287, 291, 292, 294]
       note: The loop runs batch iterations back to back while isWorking is true, with no sleep or schedule (`git grep -n -i -E 'sleep|Thread\.sleep|TimeUnit' <commit> -- ingest/src` found only HTTP timeouts in ConfigController and VersionController). Each batch is about 1000 carts, 2000 storage items, 500 orders, 455 payments and 700 ratings over HTTP (k8s/ingest.yaml:132). Nothing guarantees a buy-then-rate at least once a minute.

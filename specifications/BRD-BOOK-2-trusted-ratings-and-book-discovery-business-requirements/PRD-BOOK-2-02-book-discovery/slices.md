@@ -24,7 +24,7 @@ any of them elsewhere. The operator took it in one confirmation. It wrote:
 - **Left open for `/brd-interview`.** The offer flagged these rows and the operator did not walk
   them separately. Each now reads `covered-here`, and the open question stays with the interview:
   - [BR#19]'s synthetic monitor is a FALSE-FRIEND at the pinned commit ([CG#9]). Whether a
-    Dynatrace synthetic monitor exists in the tenant cannot be settled from the repository
+    synthetic monitor exists in an external monitoring tool cannot be settled from the repository
     ([DEF#25]). Sibling BOOK-2-01's [BR#10] was in the same position until BOOK-2-01 [CD#11] withdrew it from
     the release (20261012).
   - [BR#17] (count only buyers' ratings) depends on BOOK-2-01's [BR#1], which the code does not

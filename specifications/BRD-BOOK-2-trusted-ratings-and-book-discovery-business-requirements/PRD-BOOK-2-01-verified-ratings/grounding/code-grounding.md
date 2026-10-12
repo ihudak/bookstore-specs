@@ -5,9 +5,10 @@ key: BOOK-2-01
 
 # Code grounding: BOOK-2-01
 
-Ground by `/product-workflows:prd-ground` on 2026-10-12 against `bookstore` pinned at
-`e439178550371f2bc4f5a9acfee9a1c4f2289ae4` (see `baselines.md`). Every finding below was re-derived
-blind and compared by `grounding-verifier` before it was written; `outcome` records the result.
+Grounded on 2026-10-12 against `bookstore` pinned at
+`e439178550371f2bc4f5a9acfee9a1c4f2289ae4` (see the grounding baselines document). Every finding below
+was re-derived blind by an independent verifier and compared before it was written; `outcome` records
+the result.
 Ground tier: `claude-opus-5-5`.
 
 ## Findings
@@ -25,7 +26,7 @@ Ground tier: `claude-opus-5-5`.
   consumed_by: none
   outcome: agree
   notes: |
-    I ran baseline-integrity again before comparing. rev-parse HEAD gave e439178550371f2bc4f5a9acfee9a1c4f2289ae4, diff --stat printed nothing, and status --porcelain printed nothing and exited 0 (with and without --no-optional-locks). This is a baseline finding, so it owes no control (§2.2, §4.1 rule 4).
+    I re-ran the three pin-check commands before comparing. rev-parse HEAD gave e439178550371f2bc4f5a9acfee9a1c4f2289ae4, diff --stat printed nothing, and status --porcelain printed nothing and exited 0 (with and without --no-optional-locks). This is a baseline finding, so under the grounding rules it owes no control search.
 
 - id: [CG#2]
   claim: [BR#1] — Only a customer who has bought a book can rate it. The store works this way today, and it must keep doing so.
@@ -100,7 +101,7 @@ Ground tier: `claude-opus-5-5`.
   outcome: contradict
   notes: |
     Rewritten in place by verification: pre-rewrite verdict REWRITTEN.
-    The verdicts differ: the original is REWRITTEN and the blind result is FALSE-FRIEND. That makes this a contradict. Both agree on the substance: nothing in ratings enforces one rating per customer per book, and RatingRepository.findByEmailAndIsbn (line 16) is declared but never called. The original listed that method as a "false friend" evidence entry under REWRITTEN. The blind result made it the verdict, which is the case §3 gives FALSE-FRIEND its own verdict for.
+    The verdicts differ: the original is REWRITTEN and the blind result is FALSE-FRIEND. That makes this a contradict. Both agree on the substance: nothing in ratings enforces one rating per customer per book, and RatingRepository.findByEmailAndIsbn (line 16) is declared but never called. The original listed that method as a "false friend" evidence entry under REWRITTEN. The blind result made it the verdict, which is the case the FALSE-FRIEND verdict exists for.
     Control: `git grep -n 'findByEmailAndIsbn' <commit>` matched OrderController.java:97, plus the other carts and orders callers. `git grep -n -i 'unique' <commit> -- orders` matched Order.java:11. I re-ran the original's absence search, `unique` over `ratings common web/src/app/ratings k8s`: no match.
     The blind evidence supports its own verdict. The method is declared, ratings never calls it (a repo-wide grep whose control fired), create does no lookup, and there is no unique constraint (control fired at Order.java:11).
 
@@ -167,7 +168,7 @@ Ground tier: `claude-opus-5-5`.
   notes: |
     Rewritten in place by verification: pre-rewrite verdict AMENDED (unchanged verdict; the search behind the correction was repaired with a positive control).
     The contradict comes from the control rule, not from a different verdict. The blind result is AMENDED, the same as the original.
-    The original's correction rests on an absence. It says "the range check lives only in the setter" and that create and update "save the bound body with no further check on rating". In other words, no bean-validation annotation, entity hook or database constraint backs the setter. That is a negative over the codebase. No search in the record reaches it and the record carries no control, so under §2.2 the control is owed and missing.
+    The original's correction rests on an absence. It says "the range check lives only in the setter" and that create and update "save the bound body with no further check on rating". In other words, no bean-validation annotation, entity hook or database constraint backs the setter. That is a negative over the codebase. No search in the record reaches it and the record carries no control, so under the grounding rules a control search is owed and missing.
     Because the control rule forces this contradict, it cannot be disputed. The re-derived finding can carry the blind result's evidence and its own_control.
     I checked the blind result's own absence and control. The validation grep has no hit under ratings/ and does hit carts/src/main/java/com/dynatrace/carts/model/Cart.java:30 (`@Min(1)`), so the blind control fires.
     Both sides agree on the substance: a POST or PUT that omits `rating` stores 0.
@@ -311,7 +312,7 @@ Ground tier: `claude-opus-5-5`.
     - "the update path checks no ownership and re-verifies neither client nor book"
     - "posting another rating ... adds a second row instead of replacing the first"
     - "so any caller can rewrite any rating"
-    The last one is a negative over the whole stack: it assumes no authentication or authorisation layer exists anywhere. No search in the record reaches it, so under §2.2 the control is owed and missing. This contradict cannot be disputed.
+    The last one is a negative over the whole stack: it assumes no authentication or authorisation layer exists anywhere. No search in the record reaches it, so under the grounding rules a control search is owed and missing. This contradict cannot be disputed.
     The blind controls fire: verify(Book|Client)\( at RatingController.java:77, and findByEmailAndIsbn at OrderController.java:97.
     Do not carry "any caller can rewrite any rating" into the re-derived record. The blind result found no positive control for a filter, interceptor or guard search and explicitly does not rest on "there is no authentication". What its evidence supports is narrower: the edit works on any rating by id, and the method itself has no ownership check.
 
@@ -366,7 +367,7 @@ Ground tier: `claude-opus-5-5`.
     - Arm 3, the startup/scheduling-annotation grep, returned no match. That repeats the failure the record itself states.
     The verdict does not rest on arm 3's absence. FALSE-FRIEND stands on direct reads: ratings use random pairs (Rating.java:37-38), orders use their own separate random pairs (Order.java:53-54), and the loop runs without a pause. Even a scheduler would not make ingest rate the book it bought. So the owed control is reported as fired.
     The blind controls fired too: dtctl.instructions.md:149 and CLAUDE.md:79.
-    Caller: entries 4 and 5 are appended above. Entry 1 is not: it cites repository documentation (CLAUDE.md and two agent-instruction files), and a documentation page is never evidence for a [CG#n] (/prd-ground Phase 4.5).
+    Caller: entries 4 and 5 are appended above. Entry 1 is not: it cites repository documentation (CLAUDE.md and two agent-instruction files), and under the grounding rules a documentation page is never evidence for a code finding.
 
 - id: [CG#12]
   claim: [BR#11] — Clicking the rating count on the book page opens the list of the book's ratings, as the sketch's note says: "Clicking the count opens the list of this book's ratings."
@@ -407,8 +408,8 @@ Ground tier: `claude-opus-5-5`.
 
 Ran by default: the claim list asks the store to hold or display data elements (BR#4–BR#8, BR#11 —
 the star value, a per-book average, a per-book count, an empty state and a per-book list). One
-implementation-altitude row per data element, classed per `workflows-core:grounding-format` §7, each
-resting on the verified finding it cites.
+implementation-altitude row per data element, classed EXISTS (already captured and stored) or
+DERIVED (computed from data that already exists), each resting on the verified finding it cites.
 
 | element | asked by | class | source | finding |
 |---|---|---|---|---|

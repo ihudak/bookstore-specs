@@ -450,3 +450,45 @@ impact: polish
 - a starting-state fact the PRD states goes in the note only when it changes what a reader sees on day one;
 - it is written as one plain sentence after the feature's prose, for example "Every book starts at **Not yet rated**";
 - otherwise it is left out.
+
+## 2026-10-12 — /create-ard — wrong-output
+
+```yaml
+id: BOOK-2-01-create-ard-unverified-claims-in-playback
+date: 2026-10-12
+command: /create-ard
+plugin_version: 3.32.1
+origin: auto
+author: ihudak@gmail.com
+category: wrong-output
+impact: friction
+```
+
+**Friction:** In Phase 3 and the first confirmation gate, the architect was asked to confirm claims nobody had verified. Three were wrong:
+- `bookstore:k8s` was proposed as a deploy component "to give ratings the orders URL". The configmap already delivers `DT_ORDERS_SERVER` to the pod via `envFrom`, so k8s needed no change.
+- The code-scanner reported that orders' `completed` flag is freely writable through POST/PUT. Setting it actually runs the purchase flow.
+- The code-scanner reported that an omitted star value is rejected. The verified [CG#5] shows it is stored as 0.
+
+All three were caught later, but only after the architect had decided on them. The first ard-reviewer pass then found a grounding claim ("`completed == true` is exactly the qualifying order") overstated too.
+
+**Suggested improvement:** Change `/create-ard` Phases 3 and 4:
+- Before the architect confirms a component or a grounding play-back, check every claim that rests on `code-scanner` output or on an orchestrator premise against the cited file:line. Mark any claim not yet checked "scanner-reported, unverified" in the play-back.
+- Hold a component proposed "because X needs a change" until that change has been confirmed in the code.
+- Apply Phase 5's search-for-counter-examples rule for universal claims ("exactly", "only") at the grounding gate, not only to the review-fix edits.
+
+## 2026-10-12 — /create-ard — missing-capability
+
+```yaml
+id: BOOK-2-01-create-ard-post-cap-decision-edits-unreviewed
+date: 2026-10-12
+command: /create-ard
+plugin_version: 3.32.1
+origin: auto
+author: ihudak@gmail.com
+category: missing-capability
+impact: polish
+```
+
+**Friction:** After the re-review spent the cap, applying its findings needed a new architect decision (e-mails compared case-insensitively). That decision changed [AD#2]'s lookup from one orders endpoint to two. The version line correctly said that the current text had not been reviewed. It did not single out that a decision's Rule and a contract row had changed after the last verdict, which matters far more to a pull-request reviewer than a reworded sentence.
+
+**Suggested improvement:** In the "A recorded verdict names the version it was taken against" rule, or in `/create-ard` Phase 6's `body_facts`, require the PR body and the final report to list, by `[AD#N]` and contract row, every decision or interface whose Rule changed after the last verdict, separately from editorial edits. Alternatively, offer to record such a change as an `## Open questions` entry when the cap is already spent.

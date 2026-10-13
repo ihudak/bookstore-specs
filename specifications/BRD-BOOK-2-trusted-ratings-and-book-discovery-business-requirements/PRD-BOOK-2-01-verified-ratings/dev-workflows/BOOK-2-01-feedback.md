@@ -656,3 +656,105 @@ impact: polish
 **Friction:** `pre-lint`'s placeholder scan flagged a display-format criterion that wrote the plural count as `"(<n> ratings)"` — a literal format the spec meant, not an unfilled placeholder — and the criterion had to be reworded around the regex ("the number followed by "ratings" in parentheses, such as "(37 ratings)"").
 
 **Suggested improvement:** Document the convention in `pre-lint` (and `specification-format`) for writing a display format with a variable part — e.g. a concrete example value instead of `<n>` — or exempt an angle-bracket token inside a quoted display string from the placeholder scan.
+
+## 2026-10-13 — /epics — missing-capability
+
+```yaml
+id: BOOK-2-01-epics-keep-whole-asked-after-writer-splits
+date: 2026-10-13
+command: /epics
+plugin_version: 3.33.3
+origin: auto
+author: ihudak@gmail.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** `epic-writer`'s pre-flight splits over-limit work by size on its own unless `scope` already carries a keep-whole instruction with the operator's reason, which only a Phase 2 *Revise* supplies; `/epics` asks its keep-whole question only at Phase 6 step 4, after the writer has returned. On a two-component PRD whose PRD-level specification folds 62 criteria into coverage, the plan said the operator would be asked "split or keep whole" after drafting, but the writer would have split both Epics first. The orchestrator had to ask the keep-whole question before the dispatch, in a step `/epics` does not define, and ask a second time for the reason because the choice carried no notes.
+
+**Suggested improvement:** Add a defined step between Phase 5.5 and Phase 6: estimate each planned Epic against `size_limit` from the coverage inventory and the component split, and where one will be over, ask Phase 6 step 4's split / keep-whole question there (the reason in the same prompt), passing a keep-whole answer through `scope`. Keep step 4 for what only the returned drafts reveal.
+
+## 2026-10-13 — /epics — unfollowed-rule
+
+```yaml
+id: BOOK-2-01-epics-code-scanner-line-numbers-out-of-range
+date: 2026-10-13
+command: /epics
+plugin_version: 3.33.3
+origin: auto
+author: ihudak@gmail.com
+category: unfollowed-rule
+impact: friction
+```
+
+**Friction:** Rule: `code-scanner` records `lines` only from grep hits and never invents one (`~/.claude/plugins/cache/shipwright/workflows-core/1.39.2/agents/code-scanner.md:63`). What happened: the scan of `bookstore` @ e439178 cited `RatingRepository.java` lines 376–382 (a 21-line file), `RatingsApplicationTests.java` 430–432 (18 lines) and `Rating.java` 147–237 (116 lines) — it appeared to number lines across a concatenated read. Why missed: undetermined. The orchestrator stripped every line number before handing the scan to `epic-writer` and `epic-reviewer`, losing the valid ones too.
+
+**Suggested improvement:** Validate each evidence entry after the scan: every `lines` value at most `git show <scanned_ref>:<path> | wc -l`; drop or flag an entry that fails, in `code-scanner`'s own output step or a shared post-scan check its callers run.
+
+## 2026-10-13 — /epics — false-positive
+
+```yaml
+id: BOOK-2-01-epics-pre-lint-autolink-flags-specs-keys
+date: 2026-10-13
+command: /epics
+plugin_version: 3.33.3
+origin: auto
+author: ihudak@gmail.com
+category: false-positive
+impact: polish
+```
+
+**Friction:** `pre-lint`'s auto-link collision grep (`\b[A-Z]{2,10}-[0-9]+\b`) flags every specs key `epic-writer` writes bare in prose (`BOOK-2-01-01`, `BOOK-2-02` in Scope and Dependencies). Its branch 2 says to confirm with the author before wrapping, while `/epics`' invariants call `[[KEY]]` the specs tree's required traceability form; the orchestrator confirmed each key resolves in the tree and wrapped them by script. `epic-writer` does not wrap its own sibling-Epic or sibling-slice keys.
+
+**Suggested improvement:** Have `epic-writer` write every specs key it cites as `[[KEY]]`, and state in `pre-lint` that a bare key which resolves in the specs tree (`workflows-core:addressing` §3) takes the wrap with no author confirmation, keeping the confirm branch for keys that resolve nowhere.
+
+## 2026-10-13 — /epics — wrong-output
+
+```yaml
+id: BOOK-2-01-epics-handoff-body-next-command-claim
+date: 2026-10-13
+command: /epics
+plugin_version: 3.33.3
+origin: auto
+author: ihudak@gmail.com
+category: wrong-output
+impact: polish
+```
+
+**Friction:** Phase 7.5's `body_facts` tells the run to write that the next command, `/product-workflows:specify <EPIC>`, "will not run until this pull request is merged". For a run whose Epics are all new, `phase-handoff` §4.1/§4.3 class `epic.md` as gated — falling back: `/specify` at Epic altitude reads an un-landed Epic folder as it stands, so the sentence is false; the run had to soften it by hand.
+
+**Suggested improvement:** Resolve the sentence from the same class the consent array uses: on the falling-back array say the next phase reads the Epics from `main` once merged and may read the working copy before then; keep "will not run until merged" only for the stopping array (a run that edited a merged `epic.md`).
+
+## 2026-10-13 — /epics — missing-capability
+
+```yaml
+id: BOOK-2-01-epics-no-offer-to-apply-open-findings
+date: 2026-10-13
+command: /epics
+plugin_version: 3.33.3
+origin: auto
+author: ihudak@gmail.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** `/epics` hands only MAJOR survivors to `doc-fixer`, and `escalation-rules`' *Findings a review leaves open — the offer to apply them* reaches only the commands that fix inline, so `/epics` has no way to apply a MINOR at all. On this run the re-review found 10 MINOR/NIT edit-only findings, three introduced by the fixer — among them a comment criterion contradicting the spaces-only comment rule — and all of them shipped open in the pull request for the operator to hand-edit.
+
+**Suggested improvement:** Give `/epics` the apply offer after each review whose verdict is not BLOCK (applied by `doc-fixer` in one bounded pass with every severity, or by the orchestrator inline), and treat a finding the fix itself introduced, or any pair of criteria giving one condition two outcomes, as owed a fix before the handoff.
+
+## 2026-10-13 — /epics — false-positive
+
+```yaml
+id: BOOK-2-01-epics-prose-style-nits-on-house-spelling
+date: 2026-10-13
+command: /epics
+plugin_version: 3.33.3
+origin: auto
+author: ihudak@gmail.com
+category: false-positive
+impact: polish
+```
+
+**Friction:** `prose-style-checker` returned 18 findings on the two Epics, all NIT, most of them the specs tree's own house spellings ("e-mail", "catalogue", "cancelled", spaced em dashes) that the PRD, the ARD and the specification use throughout. With `doc-fixer` limited to MAJOR nothing acted on them, so the check spent a dispatch to produce report noise.
+
+**Suggested improvement:** Pass `prose-style-checker` the spelling and term conventions the PRD folder already uses (or a specs-repo overlay) as house style, so it reports only departures from them.

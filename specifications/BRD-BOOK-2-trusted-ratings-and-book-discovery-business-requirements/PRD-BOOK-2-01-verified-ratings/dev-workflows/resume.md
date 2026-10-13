@@ -1,21 +1,18 @@
-# Resume — BOOK-2-01 / BOOK-2-01-01 (dev)
+# Resume — BOOK-2-01 / BOOK-2-01-02 (dev)
 
-- **Last completed:** `/dev-workflows:conformance BOOK-2-01-01` (Epic run, Dev) finished on 2026-10-13T18:39:11Z.
-  - Code checked: `bookstore` at `feat/BOOK-2-01-01-buyers-only-ratings-one-per-book` @ `7410896` (code PR ihudak/bookstore#13, still open and green).
-  - Record: specs PR #30 on `conformance/BOOK-2-01-01-ratings-service`.
-- **Artifact:** `EPIC-BOOK-2-01-01-ratings-service/_conformance.md` (in PR #30), plus 6 new lines in `follow-ups.md`.
-- **Verdicts:** 77 traced — 71 satisfied · 4 partial · 2 contradicts · 0 missing · 0 not-checkable · 0 unverified.
+- **Last completed:** `/dev-workflows:implement BOOK-2-01-02` (Epic, Dev) finished on 2026-10-13T20:03:37Z.
+  - Code: `bookstore` on `feat/BOOK-2-01-02-storefront-ratings` @ `eb694d0`, pushed; PR ihudak/bookstore#16 to master.
+  - Opus review PASS WITH RECOMMENDATIONS (1 MINOR, 3 NIT, all applied after the verdict at the user's choice); tests 453/453, 0 regressions.
+- **Artifacts:** `EPIC-BOOK-2-01-02-storefront-ratings/implementation.md`, `follow-ups.md` (stage walk, [ER3]).
+- **Merge order (ARD landing order):** #15 → feature branch, then #13 → master, then #16 → master. The web's comment note relies on [AD#7] being live in ratings.
 - **Next step:**
-  1. Merge specs PR #30.
-  2. `/dev-workflows:implement BOOK-2-01-01` from repository `bookstore`. It reads back the 6 fix-code follow-ups ([DD#1]–[DD#6]), all one fix in `Rating.applyChange`. Then re-run `/dev-workflows:conformance BOOK-2-01-01`. PR #13 is still open, so decide first whether the fix lands on its branch or as a follow-up PR after PR #13 merges.
-  3. `/dev-workflows:implement BOOK-2-01-02`, the storefront (Dev). Ratings lands before web.
-  4. Once every Epic has merged: the PE's `/dev-workflows:conformance BOOK-2-01`.
+  1. `/dev-workflows:conformance BOOK-2-01-02` while PR #16 is open.
+  2. Merge #15, #13, #16 in that order.
+  3. Re-run `/dev-workflows:conformance BOOK-2-01-01` to settle [DD#1]–[DD#6] (fixed in #15); tick its 6 follow-ups and close [ER8].
+  4. Once every Epic has merged: the PE's `/dev-workflows:conformance BOOK-2-01`, then `/docs-workflows:document BOOK-2-01` and `/docs-workflows:release-notes BOOK-2-01`.
 - **Suggested session name:** BOOK-2-01-verified-ratings-dev
 - **Carry-forward decisions:**
-  - [U02] [AC05] was left unimplemented on purpose, as the demo gap: a blank comment on a change clears the stored comment.
-    - Conformance recorded it as [DD#1]–[DD#6]: [U02]/[AC03], [U02]/[AC05], two `epic.md` bullets, the `epic.md` Contract [AD#4] line and the ARD [AD#4] Rule.
-    - Each one is `fix-code`, `proposed`, with the rationale "deliberate demo gap, see [ER8]" (added by hand after the run).
-    - The spec's [ER8] note stays open until the fix lands or [AC05] is withdrawn.
-  - The re-check dropped the tracer's story-level [U02] `partial`, because the story's "Done when" omits the comment rule.
-  - The earlier follow-up is still open: amend `design.md`'s rollback step so that rolling back cannot expose stored comments.
+  - Star picker: `form-check-inline` wrappers and a body-size legend, a recorded departure from design.md's verbatim markup.
+  - `loadRating` accepts only `/^\d+$/` route ids (the design's "not an integer → no request", tightened).
+  - Only status 200 counts as a readable summary; book-details' book load has a no-op error callback (both accepted at plan approval).
   - Landing order: ratings before web in every environment.

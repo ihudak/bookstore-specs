@@ -1232,3 +1232,54 @@ impact: friction
 **Friction:** Phase 6 loads all of `phase-handoff` (about 500 lines) to run `handoff-to-main` §2. The user rejected the Read of §2 before the handoff ran, and the handoff then followed the pattern of this session's earlier handoff (specs PR #29) rather than the reference text, which risks drifting from §2.
 
 **Suggested improvement:** Make `phase-handoff handoff-to-main` load only §2 and the §4.1 outcome line, or move `handoff-to-main` into its own short reference, so Phase 6 reads a small, targeted section.
+
+## 2026-10-13 — /implement — missing-capability
+
+```yaml
+id: BOOK-2-01-implement-spec-typecheck-before-review
+date: 2026-10-13
+command: /implement
+plugin_version: 4.24.3
+origin: auto
+author: ihudak@gmail.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** `test-writer` cannot compile, and its specs for BOOK-2-01-02 failed the strict type-check in 7 files (TS2345: `TestRequest.flush` takes no `unknown` body). Nothing in Phase 3B step 4a checks that the written tests compile before the Opus review reads them, so the orchestrator ran `npx tsc -p web/tsconfig.spec.json --noEmit` by hand and fixed the files itself. Running the tests is forbidden before the review, but type-checking them is not, and the command does not say so.
+
+**Suggested improvement:** After step 4a, type-check the test sources without running them (the project's spec tsconfig, `tsc --noEmit`, or the language's equivalent) and send any errors back to `test-writer`, or have the orchestrator fix them, before the review diff is captured. State that a type-check is not a test run under the "never run tests before the Opus review" invariant.
+
+## 2026-10-13 — /implement — other
+
+```yaml
+id: BOOK-2-01-implement-verify-status-ok-with-new-failures
+date: 2026-10-13
+command: /implement
+plugin_version: 4.24.3
+origin: auto
+author: ihudak@gmail.com
+category: other
+impact: friction
+```
+
+**Friction:** `test-baseliner` verify returned `Status: OK` with 13 entries under `### New failures`. Phase 3.5 step 5 does read the list beside the status, but the report gave each failure's name and not its message, so the orchestrator re-ran the two failing specs with `ng test --include` to learn why they failed before it could start the fix loop.
+
+**Suggested improvement:** Have verify carry each new failure's first assertion message (one line) beside its name, so the fix loop can start from the report. Consider a `Status` value, or a `New failures: N` header field, that makes a non-empty list visible at the top of the report.
+
+## 2026-10-13 — /implement — other
+
+```yaml
+id: BOOK-2-01-implement-design-markup-vs-css-framework
+date: 2026-10-13
+command: /implement
+plugin_version: 4.24.3
+origin: auto
+author: ihudak@gmail.com
+category: other
+impact: friction
+```
+
+**Friction:** BOOK-2-01-02's design gave `StarChoiceComponent`'s template verbatim. Implemented as written, it rendered cramped, with a heading-size legend, on the app's Bootstrap 5.3. Only the Opus review caught it (MINOR), after which the user had to decide on a departure from the design's markup.
+
+**Suggested improvement:** In Phase 3A/3B, check markup a design gives verbatim against the target's CSS framework before writing it. Where they conflict, record the departure as a Phase 5 assumption at implementation time, or raise it as a decision then, rather than leaving it to the review.

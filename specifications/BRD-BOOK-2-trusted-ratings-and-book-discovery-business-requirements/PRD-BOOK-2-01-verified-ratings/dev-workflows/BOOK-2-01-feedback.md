@@ -988,3 +988,76 @@ impact: polish
 **Friction:** After a BLOCK and its fix cycle, the one re-review returned PASS WITH RECOMMENDATIONS; the user applied its 2 MINOR + 1 NIT findings, and they went to the pull request unreviewed. The run did state this in the PR body and session record (the escalation-rules version line), and escalation-rules deliberately refuses a further review cycle ("no fixed point").
 
 **Suggested improvement:** Consider a narrow, delta-only `design-reviewer` pass over just the post-review edits — scoped so it cannot reopen settled sections, and so outside the cap's no-fixed-point argument — or keep the cap and add the list of post-review edits as its own `## Unreviewed edits` heading in the PR body so a merger cannot miss it.
+
+## 2026-10-13 — /design — ambiguous-prompt
+
+```yaml
+id: BOOK-2-01-design-fanout-brief-lacks-spec-literals
+date: 2026-10-13
+command: /design
+plugin_version: 4.24.3
+origin: auto
+author: ihudak@gmail.com
+category: ambiguous-prompt
+impact: friction
+```
+
+**Friction:** The Phase 5 interface fan-out ran three `interface-designer` takes. Take C contradicted the specification in two places:
+- it rendered a whole average as "4", where [U03] [AC01] [TC02] says "★ 4.0";
+- it removed `getRatingById`, which the out-of-scope rating details screen still needs.
+
+All three takes also chose a 10 s bound. The bound was settled at 8 s (D1) only after the takes were dispatched, so the brief carried the specification's "at most 10 s" cap and not a value. The orchestrator corrected all of this by hand in the hybrid.
+
+The dispatch's `problem_frame` asks only for "the constraints any proposal must satisfy" (`~/.claude/plugins/cache/shipwright/dev-workflows/4.24.3/commands/design.md`, Phase 5). It never requires:
+- the literal criteria and test cases that touch the interface;
+- the existing public surface that must survive, with its callers;
+- the grill values the interface depends on, or which of them are still open.
+
+Nothing after the fan-out checks each take against those inputs before the comparison either.
+
+**Suggested improvement:** Tighten the fan-out in two places.
+- **The brief.** Require `problem_frame` to quote verbatim the `[Uxx]`/`[ACxx]`/`[TCxx]` lines the interface serves. It should also list the surface that must survive, with its callers, and state each grill-settled value the interface depends on, with its number, naming any still open.
+- **Before the comparison.** Add a step that checks every take against those quoted lines and that surface, and records each take that breaks one, ahead of the depth/locality/seam comparison.
+
+## 2026-10-13 — /design — false-positive
+
+```yaml
+id: BOOK-2-01-design-pre-lint-placeholder-flags-code
+date: 2026-10-13
+command: /design
+plugin_version: 4.24.3
+origin: auto
+author: ihudak@gmail.com
+category: false-positive
+impact: friction
+```
+
+**Friction:** Phase 5.5's placeholder scan flagged literal HTML tags and TypeScript generics in `design.md` as BLOCKER placeholders. The hits were `<fieldset>`, `<legend>` and `EventEmitter<number>`, inside a fenced code block and inline code spans.
+
+The prose mentions could be reworded, but the fenced block is the decision itself and cannot be. So a frontend or typed-code design never reaches zero placeholder BLOCKERs, and the orchestrator has to label them as false positives by hand.
+
+The auto-link check in `~/.claude/plugins/cache/shipwright/workflows-core/1.39.2/references/pre-lint.md` excludes fenced blocks. The placeholder scan in Universal check 1 states no exclusion.
+
+**Suggested improvement:** In `pre-lint.md`'s Universal check 1, exclude fenced code blocks from the placeholder scan, and consider excluding inline code spans as well. Name the command that strips them, for example an `awk` fence filter before the `grep`. Keep the existing "do not widen" warning, and keep a fixture proving the scan still catches a prose placeholder such as `<the service's dev port>`.
+
+## 2026-10-13 — /design — missing-reference-doc
+
+```yaml
+id: BOOK-2-01-design-observability-ratio-contamination
+date: 2026-10-13
+command: /design
+plugin_version: 4.24.3
+origin: auto
+author: ihudak@gmail.com
+category: missing-reference-doc
+impact: friction
+```
+
+**Friction:** Each of the two `design-reviewer` passes raised a MAJOR on the same defect class: a rollback ratio whose denominator other clients also feed.
+
+1. The first pass found that the storefront's ratios used books endpoints that other services also call server to server.
+2. The fix counted browser requests only. The re-review then found that browser sessions still on the old bundle inflate those browser-only denominators in the first window after release.
+
+`design-format.md` section 11 asks for a rollback threshold against a baseline. It says nothing about who else feeds a compared signal, or about the window in which old and new clients coexist.
+
+**Suggested improvement:** Add one line to section 11 of `~/.claude/plugins/cache/shipwright/dev-workflows/4.24.3/references/design-format.md`, under Post-release checks and Rollback signal. The line should say that every ratio or share names the callers feeding its numerator and its denominator, and states the window in which old and new clients run side by side, which the check is read after.

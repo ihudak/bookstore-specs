@@ -1,12 +1,11 @@
 # Resume — BOOK-2-01 (pe)
 
-- **Last completed:** /product-workflows:specify BOOK-2-01 — specification, broad PRD-level (2026-10-13T07:19:15Z), merged as specs PR #23; before it, /product-workflows:prd-proposal BOOK-2-01 — command complete (2026-10-12T22:43:28Z)
-- **Artifact:** specification.md (specs PR #23, merged); proposal.md and proposal-brief.md, plus the new `.dev-workflows/proposal-profile.yml` (specs PR #22, branch prd/BOOK-2-01-verified-ratings-2)
-- **Next step:** /product-workflows:epics BOOK-2-01. Optionally, re-run /product-workflows:prd-proposal BOOK-2-01 to reach tier 4 now that the specification is on main, and run /product-workflows:brd-proposal BOOK-2 once PR #22 is merged.
+- **Last completed:** /product-workflows:epics BOOK-2-01 — command complete (2026-10-13T11:41:01Z), handed off as specs PR #24 on `epics/BOOK-2-01-verified-ratings`
+- **Artifact:** EPIC-BOOK-2-01-01-ratings-service/epic.md, EPIC-BOOK-2-01-02-storefront-ratings/epic.md, _coverage.md (specs PR #24, open)
+- **Next step:** merge specs PR #24, then /product-workflows:specify BOOK-2-01-01 and /product-workflows:specify BOOK-2-01-02 (PE), optionally after /product-workflows:create-ard <EPIC> (PA)
 - **Suggested session name:** BOOK-2-01-verified-ratings-pe
 - **Carry-forward decisions:**
-  - The proposal's final text was not reviewed after the manual fix notes. The re-review returned BLOCK on [ED#9]'s attribution, and the run escalated. All open recommendations were applied.
-  - Before the proposal goes to Quillmark, D3 (send USoft's [VD#1], [VD#5] and [VD#6] answers) and D7 (Quillmark's agreement to empty the live ratings table at the deploy) are still open.
-  - The defect sweep confirmed [CG#5], [CG#10] and [CG#2] (repaired in [WP#9]) and rejected [SR#6] ([VD#5] keeps orders unchanged).
-  - The specification's last spec-reviewer verdict was BLOCK, and the manual fix notes after it are unreviewed. Its 5 open questions were then resolved by hand, also unreviewed (Submit needs an e-mail and an ISBN, unavailable-refusal logging and comment length out of scope, a spaces-only comment counts as empty, an identical repeat moves Updated At; see `_session.md`), so specification.md has 0 open questions.
-  - The specification settled what ard.md deferred to /specify: the web's wording when ratings answers 503 or a summary request fails, and the star input's detail.
+  - Both Epics are kept whole over the 5-criteria / 4-story limit, in the operator's words: "It's a small change, and that's my decision to keep one Epic per module". The ratings Epic has 17 criteria and 6 stories, and the storefront Epic has 20 criteria and 4 stories. bookstore:orders has no Epic.
+  - A `400` from ratings carries its reason word for word in the error body's `message` field, the field the storefront's forms already read. Today's code sends no reason there.
+  - The last epic-reviewer verdict, the re-review's PASS WITH RECOMMENDATIONS, covers the current text. Ten MINOR and nine NIT findings, all fixable by editing, were listed in PR #24's body. Two MINOR were then fixed by hand, unreviewed: BOOK-2-01-01's comment criterion now reads "a give that carries a comment", so it no longer contradicts the spaces-only comment rule, and BOOK-2-01-02's refusal criterion names the text for each answer (`403`, `503`, `400`, anything else). BOOK-2-01-02's scope also now says that only the read model drops the comment and both forms still send it. Eight MINOR and nine NIT stay open.
+  - An uncommitted edit in the bookstore repo changes CLAUDE.md's Angular version from 18 to 21. web/package.json pins @angular/core ^21.1.5.

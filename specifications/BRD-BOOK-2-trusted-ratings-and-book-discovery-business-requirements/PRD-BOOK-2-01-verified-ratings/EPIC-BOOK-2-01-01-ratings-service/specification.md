@@ -10,7 +10,7 @@ key: BOOK-2-01-01
 - **Created**: 2026-10-13
 - **Author**: ihudak
 - **Published**: no
-- **Open questions**: 0
+- **Open questions**: 2
 
 ## Problem statement
 
@@ -180,6 +180,10 @@ If a give reaches the ratings service with no star value, or with a star value t
 - *Steps:* 1. Send `POST /api/v1/ratings` with `email` `low@example.com`, `isbn` `9780000000017` and `rating` 1. 2. Send `POST /api/v1/ratings` with `email` `high@example.com`, `isbn` `9780000000017` and `rating` 5.
 - *Expected result:* The ratings service answers neither give `400`, and stores a 1-star rating for `low@example.com` and a 5-star rating for `high@example.com`.
 
+##### Open questions
+
+- [ ] Engineering review [ER2]: accept that "a whole number from 1 to 5" here and in [U02] [AC09] means a JSON integer, so a give or change whose `rating` is `4.0` or the string `"4"` is refused with "Invalid rating. Must be a whole number from 1 to 5.", and add the proposed test case to each?
+
 #### [AC06]: A missing or malformed e-mail or ISBN is refused
 
 If a give reaches the ratings service with a missing or malformed e-mail, or with a missing ISBN or one that is not 13 digits, and with no other fault of [AC05] and [AC06] ([AC07]), then the ratings service shall answer `400` with exactly "Invalid email address" in the `message` field of the error body for the e-mail, or exactly "ISBN must be a 13-digits value" for the ISBN, storing no rating.
@@ -273,6 +277,10 @@ If, for a give that [AC05] and [AC06] do not refuse, orders does not answer the 
 - *Preconditions:* `browser@example.com` is a customer with no order for ISBN `9780000000017`; the orders service answers the purchase check with a success whose body the ratings service cannot read.
 - *Steps:* 1. Send `POST /api/v1/ratings` with `email` `browser@example.com`, `isbn` `9780000000017` and `rating` 4.
 - *Expected result:* The ratings service answers `503`, not `403`, and stores no rating.
+
+##### Open questions
+
+- [ ] Engineering review [ER1]: accept that "not-found" here and in [U02] [AC17] means orders' answer that the e-mail is not a customer, so a `404` that orders' `findByEmail` did not answer (a wrong orders host or path) is refused `503`, not `403`, and add the proposed test case to each?
 
 #### [AC10]: A give's id changes no other rating
 
@@ -1032,3 +1040,17 @@ The ratings service shall remove at most one rating per request.
 - *Preconditions:* The ratings service holds five ratings.
 - *Steps:* 1. Send `DELETE /api/v1/ratings`. 2. Send `GET /api/v1/ratings`.
 - *Expected result:* All five ratings remain.
+
+---
+
+## Engineering review
+
+Recorded by `/dev-workflows:design` on 2026-10-13 while designing this Epic (`design.md`, this folder). No `[Uxx]`, `[ACxx]` or `[TCxx]` is rewritten here; a proposed change waits on its open question.
+
+- **[ER1] — proposed-change: a misrouted `404` is orders unavailable.** [U01] [AC09] and [U02] [AC17] answer `503` for "any status other than a success or not-found", and [U01] [AC03] and [U02] [AC16] answer `403` only where orders "answers that this e-mail is not a customer". A `404` from a wrong orders host or path is neither, so the specification gives it no outcome, and `ard.md` (Edge cases & risks) names the danger: a wrong orders URL would refuse every buyer. The design answers `503` for any `404` that is not orders' unknown-customer answer — its body's `path` is not `/api/v1/orders/findByEmail`, or orders' `GET /api/v1/version` does not name `orders`. Proposed wording for [U01] [AC09] and [U02] [AC17]: "… answers with any status other than a success or its answer that the e-mail is not a customer …". Proposed test case for each: *A misrouted orders URL is not read as not bought — Negative / boundary:* Preconditions: `reader5@example.com` holds a qualifying order for ISBN `9780000000017`; the ratings service's orders URL names a service that answers every request `404`. Steps: 1. Send the give (or the change). Expected result: the ratings service answers `503`, not `403`, and saves nothing. Open question under [U01] [AC09].
+- **[ER2] — questioned: only a JSON integer is a whole number of stars.** [U01] [AC05] and [U02] [AC09] refuse a star value "that is not a whole number from 1 to 5". The design reads the field as JSON and accepts only an integer from 1 to 5, so `4.0` and `"4"` are refused like `3.5` — and `3.5` is never silently truncated to 3, which the service's JSON binding does by default today. Proposed test case for each: *A star value written as `4.0` or as text is refused — Negative / boundary:* Steps: send the give (or the change) with `rating` `4.0`, then with `rating` `"4"`. Expected result: both answered `400` with "Invalid rating. Must be a whole number from 1 to 5.", and nothing saved. Open question under [U01] [AC05].
+- **[ER3] — validated: [U01] [AC11]'s log entry is written in the live store.** The prod profile sets the root log level to ERROR (`ratings/src/main/resources/application-prod.properties:11`), which would drop an INFO or WARN entry; the design writes the entry on its own logger, `com.dynatrace.ratings.refusals`, whose level is INFO in every profile.
+- **[ER4] — validated: the bounded time.** [U01] [AC09] TC03 and [U02] [AC17] TC03 wait on "the ratings service's bounded time": 1 s to connect and 3 s to read, with no retry — about 4 s.
+- **[ER5] — validated: an over-length comment.** The scope leaves unset what a give or change with a comment longer than the ratings store holds is answered; in this design it is `500` with Boot's default error body, which carries no `message`, and nothing is saved. An e-mail longer than its column is answered alike.
+- **[ER6] — validated: [U04] [AC04]'s failure statuses and bodies.** The design's error handling renders only the write and summary refusals (`400`, `403`, `503`) with their reasons; none of them is raised by an existing read, so every read's failure keeps its status and its body exactly as today.
+- **[ER7] — validated: [U05] [AC04] TC02.** `DELETE /api/v1/ratings` maps to no route and is answered `405`; nothing is removed.

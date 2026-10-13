@@ -1,11 +1,15 @@
-# Resume — BOOK-2-01 (pe)
+# Resume — BOOK-2-01 / BOOK-2-01-01 (pe)
 
-- **Last completed:** /product-workflows:epics BOOK-2-01 — command complete (2026-10-13T11:41:01Z), handed off as specs PR #24 on `epics/BOOK-2-01-verified-ratings`
-- **Artifact:** EPIC-BOOK-2-01-01-ratings-service/epic.md, EPIC-BOOK-2-01-02-storefront-ratings/epic.md, _coverage.md (specs PR #24, open)
-- **Next step:** merge specs PR #24, then /product-workflows:specify BOOK-2-01-01 and /product-workflows:specify BOOK-2-01-02 (PE), optionally after /product-workflows:create-ard <EPIC> (PA)
+- **Last completed:** /product-workflows:specify BOOK-2-01-01 — command complete (2026-10-13T12:37:41Z), handed off as specs PR #25 on `spec/BOOK-2-01-01-ratings-service`
+- **Artifact:** EPIC-BOOK-2-01-01-ratings-service/specification.md (specs PR #25, open)
+- **Next step:** merge specs PR #25, then /dev-workflows:design BOOK-2-01-01 (Dev); in parallel, /product-workflows:specify BOOK-2-01-02 (PE), which waits on nothing here
 - **Suggested session name:** BOOK-2-01-verified-ratings-pe
 - **Carry-forward decisions:**
-  - Both Epics are kept whole over the 5-criteria / 4-story limit, in the operator's words: "It's a small change, and that's my decision to keep one Epic per module". The ratings Epic has 17 criteria and 6 stories, and the storefront Epic has 20 criteria and 4 stories. bookstore:orders has no Epic.
-  - A `400` from ratings carries its reason word for word in the error body's `message` field, the field the storefront's forms already read. Today's code sends no reason there.
-  - The last epic-reviewer verdict, the re-review's PASS WITH RECOMMENDATIONS, covers the current text. Ten MINOR and nine NIT findings, all fixable by editing, were listed in PR #24's body. Two MINOR were then fixed by hand, unreviewed: BOOK-2-01-01's comment criterion now reads "a give that carries a comment", so it no longer contradicts the spaces-only comment rule, and BOOK-2-01-02's refusal criterion names the text for each answer (`403`, `503`, `400`, anything else). BOOK-2-01-02's scope also now says that only the read model drops the comment and both forms still send it. Eight MINOR and nine NIT stay open.
-  - An uncommitted edit in the bookstore repo changes CLAUDE.md's Angular version from 18 to 21. web/package.json pins @angular/core ^21.1.5.
+  - The specification's current text is unreviewed. spec-reviewer's last verdict, BLOCK on the re-review, came before the manual fix notes and the folded-in MINOR and NIT edits that followed it. No finding is left open.
+  - What the storefront Epic, BOOK-2-01-02, now consumes from ratings:
+    - the `403` `message` is exactly "Only customers who have bought this book can rate it.";
+    - the write `400` reasons are "Invalid rating. Must be a whole number from 1 to 5.", "Invalid email address", "ISBN must be a 13-digits value", "A rating's e-mail and ISBN cannot be changed." and "bad rating id";
+    - a `PUT` with no body id is `400` "bad rating id", so the update form must keep sending the rating's id;
+    - a give's `id` is disregarded, so the rating form's `id: 0` keeps working;
+    - `503` covers any orders status other than success or not-found, and an unreadable success.
+  - The `/epics` review left 8 MINOR and 9 NIT findings open across both Epics (listed in PR #24's body). The ratings-side ones are settled by this specification. The storefront ones remain for `/specify BOOK-2-01-02`.

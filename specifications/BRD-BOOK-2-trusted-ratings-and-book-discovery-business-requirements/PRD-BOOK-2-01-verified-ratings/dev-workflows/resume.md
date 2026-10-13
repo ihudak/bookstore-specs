@@ -1,7 +1,7 @@
-# Resume — BOOK-2-01 (pa)
+# Resume — BOOK-2-01 (pe)
 
-- **Last completed:** /product-workflows:create-ard BOOK-2-01 — command complete (2026-10-12T21:37:30Z)
-- **Artifact:** ard.md (PR #21, branch ard/BOOK-2-01-verified-ratings)
-- **Next step:** /product-workflows:specify BOOK-2-01 (PE), once PR #21 is merged
-- **Suggested session name:** BOOK-2-01-verified-ratings-pa
-- **Carry-forward decisions:** ard.md was simplified by hand after the run, to keep the slice to two small Epics (ratings, web), and re-reviewed by ard-reviewer: [AD#2] makes one orders call (`findByEmail`, the e-mail as typed) with no `findByISBN` fallback and no lowercasing; within ratings two e-mails that differ only in capitals are one customer, as its MySQL collation compares them; [AD#5] keeps the per-rating `DELETE` exactly as today (`200`), and the removed `delete-all` falls through to it (`400`); a test environment's `ratings` table is emptied by an operator before the deploy, with no migration tool or start-up check. Also deferred to /specify: the web's wording when ratings answers 503 or a summary request fails.
+- **Last completed:** /product-workflows:specify BOOK-2-01 — specification, broad PRD-level (2026-10-13T07:19:15Z)
+- **Artifact:** specifications/BRD-BOOK-2-trusted-ratings-and-book-discovery-business-requirements/PRD-BOOK-2-01-verified-ratings/specification.md (specs PR #23, branch spec/BOOK-2-01-verified-ratings)
+- **Next step:** merge specs PR #23, then /product-workflows:epics BOOK-2-01
+- **Suggested session name:** BOOK-2-01-verified-ratings-pe
+- **Carry-forward decisions:** the spec's last spec-reviewer verdict was BLOCK, and the manual fix notes after it are unreviewed; 5 `- [ ]` open questions stay in specification.md for /epics and /design (empty e-mail/ISBN reason, unavailable-refusal logging, whitespace-only comment, Updated At on an identical repeat, comment length limit); specs PR #22 (proposal) also appends to dev-workflows/BOOK-2-01-feedback.md and rewrites this resume.md, so whichever of #22 and #23 merges second will likely need a conflict resolution in those two files

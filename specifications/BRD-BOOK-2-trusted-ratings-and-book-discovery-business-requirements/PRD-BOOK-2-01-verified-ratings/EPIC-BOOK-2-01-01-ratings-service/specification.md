@@ -10,7 +10,7 @@ key: BOOK-2-01-01
 - **Created**: 2026-10-13
 - **Author**: ihudak
 - **Published**: no
-- **Open questions**: 0
+- **Open questions**: 1
 
 ## Problem statement
 
@@ -1056,3 +1056,4 @@ Recorded by `/dev-workflows:design` on 2026-10-13 while designing this Epic (`de
 - **[ER5] — validated: an over-length comment.** The scope leaves unset what a give or change with a comment longer than the ratings store holds is answered; in this design it is `500` with Boot's default error body, which carries no `message`, and nothing is saved. An e-mail longer than its column is answered alike.
 - **[ER6] — validated: [U04] [AC04]'s failure statuses and bodies.** The design's error handling renders only the write and summary refusals (`400`, `403`, `503`) with their reasons; none of them is raised by an existing read, so every read's failure keeps its status and its body exactly as today.
 - **[ER7] — validated: [U05] [AC04] TC02.** `DELETE /api/v1/ratings` maps to no route and is answered `405`; nothing is removed.
+- [ ] **[ER8] — [U02] [AC05] is not implemented (recorded by `/dev-workflows:implement` on 2026-10-13; a deliberate gap, at the user's request).** On a change — a `PUT`, or a give applied to the pair's existing rating — an empty, absent or all-space comment clears the stored comment instead of keeping it; a comment holding another character replaces it, as [AC06] states. [U02] [AC05] TC01–TC04 have no test. Because no answer carries the comment ([U04] [AC03]), a caller that changes a rating without typing its comment again — the storefront's update form among them — clears it. The implementation records the same departure from [AD#4] (`ratings/src/main/java/com/dynatrace/ratings/model/Rating.java`, `applyChange`). Open until [U02] [AC05] is implemented or withdrawn.

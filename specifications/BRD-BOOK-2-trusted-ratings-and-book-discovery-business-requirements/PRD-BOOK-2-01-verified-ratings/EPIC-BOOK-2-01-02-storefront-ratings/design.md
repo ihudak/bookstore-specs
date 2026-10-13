@@ -8,12 +8,13 @@ key: BOOK-2-01-02
 - **Feature name**: Storefront ratings: give, change and see buyers' ratings
 - **Spec**: `specification.md` (BOOK-2-01-02)
 - **Classification**: SIGNIFICANT
-- **Version**: 1
+- **Version**: 2
 - **Created**: 2026-10-13
 - **Author**: ihudak
 - **Repos**: bookstore
 - **Target**: bookstore:web
 - **Open questions**: 0
+- **Amended**: 2026-10-13, version 2: the star choice's Bootstrap wrappers and `loadRating`'s route-id test, aligned with the implementation after its code review (ihudak/bookstore#16)
 
 ## Context & problem
 
@@ -164,7 +165,7 @@ What the types do not carry:
 - **`readSummary`.** An object with an integer `count` ≥ 0 and, when `count` > 0, a finite number `average` with at most one decimal place (`Math.abs(average * 10 - Math.round(average * 10)) < 1e-9`); with `count` 0 the average is not read. `isbn` is taken as a string where present.
 - **`readSummaries`.** An array each of whose entries is a readable summary carrying a non-empty string `isbn`, no ISBN twice; anything else → `null`, so one unreadable entry makes the whole answer unreadable ([U04] [AC04] [TC06]).
 - **Rating lines.** `bookLineFor`: `null` → unavailable `"Rating unavailable"`; count 0 → unrated `"Not yet rated"`; otherwise rated `"★ " + average.toFixed(1) + " (1 rating)"`, or `" (N ratings)"` for any other count. `catalogueLineFor`: a `null` map → unavailable for every ISBN; an ISBN absent from the map, or listed with count 0 → unrated; otherwise rated `"★ " + average.toFixed(1)` with no count. `toFixed(1)` only fixes the digits shown — the ratings service has already rounded the figure ([AD#6]), so `4` shows as `4.0` and `4.3` as `4.3`.
-- **Request shapes.** `give` → `POST {base}` with exactly `{email, isbn, rating, comment}`. `change` → `PUT {base}/{loaded.id}` with `{id: loaded.id, email: loaded.email, isbn: loaded.isbn, rating: stars, comment}`, the id a JSON integer equal to the path's (ratings answers "bad rating id" to a string id). `loadRating` → `GET {base}/{n}` where `n = Number(id)` is an integer; otherwise it emits cannot-load without a request. `bookLine` → `GET {base}/summary` with `isbn` set through `HttpParams`. `catalogueLines` → `GET {base}/summaries`. `{base}` is `${environment.ratingsSrvUrl}/api/v1/ratings`, as today. No method sends a `DELETE`.
+- **Request shapes.** `give` → `POST {base}` with exactly `{email, isbn, rating, comment}`. `change` → `PUT {base}/{loaded.id}` with `{id: loaded.id, email: loaded.email, isbn: loaded.isbn, rating: stars, comment}`, the id a JSON integer equal to the path's (ratings answers "bad rating id" to a string id). `loadRating` → `GET {base}/{n}` where `id` is a plain run of digits (`/^\d+$/`) and `n = Number(id)`; otherwise it emits cannot-load without a request (`Number()` alone would read `' '`, `'0x7'` or `'1e2'` as an id). `bookLine` → `GET {base}/summary` with `isbn` set through `HttpParams`. `catalogueLines` → `GET {base}/summaries`. `{base}` is `${environment.ratingsSrvUrl}/api/v1/ratings`, as today. No method sends a `DELETE`.
 - **Side effects and repeats.** The three reads have none. A give or a change that times out may still have been stored by ratings; the cannot-save text does not say it was not, and repeating it is safe, since ratings applies a repeat give or change to the same single rating ([AD#4], the specification's glossary).
 
 ### `StarChoiceComponent`
@@ -181,16 +182,18 @@ export class StarChoiceComponent {
 
 ```html
 <fieldset>
-  <legend>Rating</legend>
+  <legend class="form-label fs-6">Rating</legend>
   @for (n of choices; track n) {
-    <input type="radio" class="form-check-input" [id]="name + '-' + n" [name]="name" [value]="n"
-           [checked]="stars === n" (change)="stars = n; starsChange.emit(n)">
-    <label class="form-check-label" [for]="name + '-' + n">{{ n }}</label>
+    <div class="form-check form-check-inline">
+      <input type="radio" class="form-check-input" [id]="name + '-' + n" [name]="name" [value]="n"
+             [checked]="stars === n" (change)="stars = n; starsChange.emit(n)">
+      <label class="form-check-label" [for]="name + '-' + n">{{ n }}</label>
+    </div>
   }
 </fieldset>
 ```
 
-Plain `[checked]`/`(change)`, never `ngModel`, so the radios do not register with the parent `NgForm`.
+Plain `[checked]`/`(change)`, never `ngModel`, so the radios do not register with the parent `NgForm`. Each radio and its label sit in a Bootstrap `form-check form-check-inline` wrapper, and the legend is body-size (`form-label fs-6`): without them, Bootstrap 5.3 renders the five radios with no spacing and the legend at heading size.
 
 ### Contract (Epic `## Contract`, PRD-level ARD `## Contracts`)
 
@@ -259,7 +262,7 @@ State: the storefront keeps no rating state between screens and caches no figure
 | Enter in a text field while Submit is disabled | nothing is sent: a disabled default button blocks implicit submission, and `onSubmit` re-checks the gate | — |
 | An e-mail or ISBN of only spaces | Submit disabled | — |
 | An e-mail or ISBN holding a tab or other whitespace that is not a space | Submit enabled, as [U01] [AC14] reads; ratings answers `400` with its reason | entries kept |
-| The update form's route id is not an integer | "We can't load this rating right now. Please try again in a few minutes."; no request sent | — |
+| The update form's route id is not a plain run of digits (`' '`, `'0x7'`, `'1e2'`, `'-7'` included) | "We can't load this rating right now. Please try again in a few minutes."; no request sent | — |
 | The load answers `200` with an empty or unreadable body, an id other than the one requested, or stars outside 1–5 | the cannot-load text in place of the fields and Submit ([ER2]) | — |
 | The load answers `404` / `400` / `500` / nothing within 8 s | "This rating no longer exists." / the cannot-load text / the cannot-load text / the cannot-load text | — |
 | A read that still carries a `comment`, as before this release | never rendered: no screen binds a comment, and `classifyLoad` copies none | — |

@@ -23,7 +23,7 @@ Shoppers can tell a broad opinion from a single one before opening or buying a b
 - The rating details screen without the comment, showing ISBN, e-mail, stars, Updated At and Created At.
 - The book page rating line "★" and the average to one decimal with the count in parentheses ("(1 rating)", "(37 ratings)"), "Not yet rated" for an unrated book, and "Rating unavailable" when the summary cannot be loaded, the book's other details shown as usual.
 - The catalogue list "Rating" column after "OnVend": "★" and the average to one decimal with no count, "Not yet rated" for an unrated book, "Rating unavailable" in every row when the summaries cannot be loaded, and the books listed as usual.
-- The web model of a rating without its comment, a consumer-side summary model, and unit tests with the ratings service stubbed (for example with `HttpClientTestingModule`).
+- The web model of a rating as read, without its comment (no ratings response carries one), while both forms still send the comment entered on a give or a change; a consumer-side summary model; and unit tests with the ratings service stubbed (for example with `HttpClientTestingModule`).
 
 ### Out of scope
 - Any rating rule enforced for non-storefront callers; those live in bookstore:ratings ([[BOOK-2-01-01]]).
@@ -37,7 +37,7 @@ Shoppers can tell a broad opinion from a single one before opening or buying a b
 - Given the rating form opens, then it offers exactly the star choices 1, 2, 3, 4 and 5 with none chosen.
 - Given the rating form opens, then it shows the comment note.
 - Given the rating form is open, when the e-mail, the ISBN or the star choice is missing, then it keeps Submit from sending.
-- Given the ratings service refuses a give or a change from a form as buyers-only, unavailable or invalid, or the form cannot reach the ratings service or gets any other answer, then the form shows the matching text from this Epic's scope (for an invalid write, the reason from the `message` field of the error body) and stays open with the entered values (e-mail, ISBN, stars and comment on the rating form; stars and comment on the update form).
+- Given a give or a change submitted from a form, when the ratings service answers `403`, then the form shows "Only customers who have bought this book can rate it."; when it answers `503`, "We can't check your purchase right now. Nothing was saved. Please try again in a few minutes."; when it answers `400`, the reason from the `message` field of the error body; and when the form cannot reach the ratings service or gets any other answer (a `404` on a change excepted, below), "We can't save your rating right now. Please try again in a few minutes.". In each case the form stays open with the entered values (e-mail, ISBN, stars and comment on the rating form; stars and comment on the update form).
 - Given the ratings service stores a give or saves a change, then the form opens the Ratings list.
 - Given the update form opens for a rating that holds a comment, then it shows the heading "Update Rating", the rating's e-mail and ISBN as values that cannot be edited, the five star choices with the rating's current stars chosen, the comment note, and an empty comment field.
 - Given the update form opens for a rating that no longer exists, then it shows "This rating no longer exists." in place of its fields.

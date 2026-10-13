@@ -50,7 +50,7 @@ Shoppers ignore the store's star ratings today because nothing makes them trustw
 - Given stored ratings, when a rating summary is requested for one ISBN or for all books, then the service answers `{isbn, count, average}` computed from the stored ratings on that request, with the average rounded half up to one decimal place from the exact quotient (so 4.25 is 4.3), `null` when the count is 0, and no e-mail or comment; `summaries` holds one entry for every book that holds at least one rating.
 - Given a summary request for an ISBN that is missing or blank, then the ratings service answers `400`.
 - Given any ratings response, when it is a read, a `POST` answer or a `PUT` answer, then it carries no comment.
-- Given a comment given with a give or a change, when the rating is stored, then the comment is stored with the rating.
+- Given a give that carries a comment, when the rating is stored, then the comment is stored with the rating.
 - Guard: a rating given or changed stays and keeps counting in its book's summary when the qualifying order is cancelled or deleted afterwards.
 
 ## Independent Test

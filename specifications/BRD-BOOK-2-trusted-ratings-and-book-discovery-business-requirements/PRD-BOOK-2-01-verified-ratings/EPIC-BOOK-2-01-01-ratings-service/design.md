@@ -28,13 +28,13 @@ Challenge notes cross-reference the specification's `## Engineering review` ([ER
 | [U01] Rate a book I bought | `RatingService.give` (Data flow, give) | validated |
 | [U01] [AC01] A buyer's give is stored | purchase check `ELIGIBLE` → insert (D7 flow) | validated |
 | [U01] [AC02] A stored give is answered with the saved rating | `200` with the saved `Rating`, serialised without its comment | validated |
-| [U01] [AC03] A give without a qualifying order is refused | `NOT_A_CUSTOMER` / `NO_ORDER_FOR_BOOK` / `ORDER_NOT_COMPLETED` → `PurchaseForbiddenException` (403) | proposed-change — [ER1]: a `404` that orders' `findByEmail` did not answer is not "orders answers is not a customer" |
+| [U01] [AC03] A give without a qualifying order is refused | `NOT_A_CUSTOMER` / `NO_ORDER_FOR_BOOK` / `ORDER_NOT_COMPLETED` → `PurchaseForbiddenException` (403) | validated — [ER1] rejected: any `404` from orders' `findByEmail` URL is the not-a-customer answer ([AD#2]) |
 | [U01] [AC04] One refusal for every reason | one constant reason on `PurchaseForbiddenException`, rendered by `RatingsErrorAdvice` as `{timestamp, status, error, message, path}` | validated |
-| [U01] [AC05] Stars outside the scale are refused | `RatingRequest.rating` is a `JsonNode`; only a JSON integer 1–5 passes | questioned — [ER2]: `4.0` and `"4"` are refused as not whole-number JSON integers |
+| [U01] [AC05] Stars outside the scale are refused | `RatingRequest.rating` is a `JsonNode`; only a JSON integer 1–5 passes | validated — [ER2] accepted: `4.0` and `"4"` are refused as not whole-number JSON integers ([TC05]) |
 | [U01] [AC06] A missing or malformed e-mail or ISBN is refused | explicit checks in `RatingService` on `RatingRequest`'s `JsonNode` fields — e-mail: missing, not a JSON string, or not matching the entity's pattern; ISBN: missing, or neither a JSON string nor a JSON integer whose text matches `^\d{13}$` | validated |
 | [U01] [AC07] Several faults → one reason | fixed check order: e-mail, ISBN, stars (Error handling) | validated |
 | [U01] [AC08] An invalid give makes no purchase check | every `400` is decided before `PurchaseCheck.check` | validated |
-| [U01] [AC09] A give is refused while orders cannot answer | `OrdersUnavailableException` (503) from the adapter's decision table | proposed-change — [ER1]; bounded time validated — [ER4] |
+| [U01] [AC09] A give is refused while orders cannot answer | `OrdersUnavailableException` (503) from the adapter's decision table | validated — [ER1] rejected; bounded time — [ER4] |
 | [U01] [AC10] A give's id changes no other rating | `RatingRequest.id` is ignored on POST, whatever JSON value it holds; the pair alone selects the rating | validated |
 | [U01] [AC11] Each buyers-only refusal is logged | one INFO entry on logger `com.dynatrace.ratings.refusals`, ISBN and reason, no e-mail | validated — [ER3]: prod's root level is ERROR, so the logger's level is set explicitly |
 | [U02] Change my rating of a book | `RatingService.change` and a give applied as a change | validated |
@@ -46,15 +46,15 @@ Challenge notes cross-reference the specification's `## Engineering review` ([ER
 | [U02] [AC06] A comment on a change replaces the stored comment | non-blank comment replaces, as given (not trimmed) | validated |
 | [U02] [AC07] Updated At moves, Created At stays | `RatingService` sets `updatedAt` from the injected `Clock` on every saved change, identical repeats included | validated |
 | [U02] [AC08] A change keeps the stored e-mail as stored | only stars, comment and `updatedAt` are written on a change | validated |
-| [U02] [AC09] Stars outside the scale are refused on a change | same star check as a give | questioned — [ER2] |
+| [U02] [AC09] Stars outside the scale are refused on a change | same star check as a give | validated — [ER2] accepted ([TC04]) |
 | [U02] [AC10] A malformed e-mail or ISBN on a change is refused | e-mail / ISBN checked only where present | validated |
 | [U02] [AC11] A change cannot move a rating | carried e-mail compared `equalsIgnoreCase`, carried ISBN compared exactly, against the stored rating | validated |
 | [U02] [AC12] A change to a rating that does not exist is refused | `404` (Boot's default body) after the body checks and before the id / move checks | validated |
 | [U02] [AC13] A body id that does not match its path is refused | `RatingRequest.id` not a JSON integer equal to the path id — absent, `null`, text or `3.7` — → `400` "bad rating id" | validated |
 | [U02] [AC14] Several faults → one reason | fixed check order (Error handling) | validated |
 | [U02] [AC15] An invalid change makes no purchase check | every `400` / `404` is decided before `PurchaseCheck.check` | validated |
-| [U02] [AC16] A change without a qualifying order is refused | as [U01] [AC03] | proposed-change — [ER1] |
-| [U02] [AC17] A change is refused while orders cannot answer | as [U01] [AC09] | proposed-change — [ER1] |
+| [U02] [AC16] A change without a qualifying order is refused | as [U01] [AC03] | validated — [ER1] rejected |
+| [U02] [AC17] A change is refused while orders cannot answer | as [U01] [AC09] | validated — [ER1] rejected |
 | [U02] [AC18] A rating outlives its order's cancellation | no purchase state is stored or re-checked on reads; summaries read only `ratings` | validated |
 | [U03] Know how a book is rated | `GET /summary`, `GET /summaries` | validated |
 | [U03] [AC01] One book's summary | `COUNT`/`SUM` by ISBN; `BigDecimal` half-up division to one decimal | validated |
@@ -89,7 +89,7 @@ Package `com.dynatrace.ratings` (paths below relative to `ratings/src/main/java/
 - **`repository/RatingRepository.java`** (changed) — `Optional<Rating> findByEmailAndIsbn(String email, String isbn)` (plain equality; the database collation decides letter case, so lookup and constraint agree by construction); two summary queries (Interfaces); `truncateTable` removed.
 - **`repository/IsbnTotals.java`** (new) — `record IsbnTotals(String isbn, Long count, Long sum)`, the summary queries' projection.
 - **`purchase/PurchaseCheck.java`, `purchase/Eligibility.java`** (new) — the port (Interfaces).
-- **`purchase/OrdersPurchaseCheck.java`** (new) — the HTTP adapter over orders' `GET /api/v1/orders/findByEmail`, with a private consumer-side copy `record OrderLine(String isbn, Boolean completed)` (`@JsonIgnoreProperties(ignoreUnknown = true)`), the decision table, and the version probe with its positive-only cache.
+- **`purchase/OrdersPurchaseCheck.java`** (new) — the HTTP adapter over orders' `GET /api/v1/orders/findByEmail`, with a private consumer-side copy `record OrderLine(String isbn, Boolean completed)` (`@JsonIgnoreProperties(ignoreUnknown = true)`), and the decision table.
 - **`purchase/OrdersUnavailableException.java`** (new) — `extends ResponseStatusException`, `503`, reason "Service Unavailable".
 - **`config/OrdersClientConfig.java`** (new) — the `ordersRestTemplate` bean from `RestTemplateBuilder` with `connectTimeout(ratings.orders.connect-timeout)` and `readTimeout(ratings.orders.read-timeout)`, and a `Clock` bean (`Clock.systemDefaultZone()`).
 - **Deleted** — `repository/ClientRepository.java`, `repository/BookRepository.java`.
@@ -112,6 +112,7 @@ Responsibilities, in one line each: the controller speaks HTTP; `RatingService` 
 - **Testcontainers MySQL for tests** — lost: new dependencies and Docker wherever `./gradlew :ratings:test` runs, for a collation H2 reproduces with `IGNORECASE=TRUE`.
 - **A lower-cased key column** — lost: departs from [AD#3]'s "compared as the ratings database compares text".
 - **Keeping the client and book existence calls** — lost: their `404` would disclose whether an e-mail is a customer ([AD#4]), and the purchase check already refuses an unknown e-mail or ISBN.
+- **Confirming a `404` with orders' `GET /api/v1/version`** (the design run's answer to [ER1], removed by hand on 2026-10-13 when [ER1] was rejected) — lost: a second orders call, a positive-only cache and about 8 s on the first unconfirmed `404`, close to the storefront's 10 s limit, against a misconfiguration the release checks catch.
 - **Hibernate `@UpdateTimestamp`** — lost: it moves Updated At only when the row is dirty, so an identical repeat would keep it ([U02] [AC07] TC04).
 
 ## Interfaces / contracts
@@ -139,10 +140,10 @@ public class OrdersUnavailableException extends ResponseStatusException {
 
 1. `200` whose body reads as a JSON array of objects each carrying a string `isbn` and a boolean `completed` (other fields ignored): an element with the ISBN and `completed == true` → `ELIGIBLE`; an element with the ISBN, none completed → `ORDER_NOT_COMPLETED`; no element with the ISBN → `NO_ORDER_FOR_BOOK` (a known customer with no orders answers `[]`).
 2. `200` that does not read that way — not JSON, not an array, a `null` element, an element missing `isbn` or a boolean `completed` → `OrdersUnavailableException`.
-3. `404` → `NOT_A_CUSTOMER` only when both hold: the body is a JSON object whose `path` equals the constant `/api/v1/orders/findByEmail`, and `GET <scheme://host:port of http.service.orders>/api/v1/version` answers `200` with `serviceId` `"orders"`. Only a positive probe answer is cached, for the life of the pod (configuration does not change at runtime). Anything else — a different `path`, a probe that fails, times out or names another service — → `OrdersUnavailableException`.
+3. `404` → `NOT_A_CUSTOMER`, whatever its body: orders answers `404` from `findByEmail` when `verifyClient` finds no client for the e-mail ([AD#2]; [ER1] rejected, so no call confirms it).
 4. A connect or read timeout, a refused connection, any other status → `OrdersUnavailableException`.
 
-Bound: one `findByEmail` call, at most 1 s to connect and 3 s to read; on the `404` path before the first positive probe, one more call under the same bounds. No retry. The call is a read: repeating it repeats no side effect.
+Bound: one `findByEmail` call, at most 1 s to connect and 3 s to read. No retry. The call is a read: repeating it repeats no side effect.
 
 ### The ratings REST API ([AD#4]–[AD#7]; base path `/api/v1/ratings`, unchanged)
 
@@ -176,7 +177,7 @@ List<IsbnTotals> totalsForAll();
 - **Produces [AD#5]** (changed) — `delete-all` removed, `/{id}` unchanged; producer-side tests: `RatingControllerIT`.
 - **Produces [AD#6]** (new) — `GET /summary`, `GET /summaries`; producer-side tests: `RatingControllerIT` and `RatingServiceTest`.
 - **Produces [AD#7]** (changed) — `@JsonIgnore` on the comment; producer-side tests: `RatingControllerIT` reads every endpoint's raw JSON for a `comment` key.
-- **Consumes [AD#2]** (exists) — orders' `findByEmail` as it already runs, plus its `GET /api/v1/version`. Ratings depends only on `isbn` and `completed` in the answer and `serviceId` in the version answer, and ignores every other field. Test doubles: `MockRestServiceServer` bound to `ordersRestTemplate` for the adapter, modelling every outcome of the decision table; `InMemoryPurchaseCheck` for `RatingService`, modelling each `Eligibility` and unavailability. Orders and ratings share a repository, and the contract row's `Artifact` is `—`: `OrderLine` is a consumer-side copy owned by ratings, as the ARD's Schema ownership states.
+- **Consumes [AD#2]** (exists) — orders' `findByEmail` as it already runs. Ratings depends only on its status (`200` or `404`) and on `isbn` and `completed` in a `200` answer, and ignores every other field. Test doubles: `MockRestServiceServer` bound to `ordersRestTemplate` for the adapter, modelling every outcome of the decision table; `InMemoryPurchaseCheck` for `RatingService`, modelling each `Eligibility` and unavailability. Orders and ratings share a repository, and the contract row's `Artifact` is `—`: `OrderLine` is a consumer-side copy owned by ratings, as the ARD's Schema ownership states.
 
 ## Seams
 
@@ -225,9 +226,8 @@ State: a rating is created by a give, altered only by a change (stars, comment, 
 | A give or change refused as invalid (`400`) | the reason in `message` | nothing saved; no call to orders |
 | A change to an unknown id (`404`) | Boot's default body | nothing saved; no call to orders |
 | A body Jackson cannot read — malformed JSON, or an object or array as the comment | `400`, Boot's default body | nothing saved; no call to orders |
-| Orders: no qualifying order, unknown customer (confirmed `404`) | `403`, one identical body | nothing saved; one refusal log entry |
-| Orders: timeout (1 s connect / 3 s read), refused connection, `5xx`, any status but `200`/`404`, unreadable `200`, misrouted `404` | `503` "Service Unavailable" | nothing saved; nothing logged by ratings (specification, Out of scope) |
-| Version probe fails, times out or names another service after a `404` | `503` | nothing saved; the probe is retried on the next `404` |
+| Orders: no qualifying order, unknown customer (`404`) | `403`, one identical body | nothing saved; one refusal log entry |
+| Orders: timeout (1 s connect / 3 s read), refused connection, `5xx`, any status but `200`/`404`, unreadable `200` | `503` "Service Unavailable" | nothing saved; nothing logged by ratings (specification, Out of scope) |
 | Two gives for one pair race | each `200` | exactly one rating; the loser's give applied to it as a change |
 | Two changes to one rating race | each `200` | last write wins ([U02] [AC04] accepts either stars) |
 | An operator removes a rating between a give's lookup and its write | `200` | the give inserts a new rating |
@@ -249,9 +249,9 @@ Prior art: `ratings/src/test/java/com/dynatrace/ratings/RatingsApplicationTests.
 |---|---|---|
 | `service/RatingServiceTest` — `@SpringBootTest(webEnvironment = NONE)` on the `test` profile, `InMemoryPurchaseCheck` and a stepped `Clock` as `@Primary` beans | `RatingService` with the local-substitutable database (H2 `MODE=MySQL;IGNORECASE=TRUE`) and the in-memory port | validation order and exact texts, a non-string e-mail, an ISBN sent as a 13-digit JSON integer (accepted, and on a change equal to the stored one proceeding) or as a 12-digit one (refused), and a body id that is text, `3.7` or absent included; give and change rules; the pair compared ignoring letter case ([U02] [AC03] TC04); stored e-mail kept ([AC08]); comment rules; Created At / Updated At with the stepped clock ([AC07]); summaries — 4.25 → 4.3, 1.05 → 1.1, 4.0, 4.7, count 0 → `null`; a rating outliving its order ([AC18]) |
 | `service/RatingServiceConcurrencyTest` — not transactional, table emptied after each test | same | 10 threads giving one pair at once, mixed capitals included ([U02] [AC04] TC01–TC04): one row, no exception, every give answered |
-| `purchase/OrdersPurchaseCheckTest` — a fresh adapter per test, `MockRestServiceServer` bound to the `RestTemplate` passed to it | `PurchaseCheck` HTTP adapter (remote-but-owned, the port's production adapter) | every row of the decision table: buyer, not completed, no order, `[]`, unknown-customer `404` + probe `orders`, `404` with another `path`, `404` + probe naming `books`, `404` + probe `500`, `500`, `503`, unreadable `200` (HTML, an object, an element missing `completed`), a timeout (`withException(new SocketTimeoutException())`); e-mail URL-encoded; a second `404` after a positive probe makes no probe call |
+| `purchase/OrdersPurchaseCheckTest` — a fresh adapter per test, `MockRestServiceServer` bound to the `RestTemplate` passed to it | `PurchaseCheck` HTTP adapter (remote-but-owned, the port's production adapter) | every row of the decision table: buyer, not completed, no order, `[]`, unknown-customer `404` (whatever its body), `500`, `503`, unreadable `200` (HTML, an object, an element missing `completed`), a timeout (`withException(new SocketTimeoutException())`); e-mail URL-encoded; exactly one orders call per check |
 | `purchase/OrdersPurchaseCheckTimeoutTest` — no Spring context: the `RestTemplate` comes from `OrdersClientConfig`'s bean method with 1 s / 3 s, so no test's `MockRestServiceServer` can have replaced its request factory | that `RestTemplate` and the adapter against a local `ServerSocket` that accepts and never answers | the bound: `check` throws `OrdersUnavailableException` in under 4.5 s ([U01] [AC09] TC03, [U02] [AC17] TC03) |
-| `controller/RatingControllerIT` — `@SpringBootTest` + `@AutoConfigureMockMvc`, `MockRestServiceServer` bound to the `ordersRestTemplate` bean | the whole HTTP surface, the real adapter behind the stub | every specification TC at HTTP level: statuses and exact `message` texts; two refusals' bodies equal in every field but `timestamp` and `path`; no `comment` key in any answer's raw JSON; `ExpectedCount.never()` on orders for every `400`/`404` ([U01] [AC08], [U02] [AC15]); `delete-all` `400` and `DELETE /api/v1/ratings` `405`; summary JSON `4.3`, `4.0`, `null`; for each failure the advice does not render, the status, `getResolvedException()`'s type and that the advice wrote no body — MockMvc does not forward to Boot's `/error`, so the bodies themselves are checked in `RatingErrorBodiesIT`; both operator-removal races, the rating removed from inside the orders stub's answer (a `ResponseCreator` that deletes it before it responds), answered `200` with a new rating for a give and `404` for a change; the version probe stubbed `ExpectedCount.between(0, 1)` with `ignoreExpectOrder`, because the adapter bean's positive cache outlives a test method — the probe and its cache are asserted only in `OrdersPurchaseCheckTest`; the refusal log entry through `OutputCaptureExtension` — one line on `com.dynatrace.ratings.refusals` naming the ISBN and the reason and holding no `@` |
+| `controller/RatingControllerIT` — `@SpringBootTest` + `@AutoConfigureMockMvc`, `MockRestServiceServer` bound to the `ordersRestTemplate` bean | the whole HTTP surface, the real adapter behind the stub | every specification TC at HTTP level: statuses and exact `message` texts; two refusals' bodies equal in every field but `timestamp` and `path`; no `comment` key in any answer's raw JSON; `ExpectedCount.never()` on orders for every `400`/`404` ([U01] [AC08], [U02] [AC15]); `delete-all` `400` and `DELETE /api/v1/ratings` `405`; summary JSON `4.3`, `4.0`, `null`; for each failure the advice does not render, the status, `getResolvedException()`'s type and that the advice wrote no body — MockMvc does not forward to Boot's `/error`, so the bodies themselves are checked in `RatingErrorBodiesIT`; both operator-removal races, the rating removed from inside the orders stub's answer (a `ResponseCreator` that deletes it before it responds), answered `200` with a new rating for a give and `404` for a change; the refusal log entry through `OutputCaptureExtension` — one line on `com.dynatrace.ratings.refusals` naming the ISBN and the reason and holding no `@` |
 | `controller/RatingErrorBodiesIT` — `@SpringBootTest(webEnvironment = RANDOM_PORT)` + `TestRestTemplate`, a real server so Boot's `/error` renders | the HTTP surface as a caller sees it | the exact key set of each kind of error body: `{timestamp, status, error, path}` with no `message` for the `GET /{id}` `404` (as today), the `PUT /{id}` `404`, a Spring `400` (`DELETE /delete-all`) and the `405` (`DELETE /api/v1/ratings`); `{timestamp, status, error, message, path}` for an advice-rendered `400`. None of these cases calls orders |
 | `RatingsApplicationTests` (unchanged) | context | the context starts with the new beans and the H2 URL |
 
@@ -259,9 +259,9 @@ Producer-side tests for each boundary interface: `RatingControllerIT` drives the
 
 ## Risks & mitigations
 
-- **Every give and change now waits on orders, and orders on clients twice.** Accepted under [VD#5]; bounded by the 1 s / 3 s timeouts, with no retry, so a slow orders costs at most about 4 s per write (about 8 s on the first `404` path while the probe is unconfirmed) and never holds a database connection, open-in-view being off.
-- **A wrong orders URL or host.** Refusing every buyer with `403` is prevented by the `404` confirmation, which answers `503` instead; trigger 2 or 3 of the rollback signal catches it within 15–30 minutes.
-- **Orders changes its error body or its version endpoint.** Unknown e-mails would then be answered `503` rather than `403` — the safe direction — and the adapter test documents the shape it relies on.
+- **Every give and change now waits on orders, and orders on clients twice.** Accepted under [VD#5]; bounded by the 1 s / 3 s timeouts, with no retry, so a slow orders costs at most about 4 s per write and never holds a database connection, open-in-view being off.
+- **A wrong orders URL or host.** A host that refuses connections or answers `5xx` gets every write answered `503`; a live service other than orders answers `404` to `findByEmail`, so every buyer would be refused `403` ([ER1] rejected: no call confirms a `404`). Rollback trigger 2 catches the first and trigger 3 the second, within 15–30 minutes.
+- **Orders changes how it answers an unknown customer.** A status other than `200` or `404` is answered `503` — the safe direction — and the adapter test documents the `404` it relies on.
 - **The unique constraint is not created.** Under `ddl-auto=update` Hibernate cannot add it over duplicate rows and starts anyway; insert-then-recover then has nothing to recover from. Mitigated by the release steps (Migration) and the post-release duplicate and index checks.
 - **H2 and MySQL compare text alike only where it matters.** MySQL's `utf8mb4_0900_ai_ci` also ignores accents; the e-mail pattern admits ASCII only, so H2's `IGNORECASE` reproduces every comparison the pair can meet.
 - **`summaries` grows with the catalogue.** One `GROUP BY` over `idx_ratings_isbn` per request, unpaged ([CD#10]); trigger 4 watches its response time.
@@ -283,7 +283,7 @@ No `Target span`, no ARD deviation, and no architecture deviation (architecture 
 
 - **Signals.**
   - Dynatrace service metrics for the ratings service, per endpoint — request count, failure rate, response time, and response-code mix (`200`/`400`/`403`/`404`/`503`/`500`) for `POST /api/v1/ratings`, `PUT /api/v1/ratings/{id}`, `GET /api/v1/ratings/summary`, `GET /api/v1/ratings/summaries` and `GET /api/v1/ratings/findByISBN` — exist today (every ratings image is instrumented); the two summary endpoints appear with this change.
-  - Traced outbound calls from ratings to orders (`GET /api/v1/orders/findByEmail`, `GET /api/v1/version`) — exist as soon as ratings makes them; they show orders' latency and `404` rate behind each write.
+  - Traced outbound calls from ratings to orders (`GET /api/v1/orders/findByEmail`) — exist as soon as ratings makes them; they show orders' latency and `404` rate behind each write.
   - Refusal log entries on `com.dynatrace.ratings.refusals`, one per buyers-only refusal, carrying the ISBN and the reason — added by this change (`RatingService`).
 - **Baseline.** The ratings service's POST and PUT failure rate, `500` share, `503` share and median response time, `GET /findByISBN`'s median response time (the stand-in baseline for the two new summary endpoints), and the orders service's failure rate, each read in Dynatrace for the 7 days before the deploy, per environment, by the release operator on the day of the deploy. None can be read now: this run has no Dynatrace access, and the summary endpoints do not exist yet.
 - **Blast radius.** Orders, and clients behind it — one more `findByEmail` per write (signal: orders' request count and failure rate). The ratings database — two new indexes and `GROUP BY` queries (signal: ratings' database statement time). The storefront — the consumer of every changed answer (signal: ratings' `4xx` mix per endpoint). The load generator in test environments — `delete-all` now `400`, most gives refused (signal: its own log). Ratings' reads must not depend on orders (signal: read endpoints' failure rate while orders' failure rate rises).

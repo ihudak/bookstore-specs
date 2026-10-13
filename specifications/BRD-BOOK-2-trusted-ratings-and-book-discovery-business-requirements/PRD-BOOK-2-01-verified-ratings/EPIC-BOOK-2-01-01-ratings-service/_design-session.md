@@ -66,6 +66,14 @@
 - **Findings applied (user, 2026-10-13):** `RatingErrorBodiesIT` (`RANDOM_PORT` + `TestRestTemplate`) asserts each error body's exact key set, and `RatingControllerIT` now checks status, resolved exception and an empty advice body for non-advice failures; an ISBN is a JSON string or a JSON integer whose text matches `^\d{13}$`; `OrdersPurchaseCheckTimeoutTest` builds its `RestTemplate` from `OrdersClientConfig`'s bean method with no Spring context. Each edit read against what it overlaps.
 - **Version line:** PASS WITH RECOMMENDATIONS was reached before these three edits (the error-body test, the ISBN-as-integer rule, the timeout test's isolation), which followed it; the current text has not been reviewed. The review cap is spent.
 
+## Hand edits after the run (2026-10-13)
+
+The two specification open questions were settled by hand on the PR branch, at the user's request. Not reviewed by design-reviewer.
+
+- [ER2] accepted: only a JSON integer from 1 to 5 is a whole number of stars. Its test case was added as [U01] [AC05] [TC05] and [U02] [AC09] [TC04]; the design already behaved so (D3).
+- [ER1] rejected: every `404` from orders' `findByEmail` URL is the not-a-customer answer, as [AD#2] states. The version probe and its positive-only cache are removed from the design (decision table row 3, the bound, the Contract, Error handling, the adapter and IT tests, Risks, Observability; the probe moved to Alternatives considered), so D5's probe note and the D4 hybrid's probe cache no longer apply. A write waits at most about 4 s on orders. The "Misrouted 404" glossary entry is removed.
+- Specification `Open questions`: 2 → 0; design `Open questions`: 0.
+
 ## Interface candidates
 
 - **PurchaseCheck port** (ratings → orders, network boundary; adapters: HTTP to orders, in-memory fake for tests):

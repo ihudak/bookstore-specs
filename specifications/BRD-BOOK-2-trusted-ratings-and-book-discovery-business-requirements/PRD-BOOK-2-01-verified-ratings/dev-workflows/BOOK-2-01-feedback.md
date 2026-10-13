@@ -758,3 +758,74 @@ impact: polish
 **Friction:** `prose-style-checker` returned 18 findings on the two Epics, all NIT, most of them the specs tree's own house spellings ("e-mail", "catalogue", "cancelled", spaced em dashes) that the PRD, the ARD and the specification use throughout. With `doc-fixer` limited to MAJOR nothing acted on them, so the check spent a dispatch to produce report noise.
 
 **Suggested improvement:** Pass `prose-style-checker` the spelling and term conventions the PRD folder already uses (or a specs-repo overlay) as house style, so it reports only departures from them.
+
+## 2026-10-13 — /specify — unfollowed-rule
+
+```yaml
+id: BOOK-2-01-specify-overlap-read-misses-inherited-rules
+date: 2026-10-13
+command: /specify
+plugin_version: 3.33.3
+origin: auto
+author: ihudak@gmail.com
+category: unfollowed-rule
+impact: friction
+```
+
+**Friction:** `workflows-core` `escalation-rules.md` (*An inline fix is read against what it overlaps*, around lines 504-506, cited by `/specify` Phase 6 step 2) says each changed requirement "is read against every other one whose trigger, precondition, state or figure overlaps it". On the BOOK-2-01-01 Epic spec, the fix cycle limited `[U02] [AC13]` to "no body id → `400` bad rating id" and added a give-id criterion, and the overlap read ran. It still missed that `[U02] [AC03]` applies a repeat give "under every rule of a change in this story". So the `PUT`-only `404` and "bad rating id" rules reached `POST`, and seven test cases contradicted them. That was the re-review's only BLOCKER, and it spent the cap. The rule reads as a match on trigger text, and a criterion that imports another's rules by reference has none.
+
+**Suggested improvement:** Widen the overlap set in `escalation-rules.md` to include every criterion that imports rules by reference ("every rule of", "as in [ACnn]", "same as", a bare `[ACnn]` cited as a rule). Read both the importer and the imported rules against the changed criterion, and use this importer-and-imported case as the example. In `/specify`'s fix step, list the importing criteria before the overlap read.
+
+## 2026-10-13 — /specify — missing-reference-doc
+
+```yaml
+id: BOOK-2-01-specify-tc-assertion-absent-from-ac
+date: 2026-10-13
+command: /specify
+plugin_version: 3.33.3
+origin: auto
+author: ihudak@gmail.com
+category: missing-reference-doc
+impact: polish
+```
+
+**Friction:** `specification-format.md`'s test-case rule says the expected result is a "single pass/fail outcome asserting the parent AC". On the BOOK-2-01-01 spec, the answer each racing give gets was asserted in a test, removed to meet that rule, and then put back once the re-review asked for it to be stated. The format never says the answer must first be written into the criterion.
+
+**Suggested improvement:** Add one sentence beside the expected-result rule in `product-workflows` `references/specification-format.md`. Anything a test must observe, including the answer to a race or a conflict, is stated in its parent criterion first, and a test never carries an assertion its criterion lacks.
+
+## 2026-10-13 — /specify — missing-reference-doc
+
+```yaml
+id: BOOK-2-01-specify-fault-precedence-unspecified
+date: 2026-10-13
+command: /specify
+plugin_version: 3.33.3
+origin: auto
+author: ihudak@gmail.com
+category: missing-reference-doc
+impact: friction
+```
+
+**Friction:** In an API-level spec, single-fault criteria each carry an exact error message, and nothing in `specification-format.md` makes the author settle precedence between them. On the BOOK-2-01-01 spec, a `PUT` to an unknown id with a bad body matched both a `400` and the `404` criterion, which was a first-review BLOCKER. The re-review then found that every exact-message criterion conflicts with a request carrying two faults unless it is scoped "with no other fault". The stage-4 play-back of inferred precedence covered only the two pairs the grill happened to raise.
+
+**Suggested improvement:** Add a section on faults to `product-workflows` `references/specification-format.md`. A criterion that names one fault's exact message is scoped "with no other fault" and points to a multi-fault criterion. Where more than one check can fire, the spec states the check order once, as its own criterion covering every pair.
+
+## 2026-10-13 — /specify — missing-capability
+
+```yaml
+id: BOOK-2-01-specify-precedence-and-inheritance-playback
+date: 2026-10-13
+command: /specify
+plugin_version: 3.33.3
+origin: auto
+author: ihudak@gmail.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** The faults behind both BLOCKs on the BOOK-2-01-01 spec were mechanical to find. One was a pair of checks with no stated precedence. The other was a rule imported by reference into a request type it does not fit. `/specify` has no step that lists either. Phase 5.5's pre-lint runs only before the first review, and the escalation's manual fix notes are applied with no review after them, so nothing re-checks the folded-in edits.
+
+**Suggested improvement:** Three changes to `/specify`:
+- At the stage-4 confirmation gate, have the play-back of inferred precedence cover every pair of check types the criteria define.
+- Add an advisory to `pre-lint`'s spec block that lists every criterion citing another criterion's rules ("every rule of", "as in [ACnn]"), with what it cites.
+- Run that listing before the first review, again after the fix cycle, and over the manual fix notes before the handoff.

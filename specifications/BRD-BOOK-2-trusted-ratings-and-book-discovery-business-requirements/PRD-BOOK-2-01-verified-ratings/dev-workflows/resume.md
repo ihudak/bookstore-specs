@@ -1,15 +1,15 @@
-# Resume — BOOK-2-01 / BOOK-2-01-01 (pe)
+# Resume — BOOK-2-01 / BOOK-2-01-02 (pe)
 
-- **Last completed:** /product-workflows:specify BOOK-2-01-01 — command complete (2026-10-13T12:37:41Z), handed off as specs PR #25 on `spec/BOOK-2-01-01-ratings-service`
-- **Artifact:** EPIC-BOOK-2-01-01-ratings-service/specification.md (specs PR #25, open)
-- **Next step:** merge specs PR #25, then /dev-workflows:design BOOK-2-01-01 (Dev); in parallel, /product-workflows:specify BOOK-2-01-02 (PE), which waits on nothing here
+- **Last completed:** /product-workflows:specify BOOK-2-01-02 — command complete (2026-10-13T13:44:26Z), handed off as specs PR #26 on `spec/BOOK-2-01-02-storefront-ratings`
+- **Artifact:** EPIC-BOOK-2-01-02-storefront-ratings/specification.md (specs PR #26, open)
+- **Next step:** merge specs PR #26, then /dev-workflows:design BOOK-2-01-02 (Dev). /dev-workflows:design BOOK-2-01-01 (Dev) can run now, since its specification (PR #25) is merged.
 - **Suggested session name:** BOOK-2-01-verified-ratings-pe
 - **Carry-forward decisions:**
-  - The specification's current text is unreviewed. spec-reviewer's last verdict, BLOCK on the re-review, came before the manual fix notes and the folded-in MINOR and NIT edits that followed it. No finding is left open.
-  - What the storefront Epic, BOOK-2-01-02, now consumes from ratings:
-    - the `403` `message` is exactly "Only customers who have bought this book can rate it.";
-    - the write `400` reasons are "Invalid rating. Must be a whole number from 1 to 5.", "Invalid email address", "ISBN must be a 13-digits value", "A rating's e-mail and ISBN cannot be changed." and "bad rating id";
-    - a `PUT` with no body id is `400` "bad rating id", so the update form must keep sending the rating's id;
-    - a give's `id` is disregarded, so the rating form's `id: 0` keeps working;
-    - `503` covers any orders status other than success or not-found, and an unreadable success.
-  - The `/epics` review left 8 MINOR and 9 NIT findings open across both Epics (listed in PR #24's body). The ratings-side ones are settled by this specification. The storefront ones remain for `/specify BOOK-2-01-02`.
+  - The specification's current text is unreviewed. spec-reviewer's last verdict, PASS WITH RECOMMENDATIONS on the re-review, came before the ten edits that applied its findings. No finding is left open.
+  - For /dev-workflows:design BOOK-2-01-01: the storefront gives up on every ratings request after at most 10 seconds. The ratings service's own wait on orders should end well inside that, or its `503` reaches the form as the cannot-save text.
+  - The storefront consumes [AD#4]–[AD#7] as BOOK-2-01-01's specification answers them:
+    - a change carries the loaded rating's id, e-mail and ISBN;
+    - a give carries the e-mail and ISBN as typed;
+    - `summary` and `summaries` are read on every load;
+    - no `DELETE` is sent from any screen.
+  - Both specifications of the slice now exist. `/product-workflows:prd-proposal BOOK-2-01` can price the slice from the authored test cases, as optional and ungated.

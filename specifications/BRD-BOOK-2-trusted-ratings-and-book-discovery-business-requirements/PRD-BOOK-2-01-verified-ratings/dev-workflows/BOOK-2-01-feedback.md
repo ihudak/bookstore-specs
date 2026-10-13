@@ -829,3 +829,111 @@ impact: friction
 - At the stage-4 confirmation gate, have the play-back of inferred precedence cover every pair of check types the criteria define.
 - Add an advisory to `pre-lint`'s spec block that lists every criterion citing another criterion's rules ("every rule of", "as in [ACnn]"), with what it cites.
 - Run that listing before the first review, again after the fix cycle, and over the manual fix notes before the handoff.
+
+## 2026-10-13 — /specify — unfollowed-rule
+
+```yaml
+id: BOOK-2-01-specify-new-outcome-siblings-unqualified
+date: 2026-10-13
+command: /specify
+plugin_version: 3.33.3
+origin: auto
+author: ihudak@gmail.com
+category: unfollowed-rule
+impact: friction
+```
+
+**Friction:** The rule at `~/.claude/plugins/cache/shipwright/workflows-core/1.39.2/references/escalation-rules.md:504-506` says each requirement is "read against every other one whose trigger, precondition, state or figure overlaps it". `/specify` (`commands/specify.md:953-962`) cites it only at the fix, manual-notes and apply-offer steps.
+
+On the BOOK-2-01-02 spec, all three first-review BLOCKERs were written at authoring time, by the same move. A criterion added a new outcome for an existing trigger ("unreadable answer" → "Rating unavailable"; "no answer within the bounded time" → a failure text), and the sibling criteria that share the trigger kept their old wording:
+- "count above 0" and "count of 0" were not limited to a readable summary, on both the book page and the catalogue list;
+- "while not yet answered" loading states never ended at the bounded time.
+
+The overlap read before the Stage 4 gate missed all three. It compares criterion texts, and a new outcome added to a trigger's implicit set of outcomes doesn't read as an overlap. This is the third `/specify` run on this PRD whose BLOCK was an overlap defect.
+
+**Suggested improvement:** In `/specify`, add an outcome-set read at the Stage 4 confirmation gate, and again before the first `spec-reviewer` dispatch and after the fix cycle. For every trigger the criteria use (a response status, a load state, a count), list all of its outcomes across the ACs. Confirm that each outcome has one criterion, and that no two can fire together without a stated precedence. Add this session's pair to the `escalation-rules.md` rule as its worked example: a new "unreadable" outcome obliges re-qualifying the "count above 0" and "count of 0" siblings, and a bounded wait obliges ending every loading state.
+
+## 2026-10-13 — /specify — missing-reference-doc
+
+```yaml
+id: BOOK-2-01-specify-sibling-states-and-inverse-unstated
+date: 2026-10-13
+command: /specify
+plugin_version: 3.33.3
+origin: auto
+author: ihudak@gmail.com
+category: missing-reference-doc
+impact: friction
+```
+
+**Friction:** Most of the BOOK-2-01-02 re-review findings had two shapes that `specification-format.md` doesn't name:
+- **A state with no end.** A loading or empty state is written without saying how a bounded wait or an unreadable-answer outcome ends or limits it.
+- **A control state with no inverse.** A criterion says when Submit is disabled, but none says when it is enabled, though test cases rely on it.
+
+A third finding was a criterion asserting what one component can't guarantee: two screens agreeing when each makes its own request. The test-case-versus-criterion half repeats `BOOK-2-01-specify-tc-assertion-absent-from-ac`.
+
+**Suggested improvement:** Add three lines to `product-workflows` `references/specification-format.md` Stage 4:
+1. Where a spec has a bounded wait or an "unreadable" outcome, every sibling state (loading, empty, count) states how that outcome ends or limits it.
+2. Every criterion that holds a control in a state (disabled, hidden) has its inverse stated.
+3. A criterion asserts only what the named component controls; agreement between two requests is stated as "when both answers agree, both show it alike".
+
+## 2026-10-13 — /specify — false-positive
+
+```yaml
+id: BOOK-2-01-specify-pre-lint-flags-markup-fixture
+date: 2026-10-13
+command: /specify
+plugin_version: 3.33.3
+origin: auto
+author: ihudak@gmail.com
+category: false-positive
+impact: polish
+```
+
+**Friction:** A Security / privacy test case needs a literal markup fixture, a `400` reason holding a bold tag and an image with an `onerror` handler. The pre-lint placeholder pattern (`workflows-core` `references/pre-lint.md:18-26`) flags the lowercase bold tag as a placeholder BLOCKER, even inside backticks. The run wrote the tag in capitals to pass, which the pattern deliberately skips. That works in HTML, but it changes the fixture string and relies on a carve-out meant for another case. This is a sibling of `BOOK-2-01-specify-pre-lint-placeholder-literal-format`, which covers display formats rather than test fixtures.
+
+**Suggested improvement:** In `pre-lint.md`, exempt angle tokens inside a backtick span on a test-case Preconditions or Steps line. Alternatively, say in `specification-format.md` how a literal-markup fixture is written: described in words, or in capitals with a note that the case is immaterial to HTML.
+
+## 2026-10-13 — /specify — missing-capability
+
+```yaml
+id: BOOK-2-01-specify-post-verdict-edits-unlisted
+date: 2026-10-13
+command: /specify
+plugin_version: 3.33.3
+origin: auto
+author: ihudak@gmail.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** After the re-review's PASS WITH RECOMMENDATIONS, the apply offer put ten edits into the BOOK-2-01-02 spec with no review after them. Three of them added or restated rules:
+- two new Submit-enabled criteria;
+- a reworded agreeing-screens criterion;
+- new late-answer and markup tests.
+
+The verdict-version line says the text is unreviewed, but neither it nor the PR body names which criteria changed. A PR reviewer can't find them without diffing.
+
+**Suggested improvement:** In `/specify` Phase 6, when the apply offer follows the last verdict, run edits that add or change a criterion through the overlap read. List the added or changed `[Uxx] [ACxx]` ids in `_session.md`, the final report and the PR body beside the verdict-version line. Rewording-only edits are exempt.
+
+## 2026-10-13 — /specify — manual-workaround
+
+```yaml
+id: BOOK-2-01-specify-scratch-scripts-for-tc-and-fixes
+date: 2026-10-13
+command: /specify
+plugin_version: 3.33.3
+origin: auto
+author: ihudak@gmail.com
+category: manual-workaround
+impact: polish
+```
+
+**Friction:** To place 140 test cases under 51 criteria and apply two fix passes, the run wrote scratch Python each time. One script inserted test cases after each criterion; the others made exact-string replacements that assert a single match, with a structural check after each pass (ids contiguous, a Happy path and a Negative / boundary case per criterion). An earlier `/specify` run on this PRD hand-wrote a similar checker (`BOOK-2-01-specify-fix-cycle-unverified-overlaps`). The tooling is rebuilt on every run.
+
+**Suggested improvement:** Ship a `product-workflows/scripts/spec-tool.py` with three subcommands:
+- `insert-tcs` (from a criterion-to-test-cases map);
+- `replace` (an exact string that fails on zero or many matches);
+- `check` (ids, categories, open-question count, and a list of criteria sharing a trigger as overlap candidates).
+
+Have `/specify` call `check` at Phase 5.5, after the fix cycle and before the handoff.

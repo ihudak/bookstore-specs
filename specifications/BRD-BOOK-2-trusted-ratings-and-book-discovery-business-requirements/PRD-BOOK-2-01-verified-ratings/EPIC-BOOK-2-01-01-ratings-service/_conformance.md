@@ -94,7 +94,7 @@ None.
 - **shipped:** A give for a pair that already holds a rating is applied to it through `applyChange` (stars, Updated At and the no-move rules hold), but not under the comment rule of a change: a blank comment on it clears the stored comment.
 - **evidence:** ratings/src/main/java/com/dynatrace/ratings/service/RatingService.java:68-74@7410896; ratings/src/main/java/com/dynatrace/ratings/model/Rating.java:62-70@7410896
 - **decision:** fix-code — **status:** proposed
-- **rationale:** —
+- **rationale:** deliberate demo gap, see [ER8]
 - **effect:** follow-up proposed: Run `/dev-workflows:implement BOOK-2-01-01` from repository `bookstore`: [U02]/[AC03] a repeat give is applied as a change under every rule of a change — a blank comment on a repeat give clears the stored comment instead of keeping it (`Rating.applyChange`)
 
 ### [DD#2] [U02]/[AC05]
@@ -104,7 +104,7 @@ None.
 - **shipped:** `Rating.applyChange` sets the comment through `commentOrNull`, so an empty, absent or all-space comment on a change — a `PUT`, or a give applied as one — sets the stored comment to null instead of keeping it.
 - **evidence:** ratings/src/main/java/com/dynatrace/ratings/model/Rating.java:62-70@7410896; ratings/src/main/java/com/dynatrace/ratings/service/RatingService.java:110-112@7410896; ratings/src/main/java/com/dynatrace/ratings/service/RatingService.java:68-74@7410896
 - **decision:** fix-code — **status:** proposed
-- **rationale:** —
+- **rationale:** deliberate demo gap, see [ER8]
 - **effect:** follow-up proposed: Run `/dev-workflows:implement BOOK-2-01-01` from repository `bookstore`: [U02]/[AC05] an empty, absent or all-space comment on a change keeps the stored comment — it clears it to null (`Rating.applyChange` via `commentOrNull`)
 
 ### [DD#3] "Given an e-mail and ISBN that already hold a rating (compared ignoring letter case), when a give reaches the ratings service, then it is applied to that rating as a change under every rule of a change."
@@ -114,7 +114,7 @@ None.
 - **shipped:** The repeat give is applied to the pair's rating through `applyChange`, but not under the comment rule of a change: a blank comment clears the stored comment.
 - **evidence:** ratings/src/main/java/com/dynatrace/ratings/service/RatingService.java:68-74@7410896; ratings/src/main/java/com/dynatrace/ratings/model/Rating.java:62-70@7410896
 - **decision:** fix-code — **status:** proposed
-- **rationale:** —
+- **rationale:** deliberate demo gap, see [ER8]
 - **effect:** follow-up proposed: Run `/dev-workflows:implement BOOK-2-01-01` from repository `bookstore`: epic.md acceptance criterion "a give for a pair that already holds a rating is applied as a change under every rule of a change" — a blank comment on that give clears the stored comment (`Rating.applyChange`)
 
 ### [DD#4] "Given a saved change, when its comment is empty, absent or only spaces, then the stored comment is kept; when it holds a character other than a space, then it replaces the stored comment."
@@ -124,7 +124,7 @@ None.
 - **shipped:** A comment holding another character replaces the stored one as given; an empty, absent or all-space comment sets the stored comment to null instead of keeping it.
 - **evidence:** ratings/src/main/java/com/dynatrace/ratings/model/Rating.java:62-70@7410896
 - **decision:** fix-code — **status:** proposed
-- **rationale:** —
+- **rationale:** deliberate demo gap, see [ER8]
 - **effect:** follow-up proposed: Run `/dev-workflows:implement BOOK-2-01-01` from repository `bookstore`: epic.md acceptance criterion "a saved change with an empty, absent or all-space comment keeps the stored comment" — it clears it to null (`Rating.applyChange`)
 
 ### [DD#5] "Produces: [AD#4] — the changed write API: statuses, one identical `403`, `503`, fixed e-mail and ISBN on a change, comment kept when empty, the saved rating returned without its comment."
@@ -134,7 +134,7 @@ None.
 - **shipped:** Every clause of the produced write API holds except "comment kept when empty": a blank comment on a change clears the stored comment.
 - **evidence:** ratings/src/main/java/com/dynatrace/ratings/service/RatingService.java:60-113@7410896; ratings/src/main/java/com/dynatrace/ratings/model/Rating.java:62-70@7410896; ratings/src/main/java/com/dynatrace/ratings/controller/RatingsErrorAdvice.java:21-30@7410896
 - **decision:** fix-code — **status:** proposed
-- **rationale:** —
+- **rationale:** deliberate demo gap, see [ER8]
 - **effect:** follow-up proposed: Run `/dev-workflows:implement BOOK-2-01-01` from repository `bookstore`: epic.md Contract "Produces: [AD#4]" — the write API's "comment kept when empty" clause: a blank comment on a change clears the stored comment (`Rating.applyChange`)
 
 ### [DD#6] [AD#4] Rule
@@ -144,5 +144,5 @@ None.
 - **shipped:** The give-or-change flow, the statuses, the identical `403`, the `503`, the checks decided before orders and the fixed e-mail and ISBN on a change hold; the clause "an absent or empty comment keeps the stored comment, and a non-empty one replaces it ([AC#30])" does not — `applyChange` writes null.
 - **evidence:** ratings/src/main/java/com/dynatrace/ratings/service/RatingService.java:60-113@7410896; ratings/src/main/java/com/dynatrace/ratings/model/Rating.java:62-70@7410896
 - **decision:** fix-code — **status:** proposed
-- **rationale:** —
+- **rationale:** deliberate demo gap, see [ER8]
 - **effect:** follow-up proposed: Run `/dev-workflows:implement BOOK-2-01-01` from repository `bookstore`: [AD#4] Rule "on a change … an absent or empty comment keeps the stored comment" — a blank comment on a change, through `PUT` or a give applied as one, clears the stored comment (`Rating.applyChange`)

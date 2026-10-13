@@ -14,7 +14,7 @@
 - **Carry-forward decisions:**
   - [U02] [AC05] was left unimplemented on purpose, as the demo gap: a blank comment on a change clears the stored comment.
     - Conformance recorded it as [DD#1]–[DD#6]: [U02]/[AC03], [U02]/[AC05], two `epic.md` bullets, the `epic.md` Contract [AD#4] line and the ARD [AD#4] Rule.
-    - Each one is `fix-code`, `proposed`, with no rationale given.
+    - Each one is `fix-code`, `proposed`, with the rationale "deliberate demo gap, see [ER8]" (added by hand after the run).
     - The spec's [ER8] note stays open until the fix lands or [AC05] is withdrawn.
   - The re-check dropped the tracer's story-level [U02] `partial`, because the story's "Done when" omits the comment rule.
   - The earlier follow-up is still open: amend `design.md`'s rollback step so that rolling back cannot expose stored comments.

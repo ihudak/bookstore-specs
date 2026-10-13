@@ -1325,3 +1325,37 @@ impact: friction
 **User prompt:** PR#31 is merged. I asked whether anything comes to SPECS because I did not see any PR there. Now now I see that you committed 0f5307b directly to main and pushed main. you did not do that mistake before. Why did you do it now?
 
 **Resolution:** Explained the cause: no specs branch was opened, so §4.1 put the session files on `main` and pushed; the same had happened in three earlier direct commits on 10-12. Owned the unannounced push and its repeat in `1e9d493`. Offered session-branch mode (session files go to `session/<initials>`, landed by PR); the user chose to leave it as is. Pulled `main` after PR #31 merged and deleted the merged local `design/BOOK-2-01-02-storefront-ratings` branch.
+
+## 2026-10-13 — /conformance — missing-reference-doc
+
+```yaml
+id: BOOK-2-01-conformance-not-checkable-unrecorded
+date: 2026-10-13
+command: /conformance
+plugin_version: 4.24.3
+origin: auto
+author: ihudak@gmail.com
+category: missing-reference-doc
+impact: polish
+```
+
+**Friction:** On the BOOK-2-01-02 Epic run, three requirements (the [AD#2], [AD#3] and [AD#4] Rules, which bind the other Epic's service) traced `not-checkable`. `references/conformance-format.md` §2 gives the record a `## Satisfied` and a `## Unverified` list but no place for not-checkable requirements, so they survive only as a count in the header. A reader of `_conformance.md` cannot tell which requirements they were or why, and `commands/conformance.md` (e) relies on a later run recognising requirements that were "`not-checkable` there".
+
+**Suggested improvement:** Add an optional `## Not checkable` list to the record in `conformance-format.md` §2, one line per requirement with the tracer's `reason`, traced in full by a later run as `## Unverified` items are. Alternatively, state explicitly that not-checkable is count-only and why.
+
+## 2026-10-13 — /conformance — missing-capability
+
+```yaml
+id: BOOK-2-01-conformance-tracer-output-handoff
+date: 2026-10-13
+command: /conformance
+plugin_version: 4.24.3
+origin: auto
+author: ihudak@gmail.com
+category: missing-capability
+impact: polish
+```
+
+**Friction:** The tracer's 88-section output came back only in the agent's reply, so the orchestrator had to extract it from the agent transcript with a script to render the `## Satisfied` list. It also built the tracer's YAML input with a one-off script. The tracer's satisfied evidence used approximate line ranges, which weakens the evidence a PRD run's drift check and later readers rely on.
+
+**Suggested improvement:** Add an `output_path` field to `references/handoff/conformance-tracer.md`'s input and have the tracer write its sections there. Require `file:line` evidence to be exact, or a tight range. Consider shipping a helper script that builds the tracer handoff from the requirement documents and renders `## Satisfied` from the verdicts.

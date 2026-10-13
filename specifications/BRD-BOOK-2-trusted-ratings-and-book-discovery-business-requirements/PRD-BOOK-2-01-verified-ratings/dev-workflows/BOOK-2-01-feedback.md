@@ -605,3 +605,54 @@ impact: polish
 **Suggested improvement:**
 - Add to `proposal-format.md` §4 section 21 that every live `[SM#n]`/`[SMC#n]` traces to a `[WP#n]` or to section 20.
 - Give `agents/proposal-reviewer.md` check 10, or a new check, the matching test.
+
+## 2026-10-13 — /specify — missing-capability
+
+```yaml
+id: BOOK-2-01-specify-fix-cycle-unverified-overlaps
+date: 2026-10-13
+command: /specify
+plugin_version: 3.32.1
+origin: auto
+author: ihudak@gmail.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** On a 62-AC / 166-TC multi-component specification, the first `spec-reviewer` pass returned BLOCK partly on mechanical defects (six test cases sent a give or change with no star value, so each was refused as invalid before the behaviour under test was reached; update-form outcomes for a `404` and a `400` were unenumerated). The one fix cycle applied every finding and was read against its overlaps as `escalation-rules` *An inline fix is read against what it overlaps* requires, yet the re-review found two new BLOCKERs that the fix itself wrote: letter-case test cases contradicting an AC's "the rating's e-mail" wording against `[AD#2]`'s "as typed", and a new "no longer exists" criterion leaving a third load outcome (load failure) uncovered. The cap was spent, so both were closed by unreviewed manual fix notes and the pull request shipped with a version line saying the text is unreviewed. Pre-lint's spec block is grep-level, so the run hand-wrote a checker for ID contiguity and per-AC Happy path + Negative / boundary coverage.
+
+**Suggested improvement:** Extend `pre-lint`'s spec block (or ship a script `/specify` runs before each reviewer dispatch and after every fix cycle) with deterministic checks: per-AC category coverage; every write-type test step names a value for each required input; every cited `[AD#N]`/`[CG#n]` exists. And give the overlap read in `escalation-rules` a concrete enumeration step for an AC that adds an outcome to a closed set (an implicit enum branch): list every outcome of that trigger and confirm each has a criterion or an exclusion before the re-review.
+
+## 2026-10-13 — /specify — wrong-output
+
+```yaml
+id: BOOK-2-01-specify-consumed-by-overwrites-provenance
+date: 2026-10-13
+command: /specify
+plugin_version: 3.32.1
+origin: auto
+author: ihudak@gmail.com
+category: wrong-output
+impact: friction
+```
+
+**Friction:** `/specify` Phase 7 sets `consumed_by: specification` on each `[CG#n]` the specification drew on, but `workflows-core:grounding-format` §2 defines `consumed_by` as one value of `PRD | ARD | specification | none`. On this run nine findings went from `ARD` to `specification`, silently erasing the record that the ARD had consumed them, so "nothing was lost" (the design's consumption tracking) becomes uncheckable for the earlier consumer.
+
+**Suggested improvement:** Make `consumed_by` a list (append, never overwrite) in `grounding-format` §2 and `decision-register-format` §1, and update the stamping steps of `/create-prd`, `/create-ard` and `/specify` to append; or, if single-valued is intended, state the overwrite and its loss explicitly in those commands' stamping paragraphs.
+
+## 2026-10-13 — /specify — false-positive
+
+```yaml
+id: BOOK-2-01-specify-pre-lint-placeholder-literal-format
+date: 2026-10-13
+command: /specify
+plugin_version: 3.32.1
+origin: auto
+author: ihudak@gmail.com
+category: false-positive
+impact: polish
+```
+
+**Friction:** `pre-lint`'s placeholder scan flagged a display-format criterion that wrote the plural count as `"(<n> ratings)"` — a literal format the spec meant, not an unfilled placeholder — and the criterion had to be reworded around the regex ("the number followed by "ratings" in parentheses, such as "(37 ratings)"").
+
+**Suggested improvement:** Document the convention in `pre-lint` (and `specification-format`) for writing a display format with a variable part — e.g. a concrete example value instead of `<n>` — or exempt an angle-bracket token inside a quoted display string from the placeholder scan.

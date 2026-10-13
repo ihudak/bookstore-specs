@@ -41,7 +41,7 @@ argumentation: |
 evidence: [[CG#5]]
 altitude: implementation
 status: decided
-consumed_by: none
+consumed_by: specification
 round: 1
 
 id: [VD#3]

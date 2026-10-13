@@ -1,11 +1,12 @@
-# Resume — BOOK-2-01 / BOOK-2-01-01 (dev)
+# Resume — BOOK-2-01 / BOOK-2-01-02 (dev)
 
-- **Last completed:** /dev-workflows:design BOOK-2-01-01 — command complete (2026-10-13T15:05:08Z), handed off as specs PR #27 on `design/BOOK-2-01-01-ratings-service`
-- **Artifact:** EPIC-BOOK-2-01-01-ratings-service/design.md (+ amended specification.md; specs PR #27, open)
-- **Next step:** merge specs PR #27, then /dev-workflows:implement BOOK-2-01-01 (Dev). /dev-workflows:design BOOK-2-01-02 (Dev) can run now — its specification (PR #26) is merged.
+- **Last completed:** /dev-workflows:design BOOK-2-01-02 — command complete (2026-10-13T16:21:55Z). Handed off as specs PR #28 on `design/BOOK-2-01-02-storefront-ratings`.
+- **Artifact:** `EPIC-BOOK-2-01-02-storefront-ratings/design.md`, plus the amended `specification.md`. Both are in specs PR #28, which is open.
+- **Next step:** Merge specs PR #28, then run `/dev-workflows:implement BOOK-2-01-02` (Dev). `/dev-workflows:implement BOOK-2-01-01` (Dev) can run now, because its design (PR #27) is merged.
 - **Suggested session name:** BOOK-2-01-verified-ratings-dev
 - **Carry-forward decisions:**
-  - design-reviewer's last verdict, PASS WITH RECOMMENDATIONS on the re-review, came before three applied edits (`RatingErrorBodiesIT`, an ISBN accepted as a 13-digit JSON integer, the timeout test's isolation); the current text is unreviewed. No finding is left open.
-  - specification.md's 2 open questions were settled by hand on the PR branch (unreviewed): [ER2] accepted (only a JSON integer is a whole number of stars; [U01] [AC05] [TC05] and [U02] [AC09] [TC04] added); [ER1] rejected (every orders `404` is the not-a-customer answer, so the design's version probe is removed). The specification has 0 open questions.
-  - For /dev-workflows:design BOOK-2-01-02: only ratings' `400`/`403`/`503` write refusals (and a blank-`isbn` summary `400`) carry `message`; a `PUT` `404` carries Boot's default body with no `message` key. A write waits at most ~4 s on orders, inside the storefront's 10 s limit.
-  - Release: operators empty the `ratings` table and confirm `uk_ratings_email_isbn` (and `idx_ratings_isbn`) exist before the rules are relied on in an environment; ratings lands before web.
+  - Review status: design-reviewer's last verdict, PASS WITH RECOMMENDATIONS on the re-review, came before the five applied edits that answered it, so the current text is unreviewed. Those edits are the ratio triggers and 24-hour checks moved past the first hour, the `400` baseline window, the walks' unavailable retries, the storage wording, and the refresh list. No finding is left open.
+  - Two wording fixes followed by hand on the PR branch (unreviewed, no decision changed): the test-strategy line now covers only the specs this change adds or rewrites, and every `RatingService` subscription uses `takeUntilDestroyed(this.destroyRef)`.
+  - `specification.md` gained four `## Engineering review` notes ([ER1]–[ER4]) and no new `- [ ]`, so it still has 0 open questions.
+  - Landing order: ratings (BOOK-2-01-01) lands before web in every environment.
+  - Deploy gate: the web deploys only after `GET /api/v1/ratings/summaries` answers `200` there. It goes live only after the stage walk passes.

@@ -1109,3 +1109,18 @@ The storefront shall send the ratings service no removal request, neither `DELET
 - *Preconditions:* The ratings service answers the Ratings list with no ratings.
 - *Steps:* 1. Open the Ratings list.
 - *Expected result:* The ratings service receives no `DELETE` request of any kind.
+
+---
+
+## Engineering review
+
+Notes recorded by `/dev-workflows:design BOOK-2-01-02` (2026-10-13). Each records how the design reads a term this specification leaves open; none changes a criterion or adds an open question.
+
+- **[ER1] questioned — [U04] [AC06].** "When the catalogue list loads" is read as each time the catalogue list screen is opened. After the vend toggle, Delete, Delete All, Vend All and Unvend All, the list refreshes its books in place. That refresh sends no new `GET /api/v1/ratings/summaries` and keeps the answer from when the screen was opened, because those actions change books, never ratings. [TC02]'s second load is a second opening of the screen.
+- **[ER2] questioned — [U02] [AC02], [AC14].** "The rating" that the update form loads is read as a readable rating: a `200` whose body carries an integer `id` equal to the one requested, a non-empty `email` and `isbn`, and whole stars from 1 to 5. Any other `200` counts as "cannot be loaded" and shows "We can't load this rating right now. Please try again in a few minutes.". An example is a row with 0 stars from before this release. No such row can exist once the release empties the `ratings` table ([CD#19]).
+- **[ER3] validated — [U01] [AC12], [AC13]; [U02] [AC16], [AC17].** The unit tests check what a screen reader and the keyboard rely on:
+  - The outcome text sits in a persistent `role="alert"` element that each Submit empties and refills.
+  - The star choices are five native radio inputs, 1 to 5, in a fieldset with a legend.
+
+  The tests cannot hear the announcement or press the arrow keys, because Karma runs no screen reader and synthetic key events do not move a native radio group. Those steps are checked by hand once after deploy, in the design's release verification.
+- **[ER4] questioned — Out of scope, a book that cannot be loaded; [U03] [AC05], [AC06].** The book page still requests the book's rating summary on every load. It shows the rating line, or "Not yet rated" or "Rating unavailable" in its place, only once the book itself has loaded, so nothing stands in place of the rating line while either the summary or the book has not yet answered. So a book page whose book cannot be loaded stays as it is today, with no rating line. Every [U03] test case has the books service answering, so none is affected.

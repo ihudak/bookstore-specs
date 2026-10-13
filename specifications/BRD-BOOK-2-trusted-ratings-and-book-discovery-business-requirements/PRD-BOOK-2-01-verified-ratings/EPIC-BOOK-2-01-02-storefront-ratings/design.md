@@ -217,7 +217,7 @@ The tests swap the adapter at `HttpBackend` and never `RatingService` itself: `R
 **Rating form (`create-rating`).** Fields `email = ''`, `isbn = ''`, `stars: number | undefined`, `comment = ''`, `sending = false`, `outcomeText = ''`. `canSubmit` = `/[^ ]/` matches both e-mail and ISBN, `stars` is set, and `!sending`.
 
 1. Submit (button `[disabled]="!canSubmit"`; `onSubmit` returns at once when `!canSubmit`) → `outcomeText = ''`, `sending = true`.
-2. `give({email, isbn, rating: stars, comment})` with `takeUntilDestroyed`.
+2. `give({email, isbn, rating: stars, comment})`, piped through `takeUntilDestroyed(this.destroyRef)`.
 3. The outcome → `sending = false`; stored → `/ratings`; otherwise `outcomeText = o.text`. The entries are never touched.
 
 **Update form (`update-rating`).** `load: LoadOutcome | undefined`, `stars`, `comment = ''`, `sending`, `outcomeText`.
@@ -237,6 +237,8 @@ The tests swap the adapter at `HttpBackend` and never `RatingService` itself: `R
 2. Each row's Rating cell shows `lineFor ? lineFor(book.isbn).text : ''`.
 
 **Ratings list and rating details.** Loaded as today; the Comment column and row, Delete and Delete All are gone.
+
+**Every screen** ends each subscription to `RatingService` with `takeUntilDestroyed(this.destroyRef)`, where `destroyRef = inject(DestroyRef)`. `onSubmit` and `ngOnInit` are not injection contexts, so the form without an argument would throw `NG0203`. Leaving a screen therefore cancels its request in flight (Error handling).
 
 State: the storefront keeps no rating state between screens and caches no figure; every screen open asks again.
 
@@ -269,7 +271,7 @@ State: the storefront keeps no rating state between screens and caches no figure
 
 ## Test strategy
 
-The runner is Karma with Jasmine (`ng test --watch=false`, `web/karma.conf.js`, ChromeHeadlessNoSandbox through the Playwright Chromium fallback). The baseline is green at 57/57 before any change. Every spec configures `provideHttpClient()` + `provideHttpClientTesting()`, `provideRouter([])` where a component injects `Router`, and `httpMock.verify()` in `afterEach`, so no spec sends a real request. `HttpTestingController` and `fakeAsync` are new to the repository: the existing specs are "should create" smoke tests. Each spec case is named after the test case it carries, for example `it('[U01][AC05][TC02] shows the rule whatever the body')`.
+The runner is Karma with Jasmine (`ng test --watch=false`, `web/karma.conf.js`, ChromeHeadlessNoSandbox through the Playwright Chromium fallback). The baseline is green at 57/57 before any change. Every spec this change adds or rewrites (listed below) configures `provideHttpClient()` + `provideHttpClientTesting()`, `provideRouter([])` where a component injects `Router`, and `httpMock.verify()` in `afterEach`, so none of them sends a real request. The other screens' specs (carts, clients, orders, storage and the rest) stay as they are. `HttpTestingController` and `fakeAsync` are new to the repository: the existing specs are "should create" smoke tests. Each spec case is named after the test case it carries, for example `it('[U01][AC05][TC02] shows the rule whatever the body')`.
 
 - **`ratings/rating-outcomes.spec.ts`** (new; in-process seam): tables over `classifyWrite` (each status × `give`/`change`, with bodies carrying a reason, a blank or all-space `message`, a non-string `message`, no `message`, `null`, a string), `readableReason`, `classifyLoad` (readable; id mismatch; string id; stars 0, 6, 3.5; empty e-mail; `null`), `readSummary` (4 / 4.3; 0 / `null`; 0 / 7; 4 / no average; −1; 1.5; 4.35; `"4.3"`) and `readSummaries` (readable; one bad entry; a duplicate ISBN; a non-array; an empty array).
 - **`ratings/rating-texts.spec.ts`** (new): "★ 4.0 (37 ratings)", "★ 5.0 (1 rating)", "★ 3.5 (2 ratings)", "Not yet rated", "Rating unavailable", and the catalogue's line without a count.

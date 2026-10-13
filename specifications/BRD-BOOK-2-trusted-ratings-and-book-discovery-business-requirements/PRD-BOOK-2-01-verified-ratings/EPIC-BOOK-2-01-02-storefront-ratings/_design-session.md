@@ -38,6 +38,13 @@ The web's ratings request-and-outcome API (`web/src/app/ratings/rating.service.t
 - **Take B — maximise flexibility.** Five methods returning data-only outcome unions (`WriteOutcome`, `LoadOutcome`, `SummaryOutcome`, `SummariesOutcome` with `of(isbn)`); an exported generic `Exchange<T>` + `run()` layer (method/path/body + pure `classify`, `onFailure`, `boundedMs`); texts in a separate pure `rating-texts.ts` (`writeText`, `loadText`, `ratingLine(o, {withCount})`) that screens call; legacy delete methods left in place.
 - **Take C — optimise for the most common caller.** Five methods — `give(entry)`, `change(loaded, stars, comment)`, `loadRating(id)`, `bookLine(isbn)`, `catalogueLines()` → `(isbn) => RatingLine` — each emitting one outcome carrying the finished screen text (from `rating-texts.ts` constants); `RatingToEdit {id, email, isbn, stars}` carries the loaded values into the change; readable rating requires an integer id equal to the one requested and stars 1–5; delete methods removed. Flaws noted: claims a whole average renders "4" (the specification says "★ 4.0"), and removes `getRatingById`, which the rating details screen still needs (its load stays as today).
 
+## Hand edits after the run (2026-10-13)
+
+Two wording fixes made by hand on the PR branch at the user's request, before `/implement`. Not reviewed by design-reviewer; no decision changes.
+
+- Test strategy: "Every spec configures `provideHttpClient()` + `provideHttpClientTesting()` …" now reads "Every spec this change adds or rewrites", and the other screens' specs are named as unchanged, so the line cannot be read as rewriting all 57 existing specs.
+- Data flow: `takeUntilDestroyed` is called as `takeUntilDestroyed(this.destroyRef)`, with `destroyRef = inject(DestroyRef)`, on every screen's `RatingService` subscription. `onSubmit` and `ngOnInit` are not injection contexts, and the form without an argument throws `NG0203`. The "leaves a screen with a request in flight" edge case relies on it.
+
 ## Reviews
 
 ### Review 1 — design-reviewer (Opus): PASS WITH RECOMMENDATIONS

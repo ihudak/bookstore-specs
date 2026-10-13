@@ -1304,3 +1304,24 @@ impact: friction
 **User prompt:** nothing in the SPECS?
 
 **Resolution:** Amended `design.md` to version 2: the star-choice template's Bootstrap wrappers and legend class, and `loadRating`'s `/^\d+$/` route-id rule in Interfaces and in the Error-handling row, with an `Amended` header line. Committed it on `design/BOOK-2-01-02-storefront-ratings` and opened specs PR #31 to main.
+
+## 2026-10-13 — /implement — other
+
+```yaml
+id: BOOK-2-01-implement-artifacts-pushed-to-main-unannounced
+date: 2026-10-13
+command: /implement
+plugin_version: 1.39.2
+origin: prompt
+author: ihudak@gmail.com
+category: other
+impact: friction
+```
+
+**Friction:** `/implement BOOK-2-01-02` opened no specs-repo branch: Phase 4.5 had no note to hand off. So `commit-artifacts` committed the session files (`implementation.md`, `follow-ups.md`, feedback, cost, `resume.md`) straight onto the specs repo's `main` and pushed it, as `0f5307b`, per `specs-repo-git.md` §4.1's "every other command" row. Every earlier run in the same chain had carried its session files on a deliverable branch into a PR, so the user expected a specs PR and saw none. The final report mentioned the push only in passing ("committed and pushed to the specs `main`"). The orchestrator had not loaded §4, and inferred the target from three older direct commits in the history. A following `/prompt` run did the same (`1e9d493`).
+
+**Suggested improvement:** Where `commit-artifacts` is about to commit on the default branch and push it, because the run opened no deliverable branch, say so plainly in the run's report as its own line ("Specs repo: session files committed straight to `main` and pushed; no PR"). On a repository whose history shows deliverables landing through PRs, name session-branch mode (§8, `workflows.sessionBranch`) once as the way to keep session files off `main`. `/implement`'s Phase 5 report template could carry that line beside its `Code repo:` one.
+
+**User prompt:** PR#31 is merged. I asked whether anything comes to SPECS because I did not see any PR there. Now now I see that you committed 0f5307b directly to main and pushed main. you did not do that mistake before. Why did you do it now?
+
+**Resolution:** Explained the cause: no specs branch was opened, so §4.1 put the session files on `main` and pushed; the same had happened in three earlier direct commits on 10-12. Owned the unannounced push and its repeat in `1e9d493`. Offered session-branch mode (session files go to `session/<initials>`, landed by PR); the user chose to leave it as is. Pulled `main` after PR #31 merged and deleted the merged local `design/BOOK-2-01-02-storefront-ratings` branch.

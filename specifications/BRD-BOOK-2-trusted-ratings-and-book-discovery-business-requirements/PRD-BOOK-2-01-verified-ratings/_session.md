@@ -59,6 +59,17 @@
 15. MINOR (NFR) — response-time and load targets stated out of scope for this release (user chose the recommended option).
 16. Edits settled by the ARD: orders hang / server error → unavailable ([AD#2]); letter case of the pair and the stored e-mail ([AD#3], [AD#4]); star values added to test steps; "No deletion from the storefront" and the per-rating removal open to anyone out of scope ([VD#1]); raters' e-mails visible and clearing a stored comment out of scope; [AD#4]/[AD#6] cited on crossing criteria; reason texts and the blank-ISBN summary refusal moved into their criteria; "otherwise valid" on [U01] [AC01] and [U02] [AC01]; Updated At terminology; test-case coverage and labels fixed.
 
+## Hand edits after the run (2026-10-13)
+
+The five open questions were resolved by hand on the PR branch, each with the answer that keeps the slice smallest. Not reviewed by spec-reviewer.
+
+- MAJOR, [U01] [AC09] (empty e-mail or ISBN): [U01] [AC06] now keeps Submit from sending while the e-mail or the ISBN field is empty, as it does with no star choice; [TC03] added. The form never sends a missing e-mail or ISBN, so [AC09] shows only named reasons.
+- MINOR, [U01] [AC10] / [U02] [AC12] (logging an unavailable refusal): out of scope; only a buyers-only refusal's reason is logged ([U01] [AC15]).
+- MINOR, [U02] [AC04] (comment of spaces only): counts as empty and keeps the stored comment; [AC05] replaces only with a comment holding a character other than a space; [AC04] [TC04] added.
+- MINOR, [U02] [AC06] (Updated At on an identical repeat): moves to the time of the repeat; Created At stays; [AC06] [TC04] added; [AC01] [TC03] retitled to "leaves one rating with the same stars". [AD#4]'s "same values" is read as the stars, comment, e-mail and ISBN.
+- MINOR, Scope (comment length): out of scope; a comment longer than the ratings store holds is not saved, and the form shows the text of [U01] [AC12] or [U02] [AC17].
+- Now: 6 stories, 62 ACs, 169 TCs, 0 open questions.
+
 ## Open questions
 
 (none)

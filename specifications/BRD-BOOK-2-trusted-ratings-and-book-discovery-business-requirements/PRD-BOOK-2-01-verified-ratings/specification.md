@@ -10,7 +10,7 @@ key: BOOK-2-01
 - **Created**: 2026-10-13
 - **Author**: ihudak
 - **Published**: no
-- **Open questions**: 5
+- **Open questions**: 0
 
 ## Problem statement
 
@@ -44,17 +44,15 @@ Shoppers on Quillmark's online store ignore its star ratings, because nothing ab
 - Sign-in, or any check that the person typing an e-mail owns it ([CD#14]).
 - Hiding raters' e-mails: they stay visible on the Ratings list ([VD#6]).
 - What the rating details screen and the Ratings list show when a rating cannot be loaded or no longer exists, which stays as it is today.
-- A customer clearing a stored comment: an empty comment on a change keeps the stored one ([AC#30]), and an erasure request removes the whole rating ([U06]).
+- A customer clearing a stored comment: an empty comment, or one of spaces only, on a change keeps the stored one ([AC#30], [U02] [AC04]), and an erasure request removes the whole rating ([U06]).
+- A limit on a comment's length: a comment longer than the ratings store holds is not saved, and the form shows the text of [U01] [AC12] or [U02] [AC17].
 - Any change to orders, checkout, payment or order cancellation, including matching a typed e-mail to an order's e-mail regardless of letter case ([VD#5]).
 - Any clean-up of existing ratings: every rating the store held was removed before go-live ([CD#19], [CD#20]).
 - Emptying the stored ratings in each environment when the release is deployed, which is an operator step of the release rather than storefront behaviour (`ard.md`, Edge cases & risks).
 - Synthetic monitoring that buys a book and then rates it ([CD#11]).
 - Any change to the store's test-traffic generator ([CD#16]).
+- Logging a refusal as unavailable, or the orders failure behind it: only a buyers-only refusal's reason is logged ([U01] [AC15]).
 - Response-time or load targets for the book page, the catalogue list, or a give or change: none is set in this release, and the costs are recorded in `ard.md`, Edge cases & risks.
-
-### Open questions
-
-- [ ] Re-review finding (MINOR, cardinality): what is the longest comment a rating may carry? No limit is stated, so a comment longer than the ratings store holds would fail on every retry with the "try again" text of [U01] [AC12]. Either set a limit that the rating form and the update form enforce and the ratings service refuses beyond as invalid with a named reason, or state it out of scope.
 
 ## User stories
 
@@ -176,9 +174,9 @@ The rating form shall offer exactly five star choices, the whole numbers 1, 2, 3
 - *Steps:* 1. Open the rating form. 2. Try to choose or enter 0, 6, -1 and 3.5 as the star value.
 - *Expected result:* The rating form offers no way to choose any value other than 1, 2, 3, 4 or 5.
 
-#### [AC06]: The rating form needs a star choice
+#### [AC06]: The rating form needs an e-mail, an ISBN and a star choice
 
-While no star choice is chosen, the rating form shall keep Submit from sending the rating.
+While the e-mail field or the ISBN field is empty, or no star choice is chosen, the rating form shall keep Submit from sending the rating.
 
 ##### Test cases
 
@@ -191,6 +189,11 @@ While no star choice is chosen, the rating form shall keep Submit from sending t
 - *Preconditions:* `reader4@example.com` holds a qualifying order for ISBN `9780000000017`; no rating exists for that e-mail and ISBN.
 - *Steps:* 1. Open the rating form. 2. Enter `reader4@example.com` and `9780000000017`, and choose no stars. 3. Select Submit.
 - *Expected result:* The rating form sends nothing, and the ratings service stores no rating for `reader4@example.com` and `9780000000017`.
+
+**[TC03]: With the e-mail or the ISBN empty, nothing is sent — Negative / boundary:**
+- *Preconditions:* `reader4@example.com` holds a qualifying order for ISBN `9780000000017`; no rating exists for that e-mail and ISBN.
+- *Steps:* 1. Open the rating form. 2. Leave the e-mail empty, enter `9780000000017`, choose 4 stars and select Submit. 3. Enter `reader4@example.com`, clear the ISBN and select Submit.
+- *Expected result:* The rating form sends nothing either time, and the ratings service stores no rating for `reader4@example.com` and `9780000000017`.
 
 #### [AC07]: Stars outside the scale are refused for every caller
 
@@ -260,10 +263,6 @@ When the ratings service refuses a give from the rating form as invalid ([AD#4])
 - *Steps:* 1. Open the rating form. 2. Enter `reader@example.com` and `978000000001`, and choose 4 stars. 3. Select Submit.
 - *Expected result:* The rating form displays "ISBN must be a 13-digits value" and not "Only customers who have bought this book can rate it."
 
-##### Open questions
-
-- [ ] Re-review finding (MAJOR): what does the rating form show when the e-mail or the ISBN is left empty? [AC08] names no reason for a missing e-mail or a missing ISBN, so the text [AC09] displays for them is undefined. Either name both reasons in [AC08], or keep Submit from sending while either field is empty, as [AC06] does for the stars.
-
 #### [AC10]: A give is refused while orders cannot answer
 
 If orders does not answer the purchase check for an otherwise valid give within a bounded time, cannot be reached, or answers with an error other than not-found ([AD#2]), then the ratings service shall refuse the give as unavailable, storing no rating.
@@ -294,10 +293,6 @@ If orders does not answer the purchase check for an otherwise valid give within 
 - *Preconditions:* `reader6@example.com` holds a qualifying order for ISBN `9780000000017`; no rating exists for that e-mail and ISBN; the orders service is unreachable.
 - *Steps:* 1. Send a give for `reader6@example.com`, `9780000000017` and 4 stars. 2. Make the orders service reachable again. 3. Send the same give again.
 - *Expected result:* The ratings service refuses the first give as unavailable and stores one rating, with 4 stars, from the second.
-
-##### Open questions
-
-- [ ] Re-review finding (MINOR, observability): should the ratings service write each refusal as unavailable to its own log, naming the orders failure behind it (a timeout, a connection failure or the status orders answered), as [AC15] logs a buyers-only refusal's reason? This puts [AC10] and [U02] [AC12] in doubt; the alternative is to state it out of scope.
 
 #### [AC11]: The rating form says the purchase check is unavailable
 
@@ -420,7 +415,7 @@ When an otherwise valid change ([AC09], [AC10]) to a rating reaches the ratings 
 - *Steps:* 1. Send a change of that rating to 3 stars to the ratings write interface, with no storefront involved.
 - *Expected result:* The ratings service holds one rating for `direct@example.com` and `9780000000024`, with 3 stars.
 
-**[TC03]: Repeating an identical change leaves one unchanged rating — Negative / boundary:**
+**[TC03]: Repeating an identical change leaves one rating with the same stars — Negative / boundary:**
 - *Preconditions:* `reader@example.com` holds a qualifying order for ISBN `9780000000017` and a 4-star rating of it.
 - *Steps:* 1. Send a change of that rating to 4 stars. 2. Send the same change again.
 - *Expected result:* The ratings service holds one rating for `reader@example.com` and `9780000000017`, with 4 stars.
@@ -474,7 +469,7 @@ If two gives for one e-mail and ISBN, the pair compared ignoring letter case, re
 
 #### [AC04]: An empty comment on a change keeps the stored comment
 
-When a change with an empty or absent comment is saved, the ratings service shall keep the rating's stored comment.
+When a change with an empty or absent comment, or one of spaces only, is saved, the ratings service shall keep the rating's stored comment.
 
 ##### Test cases
 
@@ -493,13 +488,14 @@ When a change with an empty or absent comment is saved, the ratings service shal
 - *Steps:* 1. Open the rating form. 2. Enter `reader@example.com` and `9780000000017`, choose 4 stars and leave the comment field empty. 3. Select Submit.
 - *Expected result:* The rating's stored comment is still "Great plot".
 
-##### Open questions
-
-- [ ] Re-review finding (MINOR): does a comment of spaces only count as empty on a change, keeping the stored comment under [AC04], or as a comment that replaces it under [AC05]? Read as a comment, it lets a customer clear a stored comment, which Scope rules out.
+**[TC04]: A comment of spaces only keeps the comment — Negative / boundary:**
+- *Preconditions:* `direct@example.com` holds a qualifying order for ISBN `9780000000024` and a 5-star rating of it with the comment "Slow start".
+- *Steps:* 1. Send a change of that rating to 3 stars with a comment of three spaces to the ratings write interface.
+- *Expected result:* The rating has 3 stars, and its stored comment is still "Slow start".
 
 #### [AC05]: A comment on a change replaces the stored comment
 
-When a change carrying a comment is saved, the ratings service shall replace the rating's stored comment with that comment.
+When a change carrying a comment that holds at least one character other than a space is saved, the ratings service shall replace the rating's stored comment with that comment.
 
 ##### Test cases
 
@@ -520,7 +516,7 @@ When a change carrying a comment is saved, the ratings service shall replace the
 
 #### [AC06]: A change updates Updated At and keeps Created At
 
-When a change is saved, the ratings service shall set the rating's Updated At to the time of the change, leaving its Created At as the time the rating was first given.
+When a change is saved, an identical repeat included, the ratings service shall set the rating's Updated At to the time of the change, leaving its Created At as the time the rating was first given.
 
 ##### Test cases
 
@@ -539,9 +535,10 @@ When a change is saved, the ratings service shall set the rating's Updated At to
 - *Steps:* 1. At a later time T2, give a new rating for `reader@example.com` and `9780000000017` from the rating form. 2. Open the rating details screen for that rating.
 - *Expected result:* The rating's Created At is T1 and its Updated At is T2.
 
-##### Open questions
-
-- [ ] Re-review finding (MINOR): does an identical repeated change move the rating's Updated At under [AC06]? [AD#4] says an identical repeat leaves the same values, and [AC01] [TC03] is titled as leaving the rating unchanged.
+**[TC04]: An identical repeated change moves Updated At — State / lifecycle:**
+- *Preconditions:* `reader@example.com` holds a qualifying order for ISBN `9780000000017` and a 4-star rating of it with the comment "Great plot", first given at time T1 and last changed at time T2.
+- *Steps:* 1. At a later time T3, send a change of that rating to 4 stars with the comment "Great plot" to the ratings write interface. 2. Open the rating details screen for that rating.
+- *Expected result:* The rating still has 4 stars, its Created At is T1 and its Updated At is T3.
 
 #### [AC07]: A change without a qualifying order is refused
 

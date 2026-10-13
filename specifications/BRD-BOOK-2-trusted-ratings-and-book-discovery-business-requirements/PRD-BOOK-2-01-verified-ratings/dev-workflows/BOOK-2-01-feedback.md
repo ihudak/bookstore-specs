@@ -1156,3 +1156,79 @@ impact: friction
 It printed `0` for every profile file, although each file holds the line. `grep` read the literal as a regular expression. `grep -cF` printed `1` for each file, so the check looked like a false failure.
 
 **Suggested improvement:** In `risk-planner`'s Acceptance checks guidance, require `grep -F` for any literal text, especially text carrying `$`, `{`, `(` or `.`. Alternatively, require each acceptance command to be dry-run against the current tree before the plan is returned. The planner already did that for its spec-ID check.
+
+## 2026-10-13 — /conformance — missing-capability
+
+```yaml
+id: BOOK-2-01-conformance-shared-cause-grouping
+date: 2026-10-13
+command: /conformance
+plugin_version: 4.24.3
+origin: auto
+author: ihudak@gmail.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** One root cause, `Rating.applyChange` clearing a stored comment on a blank change, became six discrepancies. The same rule is restated in six places:
+
+- [U02]/[AC05];
+- [U02]/[AC03], through "every rule of a change";
+- two `epic.md` acceptance bullets;
+- an `epic.md` Contract line;
+- the ARD's [AD#4] Rule.
+
+The person answered six near-identical walk questions, and six near-identical `fix-code` follow-ups were written for one one-line fix. Phases 3 and 4 have no step that groups confirmed discrepancies sharing a cause.
+
+**Suggested improvement:** At the end of Phase 3, cluster confirmed discrepancies that cite the same evidence `file:line`. In Phase 4, ask once per cluster and list every restating requirement with its document and key. The person can still split the cluster. Keep one record entry per requirement, so the `[DD#n]` mapping stays intact. Queue one `fix-code` follow-up per cluster that cites every requirement. Add an optional `shared-cause:` field to `conformance-format.md` §3 for the entries that point to the primary one.
+
+## 2026-10-13 — /conformance — other
+
+```yaml
+id: BOOK-2-01-conformance-walk-batching-ambiguous
+date: 2026-10-13
+command: /conformance
+plugin_version: 4.24.3
+origin: auto
+author: ihudak@gmail.com
+category: other
+impact: friction
+```
+
+**Friction:** Phase 4 says "put one `AskUserQuestion` to the person per item", and it also says to "ask for the rationale … after each decision". The run batched six items into two calls (4 + 2), one question each, and collected rationale as optional notes on the choice. The text does not say whether one call may hold several items' questions. Asking strictly one call per item, plus a rationale prompt after each, takes twelve round trips for six items.
+
+**Suggested improvement:** Make Phase 4's rule explicit in `conformance.md`. For example: "one question per item; up to four items' questions may share one `AskUserQuestion` call; the rationale may be given as a note on the choice, recorded `—` where none is given."
+
+## 2026-10-13 — /conformance — manual-workaround
+
+```yaml
+id: BOOK-2-01-conformance-tracer-requirements-file
+date: 2026-10-13
+command: /conformance
+plugin_version: 4.24.3
+origin: auto
+author: ihudak@gmail.com
+category: manual-workaround
+impact: friction
+```
+
+**Friction:** The tracer handoff (`references/handoff/conformance-tracer.md`) expects every requirement inline as `{key, id, document, text}`. This run had 77 requirements, so the orchestrator scripted an extract into a JSON file in the scratchpad and handed the tracer that path instead. Phase 2 says only "the requirements routed to it", so each large run has to improvise this.
+
+**Suggested improvement:** Add an optional `requirements_path` input to the tracer handoff, and state in Phase 2 when to use it: above a size threshold, for example 30 requirements, write the routed list to a file and pass the path.
+
+## 2026-10-13 — /conformance — other
+
+```yaml
+id: BOOK-2-01-conformance-handoff-reference-length
+date: 2026-10-13
+command: /conformance
+plugin_version: 4.24.3
+origin: auto
+author: ihudak@gmail.com
+category: other
+impact: friction
+```
+
+**Friction:** Phase 6 loads all of `phase-handoff` (about 500 lines) to run `handoff-to-main` §2. The user rejected the Read of §2 before the handoff ran, and the handoff then followed the pattern of this session's earlier handoff (specs PR #29) rather than the reference text, which risks drifting from §2.
+
+**Suggested improvement:** Make `phase-handoff handoff-to-main` load only §2 and the §4.1 outcome line, or move `handoff-to-main` into its own short reference, so Phase 6 reads a small, targeted section.

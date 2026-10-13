@@ -1,3 +1,9 @@
 # Follow-ups — BOOK-2-01-01
 
 - [ ] Amend design.md's rollback step so a ratings rollback cannot expose comments stored since the deploy — roll back to the previous image plus @JsonIgnore on getComment(), or null those comments first — code review MAJOR; the fix is a runbook change outside the ratings code
+- [ ] Run `/dev-workflows:implement BOOK-2-01-01` from repository `bookstore`: [U02]/[AC03] a repeat give is applied as a change under every rule of a change — a blank comment on a repeat give clears the stored comment instead of keeping it (`Rating.applyChange`)
+- [ ] Run `/dev-workflows:implement BOOK-2-01-01` from repository `bookstore`: [U02]/[AC05] an empty, absent or all-space comment on a change keeps the stored comment — it clears it to null (`Rating.applyChange` via `commentOrNull`)
+- [ ] Run `/dev-workflows:implement BOOK-2-01-01` from repository `bookstore`: epic.md acceptance criterion "a give for a pair that already holds a rating is applied as a change under every rule of a change" — a blank comment on that give clears the stored comment (`Rating.applyChange`)
+- [ ] Run `/dev-workflows:implement BOOK-2-01-01` from repository `bookstore`: epic.md acceptance criterion "a saved change with an empty, absent or all-space comment keeps the stored comment" — it clears it to null (`Rating.applyChange`)
+- [ ] Run `/dev-workflows:implement BOOK-2-01-01` from repository `bookstore`: epic.md Contract "Produces: [AD#4]" — the write API's "comment kept when empty" clause: a blank comment on a change clears the stored comment (`Rating.applyChange`)
+- [ ] Run `/dev-workflows:implement BOOK-2-01-01` from repository `bookstore`: [AD#4] Rule "on a change … an absent or empty comment keeps the stored comment" — a blank comment on a change, through `PUT` or a give applied as one, clears the stored comment (`Rating.applyChange`)

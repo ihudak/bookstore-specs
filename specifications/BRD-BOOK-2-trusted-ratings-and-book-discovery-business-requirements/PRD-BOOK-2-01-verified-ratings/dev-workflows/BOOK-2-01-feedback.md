@@ -493,6 +493,119 @@ impact: polish
 
 **Suggested improvement:** In the "A recorded verdict names the version it was taken against" rule, or in `/create-ard` Phase 6's `body_facts`, require the PR body and the final report to list, by `[AD#N]` and contract row, every decision or interface whose Rule changed after the last verdict, separately from editorial edits. Alternatively, offer to record such a change as an `## Open questions` entry when the cap is already spent.
 
+## 2026-10-12 — /prd-proposal — manual-workaround
+
+```yaml
+id: BOOK-2-01-prd-proposal-profile-not-committed
+date: 2026-10-12
+command: /prd-proposal
+plugin_version: 3.32.1
+origin: auto
+author: ihudak@gmail.com
+category: manual-workaround
+impact: friction
+```
+
+**Friction:** Phase 2 writes `$SPECS_PATH/.dev-workflows/proposal-profile.yml` and calls it "a committed `proposal-profile.yml`". Every later proposal and `/brd-proposal` read it back. But Phase 10's `deliverable_paths` lists only `proposal.md`, `proposal-brief.md` and the archived revisions, and `workflows-core:specs-repo-git` §2.1's bounded session paths do not cover `.dev-workflows/` either. A profile grilled into existence would therefore stay uncommitted. The run added it to `deliverable_paths` by hand.
+
+**Suggested improvement:**
+- In `/prd-proposal` Phase 10, and in `/brd-proposal`'s handoff, add `.dev-workflows/proposal-profile.yml` to `deliverable_paths` whenever Phase 2 grilled, corrected or re-grilled the profile.
+- Alternatively, name it as a single-file path in `specs-repo-git` §2.1's bounded set.
+
+## 2026-10-12 — /prd-proposal — missing-reference-doc
+
+```yaml
+id: BOOK-2-01-prd-proposal-free-text-field-via-picker
+date: 2026-10-12
+command: /prd-proposal
+plugin_version: 3.32.1
+origin: auto
+author: ihudak@gmail.com
+category: missing-reference-doc
+impact: friction
+```
+
+**Friction:** The Phase 2 profile grill asked for the vendor name through `AskUserQuestion`. The options ("Name the vendor", then "I'll type it") carry no text, so two rounds came back with no name, and the name only arrived as a plain chat reply. The same thing happened at the `Provide manual fix notes (you'll be prompted)` escalation: the option returned no notes, and a third round was needed.
+
+**Suggested improvement:**
+- Add a rule to `workflows-core:grilling-technique`, or to `escalation-rules` §0, for free-text-only answers (a name, a note): ask them as a plain chat question, never behind a picker whose options carry no text.
+- Have `/prd-proposal` Phase 2 use it for `vendor.name`, `vendor.footer_note`, `client.name` and `productivity.basis`.
+
+## 2026-10-12 — /prd-proposal — missing-reference-doc
+
+```yaml
+id: BOOK-2-01-prd-proposal-band-rendering-precision
+date: 2026-10-12
+command: /prd-proposal
+plugin_version: 3.32.1
+origin: auto
+author: ihudak@gmail.com
+category: missing-reference-doc
+impact: friction
+```
+
+**Friction:** `proposal-format.md` §6 gives a one-percentage-point tolerance and says "Whole-hour rounding moves a band by up to a point". That is false for small packages. On a 38 h Medium package, the low end of 30.4 rounds to 30, which is −21.05 %, so a default band fails the tolerance by rounding alone. The format never says what precision Low and High are rendered to, so the run picked one decimal place itself.
+
+**Suggested improvement:**
+- State the rendering precision of the Low and High columns in §6, for example one decimal place.
+- Replace "up to a point" with the actual bound, about 0.5 h ÷ the expected hours.
+- Optionally, let `proposal-record.py` re-derive each band from the rendered figures, so a rounding breach fails at write time.
+
+## 2026-10-12 — /prd-proposal — missing-capability
+
+```yaml
+id: BOOK-2-01-prd-proposal-attribution-unchecked-before-review
+date: 2026-10-12
+command: /prd-proposal
+plugin_version: 3.32.1
+origin: auto
+author: ihudak@gmail.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** The first draft's [ED#9] said Quillmark had decided something that was the delivery team's own [VD#6]. The first `proposal-reviewer` pass missed it, and the re-review raised it as a check-1 BLOCKER. With the cap spent, the run escalated, and the final text went out under manual fix notes that no review saw. Who decided a record is mechanical to check: each `[VD#n]` is the delivery team's and each `[CD#n]` is the customer's, but no step checks the prose against it.
+
+**Suggested improvement:**
+- Add a step to `/prd-proposal` Phase 7, and to the Phase 9 pre-lint, that checks every sentence attributing a decision to the customer cites a `[CD#n]`, and every `[VD#n]` is attributed to the vendor.
+- After manual fix notes on an unresolved BLOCK, re-run that check and the band arithmetic over the touched text before the handoff.
+
+## 2026-10-12 — /prd-proposal — missing-capability
+
+```yaml
+id: BOOK-2-01-prd-proposal-source3-conflict-not-surfaced
+date: 2026-10-12
+command: /prd-proposal
+plugin_version: 3.32.1
+origin: auto
+author: ihudak@gmail.com
+category: missing-capability
+impact: polish
+```
+
+**Friction:** The Phase 4 defect sweep put [SR#6] (a deleted order erases the purchase record) to the operator for confirmation with no context. The operator confirmed it, which would have priced an orders change as mandatory, non-declinable scope. That contradicts [VD#5] ("Leave orders unchanged"), the PRD's out-of-scope list and the ARD's landing order. The run needed an extra question to surface the conflict, and the operator then reversed the confirmation.
+
+**Suggested improvement:** In Phase 4 step 3, before asking about a candidate from source 2 or 3, check the repair it implies against the PRD's out-of-scope list and the register's decided `[VD#n]`/`[CD#n]` records. Quote any conflict in the confirmation question itself.
+
+## 2026-10-12 — /prd-proposal — missing-capability
+
+```yaml
+id: BOOK-2-01-prd-proposal-success-metrics-untraced
+date: 2026-10-12
+command: /prd-proposal
+plugin_version: 3.32.1
+origin: auto
+author: ihudak@gmail.com
+category: missing-capability
+impact: polish
+```
+
+**Friction:** The proposal's traceability covered [SM#1] and [SM#2] but not [SM#3] (buyer participation, given or changed per month) or [SMC#1] (refusals counted). Measuring either may need delivery work. The repair of [CG#10] keeps the creation time on a change, so the ratings table holds no change timestamp to count from. Nothing in the format or the reviewer asks whether every success measure traces to a package or an exclusion. The re-reviewer raised it only as an out-of-scope note.
+
+**Suggested improvement:**
+- Add to `proposal-format.md` §4 section 21 that every live `[SM#n]`/`[SMC#n]` traces to a `[WP#n]` or to section 20.
+- Give `agents/proposal-reviewer.md` check 10, or a new check, the matching test.
+
 ## 2026-10-13 — /specify — missing-capability
 
 ```yaml

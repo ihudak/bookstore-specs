@@ -1,0 +1,16 @@
+vendor:
+  name: "USoft"
+  footer_note: "This estimate is indicative, valid for 30 days, and states human delivery hours only; commercial terms are agreed separately."
+client:
+  name: "Quillmark"
+engagement_model: time-and-material
+roles:
+  - { id: tl, title: "Tech Lead / Architect", part_time: true }
+  - { id: be, title: "Backend Engineer",      count: 1 }
+  - { id: fe, title: "Frontend Engineer",     count: 1 }
+  - { id: qa, title: "QA Engineer",           part_time: true }
+productivity:
+  hours_per_developer_day: 6
+  basis: "engineers working with AI coding assistants"
+calendar:
+  hours_per_week: 30

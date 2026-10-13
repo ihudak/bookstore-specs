@@ -1061,3 +1061,98 @@ impact: friction
 `design-format.md` section 11 asks for a rollback threshold against a baseline. It says nothing about who else feeds a compared signal, or about the window in which old and new clients coexist.
 
 **Suggested improvement:** Add one line to section 11 of `~/.claude/plugins/cache/shipwright/dev-workflows/4.24.3/references/design-format.md`, under Post-release checks and Rollback signal. The line should say that every ratio or share names the callers feeding its numerator and its denominator, and states the window in which old and new clients run side by side, which the check is read after.
+
+## 2026-10-13 — /implement — missing-capability
+
+```yaml
+id: BOOK-2-01-implement-parallel-test-writers
+date: 2026-10-13
+command: /implement
+plugin_version: 4.24.3
+origin: auto
+author: ihudak@gmail.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** The ratings Epic's specification had 134 test cases, 124 of them at HTTP level. That is more than one `test-writer` dispatch can write well.
+
+Phase 3B step 4a, and Phase 3.5 step 1, define exactly one `test-writer` dispatch and say nothing about splitting the work. So the orchestrator improvised:
+
+1. It split the plan's single `RatingControllerIT` into three story-scoped classes.
+2. It wrote the shared test support itself: an abstract base class, an in-memory port, a stepped clock and a test configuration.
+3. It dispatched five `test-writer`s in parallel, each owning disjoint files and test-case IDs.
+
+The split worked, but no rule backs it. Another run might send two writers to one file, or skip the shared base.
+
+**Suggested improvement:** Add a large-test-set rule to `implement.md` Phase 3B step 4a and Phase 3.5 step 1.
+
+- **When it applies:** the in-scope test-case count passes a threshold, or the plan names several test classes.
+- **What the orchestrator does:** it writes the shared test support first. It then dispatches N `test-writer`s in parallel, each owning a disjoint set of files and test-case IDs, and never two on one file. It merges their reports and runs one verify.
+- **Also:** the approved plan's class list may be split by story, and the report says so.
+
+## 2026-10-13 — /implement — other
+
+```yaml
+id: BOOK-2-01-implement-deferral-forced-open-note
+date: 2026-10-13
+command: /implement
+plugin_version: 4.24.3
+origin: auto
+author: ihudak@gmail.com
+category: other
+impact: friction
+```
+
+**Friction:** At clarification the user asked for [U02] [AC05] to be left unimplemented, as a demo gap for `/conformance` and `/document`. The approved plan recorded it as an ARD deviation flagged to the architect.
+
+Phase 3B step 7.5 still had to write it onto `specification.md` as an open `- [ ]` note. Its rule covers every unresolved `missing`, and nothing exempts a deliberate deferral. That raised the specification's Open questions from 0 to 1, for a gap that had been decided rather than left open.
+
+**Suggested improvement:** In `implement.md` Phase 3B step 7.5, carve out a deferral the user decided in this run. A plan's Out of scope line or an ARD deviation record should be enough to record it.
+
+Either write nothing to the specification, or write a closed, "deferred by decision" note that does not count toward Open questions. Phase 4.5 then hands off only real open questions.
+
+## 2026-10-13 — /implement — missing-capability
+
+```yaml
+id: BOOK-2-01-implement-specs-doc-finding-unrouted
+date: 2026-10-13
+command: /implement
+plugin_version: 4.24.3
+origin: auto
+author: ihudak@gmail.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** The Opus `code-review` raised a MAJOR whose fix lies in the specs repository's `design.md`. The design's rollback runbook would expose comments if the ratings service were rolled back to its previous image.
+
+The finding is in no code repository at all. Phase 3B step 7 routes only two kinds of finding:
+
+- "another code repository's findings";
+- step 7.5's spec/design conformance gaps, for a requirement that is `missing` or `contradicts`.
+
+So no rule said what to do with it. The orchestrator carried it to the report, to the pull request's Merge danger and to a Phase 6 follow-up by judgement.
+
+**Suggested improvement:** Add a route to `implement.md` Phase 3B step 7 for a survivor whose fix lies in a specs-repository document, such as a design runbook, ARD or specification, and that is not a conformance gap. Hand it to no fixer. Name it in the report and in `body_facts`, and emit it in Phase 6 as a follow-up with the edit it needs.
+
+## 2026-10-13 — /implement — other
+
+```yaml
+id: BOOK-2-01-implement-acceptance-grep-regex
+date: 2026-10-13
+command: /implement
+plugin_version: 4.24.3
+origin: auto
+author: ihudak@gmail.com
+category: other
+impact: friction
+```
+
+**Friction:** One of `risk-planner`'s acceptance checks was:
+
+`grep -c 'http.service.orders=http://${DT_ORDERS_SERVER:localhost:8085}/api/v1/orders' …`
+
+It printed `0` for every profile file, although each file holds the line. `grep` read the literal as a regular expression. `grep -cF` printed `1` for each file, so the check looked like a false failure.
+
+**Suggested improvement:** In `risk-planner`'s Acceptance checks guidance, require `grep -F` for any literal text, especially text carrying `$`, `{`, `(` or `.`. Alternatively, require each acceptance command to be dry-run against the current tree before the plan is returned. The planner already did that for its spec-ID check.

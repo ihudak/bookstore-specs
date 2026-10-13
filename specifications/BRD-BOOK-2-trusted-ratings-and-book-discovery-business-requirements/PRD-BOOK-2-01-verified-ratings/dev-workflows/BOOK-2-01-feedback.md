@@ -1283,3 +1283,24 @@ impact: friction
 **Friction:** BOOK-2-01-02's design gave `StarChoiceComponent`'s template verbatim. Implemented as written, it rendered cramped, with a heading-size legend, on the app's Bootstrap 5.3. Only the Opus review caught it (MINOR), after which the user had to decide on a departure from the design's markup.
 
 **Suggested improvement:** In Phase 3A/3B, check markup a design gives verbatim against the target's CSS framework before writing it. Where they conflict, record the departure as a Phase 5 assumption at implementation time, or raise it as a decision then, rather than leaving it to the review.
+
+## 2026-10-13 — /implement — missing-capability
+
+```yaml
+id: BOOK-2-01-implement-post-review-design-departures-unrecorded
+date: 2026-10-13
+command: /implement
+plugin_version: 1.39.2
+origin: prompt
+author: ihudak@gmail.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** `/implement BOOK-2-01-02` applied two post-review fixes at the user's choice. They departed from `design.md`'s literal text: the `StarChoiceComponent` template gained Bootstrap `form-check-inline` wrappers and a body-size legend, and `loadRating` accepted only `/^\d+$/` where the design said "`n = Number(id)` is an integer". The run recorded the departures only in the code PR and `resume.md`, and wrote nothing into the specs. Phase 3B step 7.5 escalates only the review's `missing`/`contradicts` findings, as `- [ ]` notes. No step covers a departure introduced after the review, so the merged design and the code disagreed, and a later `/conformance` would have flagged both.
+
+**Suggested improvement:** Whenever an edit made after the review (a settle prompt, a user-chosen fix of a MINOR/NIT, a Phase 3.5 fix) changes behaviour or markup that `design.md` or `specification.md` states literally, have `/implement` amend that document and hand it off through Phase 4.5's `handoff-to-main` (`design` prefix), or at least write a step 7.5-style note. The specs must not be left contradicting the shipped code.
+
+**User prompt:** nothing in the SPECS?
+
+**Resolution:** Amended `design.md` to version 2: the star-choice template's Bootstrap wrappers and legend class, and `loadRating`'s `/^\d+$/` route-id rule in Interfaces and in the Error-handling row, with an `Amended` header line. Committed it on `design/BOOK-2-01-02-storefront-ratings` and opened specs PR #31 to main.

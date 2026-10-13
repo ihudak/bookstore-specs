@@ -937,3 +937,54 @@ impact: polish
 - `check` (ids, categories, open-question count, and a list of criteria sharing a trigger as overlap candidates).
 
 Have `/specify` call `check` at Phase 5.5, after the fix cycle and before the handoff.
+
+## 2026-10-13 — /design — missing-capability
+
+```yaml
+id: BOOK-2-01-design-framework-defaults-unprompted
+date: 2026-10-13
+command: /design
+plugin_version: 4.24.3
+origin: auto
+author: ihudak@gmail.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** On a Spring Boot service, the design rested on "the purchase check runs before any transaction, so a slow orders never holds a database connection" and on a re-read by id seeing an operator's concurrent removal. Neither held under Spring Boot's default `spring.jpa.open-in-view=true`, which binds one persistence context and its connection to the whole request. The code-scanner brief, the 13-question grill and Phase 5.5 pre-lint all passed it; only the Opus `design-reviewer` caught it, as a MAJOR, costing a fix cycle. Nothing in `/design` asks which framework auto-configuration defaults the decisions depend on.
+
+**Suggested improvement:** In `/design` Phase 4 (the `code-scanner` brief) and Phase 5 (the grill's engineering-altitude gap scan), add a framework-defaults prompt: where the stack has auto-configuration, list the defaults that bear on the decisions at hand — for Spring/JPA: open-in-view, error attributes and `/error` rendering (`server.error.include-message`), transaction boundaries around remote calls, lazy loading — each marked kept or overridden with where it is set.
+
+## 2026-10-13 — /design — missing-capability
+
+```yaml
+id: BOOK-2-01-design-runtime-claims-unverified
+date: 2026-10-13
+command: /design
+plugin_version: 4.24.3
+origin: auto
+author: ihudak@gmail.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** Several design decisions rested on framework runtime behaviour the orchestrator reasoned about rather than checked — that `server.error.include-message=never` drops the `message` key, and that MockMvc tests would see Boot's `/error` bodies. The second was wrong (MockMvc never forwards `sendError` to `/error`); the re-review caught it as a MINOR, after the cap's one re-review was already being spent. No step distinguishes a cited or run fact from a reasoned one.
+
+**Suggested improvement:** In `/design` Phase 5, require a decision that rests on framework runtime behaviour to cite a source (documentation link or `file:line`) or a run, and otherwise tag it "reasoned, unverified"; carry the tag into `## Risks & mitigations` and into the `design-reviewer` brief so the review targets exactly those claims.
+
+## 2026-10-13 — /design — other
+
+```yaml
+id: BOOK-2-01-design-post-recommendation-edits-unreviewed
+date: 2026-10-13
+command: /design
+plugin_version: 4.24.3
+origin: auto
+author: ihudak@gmail.com
+category: other
+impact: polish
+```
+
+**Friction:** After a BLOCK and its fix cycle, the one re-review returned PASS WITH RECOMMENDATIONS; the user applied its 2 MINOR + 1 NIT findings, and they went to the pull request unreviewed. The run did state this in the PR body and session record (the escalation-rules version line), and escalation-rules deliberately refuses a further review cycle ("no fixed point").
+
+**Suggested improvement:** Consider a narrow, delta-only `design-reviewer` pass over just the post-review edits — scoped so it cannot reopen settled sections, and so outside the cap's no-fixed-point argument — or keep the cap and add the list of post-review edits as its own `## Unreviewed edits` heading in the PR body so a merger cannot miss it.

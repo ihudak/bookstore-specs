@@ -1,15 +1,11 @@
-# Resume — BOOK-2-01 / BOOK-2-01-02 (pe)
+# Resume — BOOK-2-01 / BOOK-2-01-01 (dev)
 
-- **Last completed:** /product-workflows:specify BOOK-2-01-02 — command complete (2026-10-13T13:44:26Z), handed off as specs PR #26 on `spec/BOOK-2-01-02-storefront-ratings`
-- **Artifact:** EPIC-BOOK-2-01-02-storefront-ratings/specification.md (specs PR #26, open)
-- **Next step:** merge specs PR #26, then /dev-workflows:design BOOK-2-01-02 (Dev). /dev-workflows:design BOOK-2-01-01 (Dev) can run now, since its specification (PR #25) is merged.
-- **Suggested session name:** BOOK-2-01-verified-ratings-pe
+- **Last completed:** /dev-workflows:design BOOK-2-01-01 — command complete (2026-10-13T15:05:08Z), handed off as specs PR #27 on `design/BOOK-2-01-01-ratings-service`
+- **Artifact:** EPIC-BOOK-2-01-01-ratings-service/design.md (+ amended specification.md; specs PR #27, open)
+- **Next step:** merge specs PR #27, then /dev-workflows:implement BOOK-2-01-01 (Dev). /dev-workflows:design BOOK-2-01-02 (Dev) can run now — its specification (PR #26) is merged.
+- **Suggested session name:** BOOK-2-01-verified-ratings-dev
 - **Carry-forward decisions:**
-  - The specification's current text is unreviewed. spec-reviewer's last verdict, PASS WITH RECOMMENDATIONS on the re-review, came before the ten edits that applied its findings. No finding is left open.
-  - For /dev-workflows:design BOOK-2-01-01: the storefront gives up on every ratings request after at most 10 seconds. The ratings service's own wait on orders should end well inside that, or its `503` reaches the form as the cannot-save text.
-  - The storefront consumes [AD#4]–[AD#7] as BOOK-2-01-01's specification answers them:
-    - a change carries the loaded rating's id, e-mail and ISBN;
-    - a give carries the e-mail and ISBN as typed;
-    - `summary` and `summaries` are read on every load;
-    - no `DELETE` is sent from any screen.
-  - Both specifications of the slice now exist. `/product-workflows:prd-proposal BOOK-2-01` can price the slice from the authored test cases, as optional and ungated.
+  - design-reviewer's last verdict, PASS WITH RECOMMENDATIONS on the re-review, came before three applied edits (`RatingErrorBodiesIT`, an ISBN accepted as a 13-digit JSON integer, the timeout test's isolation); the current text is unreviewed. No finding is left open.
+  - specification.md's 2 open questions were settled by hand on the PR branch (unreviewed): [ER2] accepted (only a JSON integer is a whole number of stars; [U01] [AC05] [TC05] and [U02] [AC09] [TC04] added); [ER1] rejected (every orders `404` is the not-a-customer answer, so the design's version probe is removed). The specification has 0 open questions.
+  - For /dev-workflows:design BOOK-2-01-02: only ratings' `400`/`403`/`503` write refusals (and a blank-`isbn` summary `400`) carry `message`; a `PUT` `404` carries Boot's default body with no `message` key. A write waits at most ~4 s on orders, inside the storefront's 10 s limit.
+  - Release: operators empty the `ratings` table and confirm `uk_ratings_email_isbn` (and `idx_ratings_isbn`) exist before the rules are relied on in an environment; ratings lands before web.

@@ -69,7 +69,7 @@
     },
     {
       "confidence": "high",
-      "confirmed": false,
+      "confirmed": true,
       "cwe": "CWE-79",
       "first_seen": {
         "base": "6942a2434ee05dd72c202744c760dc593a0e58c1",
@@ -87,6 +87,16 @@
           "reason": "returnUrl is only ever set by our own routerLinks; the gateway strips it from external requests",
           "role": "dev",
           "run": 2,
+          "status": "false-positive"
+        },
+        {
+          "at": "2026-10-16T23:01:11Z",
+          "by": "Ivan Gudak",
+          "evidence": "web/src/app/ratings/update-rating/update-rating.component.ts:70 — returnUrl is only ever set by our own routerLinks; the gateway strips it from external requests",
+          "links": {},
+          "reason": "returnUrl is only ever set by our own routerLinks; the gateway strips it from external requests",
+          "role": "sec",
+          "run": 4,
           "status": "false-positive"
         }
       ],
@@ -120,9 +130,9 @@
     }
   ],
   "format": 1,
-  "last_at": "2026-10-16T22:53:12Z",
+  "last_at": "2026-10-16T23:01:11Z",
   "next_id": 3,
-  "next_seq": 4,
+  "next_seq": 5,
   "renumbered": [],
   "repo": "bookstore",
   "scans": [

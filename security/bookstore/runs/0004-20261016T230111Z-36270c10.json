@@ -1,0 +1,29 @@
+{
+  "again": [],
+  "allocated": [],
+  "at": "2026-10-16T23:01:11Z",
+  "by": "Ivan Gudak",
+  "decisions": [
+    {
+      "confirmed": true,
+      "default": false,
+      "evidence": "web/src/app/ratings/update-rating/update-rating.component.ts:70 — returnUrl is only ever set by our own routerLinks; the gateway strips it from external requests",
+      "id": 2,
+      "links": {},
+      "origin": "85731200-96ab-407b-96f7-20110698a66a:v3:65fcfb6e055f29156ea60fdf3f38ff6c3824976bbcfe406baf522f840892c802",
+      "owner": null,
+      "reason": "returnUrl is only ever set by our own routerLinks; the gateway strips it from external requests",
+      "review_by": null,
+      "status": "false-positive"
+    }
+  ],
+  "format": 1,
+  "kind": "triage",
+  "matched": [],
+  "not_reported": [],
+  "renumbered": [],
+  "role": "sec",
+  "scan": null,
+  "seq": 4,
+  "unit": null
+}

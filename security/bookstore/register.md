@@ -18,9 +18,7 @@ None.
 
 ## Awaiting security review
 
-| ID | Status | CWE | Location | Decided by | Reason or evidence |
-|---|---|---|---|---|---|
-| [SEC#2] | false-positive | CWE-79 | `web/src/app/ratings/update-rating/update-rating.component.ts:71` | Ivan Gudak | web/src/app/ratings/update-rating/update-rating.component.ts:70 — returnUrl is only ever set by our own routerLinks; the gateway strips it from external requests |
+None.
 
 ## Risk register
 

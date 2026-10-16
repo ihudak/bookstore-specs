@@ -1376,3 +1376,20 @@ impact: polish
 **Friction:** On the Epic run of BOOK-2-01-02, the operator picked "Branch + commit + push + open PR to main" at Phase 6. `handoff-to-main` cut `conformance/BOOK-2-01-02-storefront-ratings` and committed the record, then the push was refused: "ERROR: Permission to <owner>/<repo>.git denied to <account>." The container's SSH identity could fetch and `ls-remote` the specs repo but not push to it, while `gh` was authenticated as the repo owner. The write-permission mismatch was only discovered after the commit was made, and the run could only report "Push failed — NOT handed off", leaving a local commit for the operator to push by hand.
 
 **Suggested improvement:** In `phase-handoff` §2.5/§4.1 (as used by `/dev-workflows:conformance` Phase 6), after a push refused for permissions, name the local branch and commit left behind and offer a consented next step: retry once credentials are fixed, or push through the credentials `gh` is authenticated with, if the operator approves. Optionally probe write access (for example `git push --dry-run`) before presenting the consent array, but only if this recurs, since a dry run can be slow or unsupported on some remotes.
+
+## 2026-10-16 — /scan — manual-workaround
+
+```yaml
+id: BOOK-2-01-scan-empty-result-flag-needs-journal-read
+date: 2026-10-16
+command: /scan
+plugin_version: 0.1.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: manual-workaround
+impact: polish
+```
+
+**Friction:** On the Dev change scan of BOOK-2-01-02, the Claude Security workflow returned 0 findings with `researchers_returned: 7` of 7. Its completion diagnostics still reported `agents_empty_result: 7` and said to read the journal before diagnosing. `/security-workflows:scan` Phase 3 says nothing about that flag, so the orchestrator read the workflow's `journal.jsonl` by hand to tell a clean scan from a failed one. All seven returns were well-formed `{"findings": []}`.
+
+**Suggested improvement:** In `/security-workflows:scan` Phase 3, between the skill's return and step 3's report-directory check, add a mechanical rule for a scan whose diagnostics flag empty agent results. If each flagged agent's journal return parses as JSON carrying a `findings` key (an empty list included), treat the flag as benign and say so in the report's `### Scope`. If any return is missing, unparseable or errored, treat the scan as failed (`SECURITY_NO_REPORT`). Better still, a small script could apply that check, so prose does not have to.

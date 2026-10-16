@@ -1,0 +1,31 @@
+{
+  "again": [],
+  "allocated": [],
+  "at": "2026-10-16T13:48:31Z",
+  "by": "Ivan Gudak",
+  "decisions": [],
+  "format": 1,
+  "kind": "scan",
+  "matched": [],
+  "not_reported": [],
+  "renumbered": [],
+  "role": "dev",
+  "scan": {
+    "base": "6942a2434ee05dd72c202744c760dc593a0e58c1",
+    "commit": "eb694d0b5ee7dce84c9f8826e18a989978a76b4d",
+    "complete": false,
+    "counted": false,
+    "covering": false,
+    "date": "2026-10-13T20:01:29+00:00",
+    "dirty": false,
+    "effort": "high",
+    "folder": "20261016T134747Z-eb694d0",
+    "id": "d5eb821d-f84f-418b-9cfc-867b0cf07c7c",
+    "id_version": null,
+    "mode": "changes",
+    "scope": [],
+    "verified": true
+  },
+  "seq": 1,
+  "unit": "BOOK-2-01-02"
+}

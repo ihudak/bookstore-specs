@@ -1444,3 +1444,105 @@ impact: polish
 **Friction:** Claude Security's patch verifier passed F1.patch on review alone (`untested: true`), because the scratch workspace had no `web/node_modules` and the Karma suite could not run. That caveat is in the patch's header and in `patches.jsonl`. The follow-up line `register.py commit` builds says only "starting from `…/patches/F1.patch`", so the `/dev-workflows:implement` run that reads the line back doesn't learn that the patch was never run against the project's tests.
 
 **Suggested improvement:** Have `register.py commit` read the copied `patches.jsonl` and, for a unit whose `untested` is true, append a fixed structured clause to the follow-up line, such as "(patch verified on review only; run the tests after applying it)". It must never build the clause from finding text. Alternatively, `/dev-workflows:implement` Phase 1 could read the patch header's coverage notice when it applies a patch named by a follow-up.
+
+## 2026-10-16 — /implement — other
+
+```yaml
+id: BOOK-2-01-implement-plan-test-runs-before-review
+date: 2026-10-16
+command: /implement
+plugin_version: 4.28.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: other
+impact: friction
+```
+
+**Friction:** On a SIGNIFICANT `task_shape: bug` run, `risk-planner` (following `bug-diagnosis.md`) wrote Steps 1–3 that run tests in place mid-implementation: confirm the repro is red on the switched tree, re-run it after applying the patch, and check the new regression test is red before the fix. `/implement`'s invariant forbids running tests on SIGNIFICANT work before the Opus review returns non-BLOCK. The orchestrator deferred those runs and showed red-capability after the review in scratch `git archive` exports. This tension recurs on every SIGNIFICANT bug run.
+
+**Suggested improvement:** Resolve it at the source. Either have `risk-planner` mark repro and red-capability runs on SIGNIFICANT bug plans as "post-review, or in a scratch export only", or have the `/implement` invariant explicitly allow test runs in a scratch export outside the working tree. That run touches neither the tree nor the index, so it doesn't defeat the gate's purpose. State the chosen rule in both the plan template and Phase 3B.
+
+## 2026-10-16 — /implement — missing-capability
+
+```yaml
+id: BOOK-2-01-implement-followup-patch-vs-unit-spec
+date: 2026-10-16
+command: /implement
+plugin_version: 4.28.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** A `/security-workflows:scan` follow-up named a patch, F1.patch, that only re-enabled Angular's `[innerHTML]` sanitizer. The Epic's own spec ([U05][AC04]) and ARD ([AD#7]) require the Ratings list to show no comment column at all, so applying the patch as the follow-up worded it would have left a spec violation and residual markup in place. Phase 1 caught the conflict only because the orchestrator happened to read the spec; nothing in Phase 1's *A task that names a patch* asks for the patch to be checked against the unit's spec and ARD.
+
+**Suggested improvement:** In `/implement` Phase 1, when a read-back task names a patch on a keyed run, check the patch's effect against the unit's in-scope `specification.md` / `design.md` / ARD before planning. Raise any conflict as a user decision: apply as-is, apply and extend, or replace. Alternatively, at the source, have `/security-workflows:scan` read the addressed unit's spec when it writes the follow-up and flag a patch that conflicts with it.
+
+## 2026-10-16 — /implement — model-routing
+
+```yaml
+id: BOOK-2-01-implement-keyed-floor-full-fanout
+date: 2026-10-16
+command: /implement
+plugin_version: 4.28.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: model-routing
+impact: polish
+```
+
+**Friction:** Phase 1.6 counts every keyed run's resolved folder as a specs-folder input, so `fan_out` is always true. That floors the run at SIGNIFICANT and forces the full Phase 1.7 fan-out — the folder read, `code-scanner`, a §8.5 round-2 scan for a `partial` theme, and `risk-planner` — even for a three-file subtractive security fix whose patch was already in hand.
+
+**Suggested improvement:** Decide and state whether a keyed follow-up run with a named patch and a narrow scope may take a reduced fan-out. For example, skip round 2 when the `partial` theme's gap is fully characterised by its own evidence. Otherwise, record in Phase 1.6 that the full fan-out is intentional for every keyed run, so it is not trimmed ad hoc.
+
+## 2026-10-16 — /implement — missing-capability
+
+```yaml
+id: BOOK-2-01-implement-code-scanner-no-ref-input
+date: 2026-10-16
+command: /implement
+plugin_version: 4.28.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** At Phase 1.7 the Epic's code lived only on its unit branch, and the working tree stood on the default branch, which lacked it. Pre-Phase 3's switch comes after the scan. `code-scanner` has no input for reading a ref that is not checked out, and `refresh` is pinned off, so the orchestrator told it in prose to use `git grep <ref>` / `git show <ref>:<path>`. `risk-planner` likewise had to be told to run its repro in a scratch `git archive` export.
+
+**Suggested improvement:** Add an optional `ref:` input to `code-scanner`, reusing `read-only-repos.md` §4's ref primitives. On a keyed run, have `/implement` Phase 1.7 pass the unit branch from `implementation.md`'s latest block for this repository wherever HEAD is not on it. Give `risk-planner`'s brief a matching scratch-export recipe for running a repro at that ref.
+
+## 2026-10-16 — /implement — wrong-output
+
+```yaml
+id: BOOK-2-01-implement-test-writer-negative-selector-unchecked
+date: 2026-10-16
+command: /implement
+plugin_version: 4.28.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: wrong-output
+impact: friction
+```
+
+**Friction:** At Phase 3B step 4a, `test-writer` wrote `expect(root().querySelector('b')).toBeNull()` into a rating-details spec. The test could never pass, because that component's template wraps every label in `<b>`. Tests cannot run before the Opus review, so the error surfaced only as a MAJOR review finding, and the run spent a `review-fixer` dispatch and a re-review on it.
+
+**Suggested improvement:** In `test-writer`'s instructions, require every negative DOM assertion (`toBeNull`, `not.toContain`, a zero count) to be checked against the template of the component under test, citing the line that shows the selector cannot match. Scope the assertion to what only the forbidden feature could produce.
+
+## 2026-10-16 — /implement — missing-reference-doc
+
+```yaml
+id: BOOK-2-01-implement-baseliner-gradle-up-to-date
+date: 2026-10-16
+command: /implement
+plugin_version: 4.28.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: missing-reference-doc
+impact: polish
+```
+
+**Friction:** In verify mode, `./gradlew test` reported every task up to date and executed nothing, so `test-baseliner` re-ran with `./gradlew cleanTest test`. Verify's command then differed from the one the capture recorded. Separately, Karma's progress reporter names no passing tests, so both reports carried a `CAVEAT:` that Karma regressions are visible only as new failing names or count changes.
+
+**Suggested improvement:** Document in `test-baseliner` that a Gradle suite is run with `cleanTest test`, or `--rerun-tasks` for `test`, in both capture and verify, so the two commands match and the capture is never a cached no-op. For Karma, note the option to add a per-test reporter through a command hint, so passing tests are named.

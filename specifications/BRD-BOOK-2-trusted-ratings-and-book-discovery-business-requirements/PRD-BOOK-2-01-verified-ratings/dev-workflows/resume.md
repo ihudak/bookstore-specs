@@ -1,10 +1,11 @@
 # Resume — BOOK-2-01 / BOOK-2-01-02 (dev)
 
-- **Last completed:** `/security-workflows:scan BOOK-2-01-02` (Epic, Dev) — command complete (2026-10-16T17:59:48Z).
-  - Change scan of `bookstore` `feat/BOOK-2-01-02-storefront-ratings` @ `d5dab21` (one local, unpushed commit past the recorded `eb694d0`) over `origin/master`, effort high: 2 MEDIUM CWE-79 findings, verified, 7 of 7 researchers returned.
-- **Artifact:** `EPIC-BOOK-2-01-02-storefront-ratings/_security.md` and `follow-ups.md`, plus `security/bookstore/` (run record `runs/0002-20261016T154148Z-1cf9ed04.json`, scan `scans/20261016T152258Z-d5dab21/` with `patches/F1.patch`).
-- **Next step:** `/dev-workflows:implement BOOK-2-01-02` from repository `bookstore` (Dev). It fixes [SEC#1] starting from `security/bookstore/scans/20261016T152258Z-d5dab21/patches/F1.patch`, then the pull request goes through review and merge. After that the Security Engineer runs `/security-workflows:scan /workspace/bookstore --verify-fixes`, and `/security-workflows:scan /workspace/bookstore --triage` for [SEC#2].
+- **Last completed:** `/dev-workflows:implement BOOK-2-01-02` — command complete (2026-10-16T21:16:00Z).
+  - Fixed [SEC#1] (CWE-79) in `bookstore` on `feat/BOOK-2-01-02-storefront-ratings`: F1.patch applied, then the Ratings list's Comment column, `commentHtml()` and the web `Rating.comment` field removed ([U05][AC04], [AD#7]). Commit `38d49a6`, on top of the local-only `d5dab21`. **Not pushed**, at the user's request.
+- **Artifact:** `EPIC-BOOK-2-01-02-storefront-ratings/implementation.md` (block for `38d49a6`, `pushed: false`).
+- **Next step:** Decide what to do with the local-only `d5dab21` before pushing: drop it, or push it deliberately for the e2e test. Then push to update PR #16, run `/dev-workflows:conformance BOOK-2-01-02` and `/security-workflows:scan BOOK-2-01-02` from `bookstore`, and once the PR merges, tick the [SEC#1] task in `EPIC-BOOK-2-01-02-storefront-ratings/follow-ups.md`. The Security Engineer then runs `/security-workflows:scan /workspace/bookstore --verify-fixes`, and `--triage` for [SEC#2].
+- **Suggested session name:** BOOK-2-01-verified-ratings-dev
 - **Carry-forward decisions:**
-  - [SEC#2] (the `returnUrl` redirect) is recorded as a false positive by the Dev, awaiting security review. The cited line `update-rating.component.ts:70` is the `if (returnUrl)` check, and no producer of `returnUrl` exists in `web/src`.
-  - F1.patch is verified on review only, because the Karma suite could not run in the patch workspace. Run `ng test` after applying it. The rating-list spec's Comment-column tests already fail at `d5dab21`.
-  - Landing order is unchanged: ratings before web in every environment.
+  - The user chose to remove the comment column, not just sanitize it, because F1.patch alone leaves [U05][AC04] violated.
+  - [SEC#2] (the `returnUrl` redirect) and the `document.cookie` console log in `rating.service.ts` were deliberately left untouched. Both are part of the e2e test, and SEC#2 causes the 11 failing `UpdateRatingComponent` Karma tests.
+  - Deferred review findings: a MINOR (the plan's acceptance counts drifted, so verify against 447 tests, `11 FAILED, 436 SUCCESS`) and a NIT (the shown-fields markup test is tagged `[U05][AC04][TC02]`).

@@ -120,9 +120,9 @@
     }
   ],
   "format": 1,
-  "last_at": "2026-10-16T15:41:48Z",
+  "last_at": "2026-10-16T22:53:12Z",
   "next_id": 3,
-  "next_seq": 3,
+  "next_seq": 4,
   "renumbered": [],
   "repo": "bookstore",
   "scans": [
@@ -158,6 +158,25 @@
       "mode": "changes",
       "scope": [],
       "seq": 2,
+      "verified": true
+    },
+    {
+      "base": "6942a2434ee05dd72c202744c760dc593a0e58c1",
+      "commit": "6942a2434ee05dd72c202744c760dc593a0e58c1",
+      "complete": false,
+      "counted": false,
+      "covering": true,
+      "date": "2026-10-13T18:25:43+00:00",
+      "dirty": false,
+      "effort": "medium",
+      "folder": "20261016T225000Z-6942a24",
+      "id": "79639d98-93bc-44f8-b367-2a4cddf71390",
+      "id_version": null,
+      "mode": "scan",
+      "scope": [
+        "web/src/app/ratings/rating-list/rating-list.component.ts"
+      ],
+      "seq": 3,
       "verified": true
     }
   ]

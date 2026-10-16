@@ -2,7 +2,7 @@
 
 # Security register — bookstore
 
-2 scans, the last at `d5dab2155552`. Findings: 0 open, 1 being fixed, 0 accepted risks, 1 false positives, 0 fixed.
+3 scans, the last at `6942a2434ee0`. Findings: 0 open, 1 being fixed, 0 accepted risks, 1 false positives, 0 fixed.
 
 This register records what scans found. It never says that nothing else is there.
 

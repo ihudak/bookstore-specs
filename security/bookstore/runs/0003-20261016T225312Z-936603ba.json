@@ -1,0 +1,33 @@
+{
+  "again": [],
+  "allocated": [],
+  "at": "2026-10-16T22:53:12Z",
+  "by": "Ivan Gudak",
+  "decisions": [],
+  "format": 1,
+  "kind": "verify",
+  "matched": [],
+  "not_reported": [],
+  "renumbered": [],
+  "role": "sec",
+  "scan": {
+    "base": "6942a2434ee05dd72c202744c760dc593a0e58c1",
+    "commit": "6942a2434ee05dd72c202744c760dc593a0e58c1",
+    "complete": false,
+    "counted": false,
+    "covering": true,
+    "date": "2026-10-13T18:25:43+00:00",
+    "dirty": false,
+    "effort": "medium",
+    "folder": "20261016T225000Z-6942a24",
+    "id": "79639d98-93bc-44f8-b367-2a4cddf71390",
+    "id_version": null,
+    "mode": "scan",
+    "scope": [
+      "web/src/app/ratings/rating-list/rating-list.component.ts"
+    ],
+    "verified": true
+  },
+  "seq": 3,
+  "unit": null
+}

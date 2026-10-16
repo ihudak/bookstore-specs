@@ -1,0 +1,101 @@
+{
+  "$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/errata01/os/schemas/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Claude Security Plugin for Claude Code",
+          "organization": "Anthropic",
+          "informationUri": "https://claude.com/product/claude-security",
+          "version": "0.12.0",
+          "rules": []
+        }
+      },
+      "automationDetails": {
+        "id": "claude-security-plugin/scan/web/src/app/ratings/rating-list/rating-list.component.ts/79639d98-93bc-44f8-b367-2a4cddf71390",
+        "guid": "79639d98-93bc-44f8-b367-2a4cddf71390"
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ],
+      "originalUriBaseIds": {
+        "%SRCROOT%": {
+          "description": {
+            "text": "The top level of the scanned repository, or the scanned directory when the scan did not run inside a git checkout."
+          }
+        }
+      },
+      "results": [],
+      "properties": {
+        "claudeSecurityPlugin": {
+          "generated_at": "2026-10-16T22:50:00+00:00",
+          "scan_id": "79639d98-93bc-44f8-b367-2a4cddf71390",
+          "mode": "scan",
+          "scan_prefix": "",
+          "scope": [
+            "web/src/app/ratings/rating-list/rating-list.component.ts"
+          ],
+          "revision": {
+            "versioned": true,
+            "commit": "6942a2434ee05dd72c202744c760dc593a0e58c1",
+            "branch": "HEAD",
+            "dirty": false
+          },
+          "revision_source": "self-reported",
+          "effort": "medium",
+          "run_shape": {
+            "requested_effort": "medium",
+            "collapsed": "small-scope",
+            "source": "coverage.json",
+            "diff_files": null,
+            "diff_lines": null,
+            "pre_existing": 0,
+            "scope_files": 1,
+            "empty_diff": false,
+            "empty_scope": false,
+            "researchers_dispatched": 2,
+            "skipped_components": [],
+            "completeness_check_outcome": "not-applicable",
+            "unaccounted_top_level_dirs": [],
+            "inventory_fallback": null,
+            "top_level_dir_count": null,
+            "target_files": 1,
+            "component_cap": null,
+            "research_coverage": null
+          },
+          "findings": {
+            "total": 0,
+            "critical": 0,
+            "high": 0,
+            "medium": 0,
+            "low": 0
+          },
+          "verification": {
+            "status": "verified",
+            "candidates": 0,
+            "candidates_deduped": 0,
+            "panel_votes": 0,
+            "panel_reviewed_findings": 0,
+            "panel_quorum_findings": 0,
+            "unreviewed_candidate_sites": 0,
+            "incomplete_panel_candidates": 0,
+            "attested_findings": 0,
+            "reason": null,
+            "researchers_dispatched": 2,
+            "researchers_returned": 2
+          },
+          "target_kind": "git-remote"
+        }
+      },
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "https://github-ig.com/ihudak/bookstore",
+          "revisionId": "6942a2434ee05dd72c202744c760dc593a0e58c1"
+        }
+      ]
+    }
+  ]
+}

@@ -1,9 +1,128 @@
 {
-  "findings": [],
+  "findings": [
+    {
+      "confidence": "high",
+      "confirmed": null,
+      "cwe": "CWE-79",
+      "first_seen": {
+        "base": "6942a2434ee05dd72c202744c760dc593a0e58c1",
+        "blob": "564674feb2f0091396d51f44a1a1286acf83a979",
+        "commit": "d5dab21555523d1ef0754aaab543ef4b25d6295c",
+        "date": "2026-10-16T14:19:58+00:00",
+        "scan": "85731200-96ab-407b-96f7-20110698a66a"
+      },
+      "history": [
+        {
+          "at": "2026-10-16T15:41:48Z",
+          "by": "Ivan Gudak",
+          "evidence": "",
+          "links": {},
+          "reason": "",
+          "role": "dev",
+          "run": 2,
+          "status": "fix"
+        },
+        {
+          "at": "2026-10-16T15:41:48Z",
+          "by": "Ivan Gudak",
+          "evidence": "",
+          "links": {
+            "followup": "- [ ] Run `/dev-workflows:implement BOOK-2-01-02` from repository `bookstore`: fix [SEC#1] (CWE-79) at `web/src/app/ratings/rating-list/rating-list.component.ts:26`, starting from `security/bookstore/scans/20261016T152258Z-d5dab21/patches/F1.patch` — raised by /security-workflows:scan",
+            "patch": "security/bookstore/scans/20261016T152258Z-d5dab21/patches/F1.patch"
+          },
+          "reason": "follow-up written",
+          "role": "dev",
+          "run": 2,
+          "status": "fixing"
+        }
+      ],
+      "id": 1,
+      "last_seen": {
+        "base": "6942a2434ee05dd72c202744c760dc593a0e58c1",
+        "blob": "564674feb2f0091396d51f44a1a1286acf83a979",
+        "commit": "d5dab21555523d1ef0754aaab543ef4b25d6295c",
+        "date": "2026-10-16T14:19:58+00:00",
+        "scan": "85731200-96ab-407b-96f7-20110698a66a"
+      },
+      "line": 26,
+      "links": {
+        "followup": "- [ ] Run `/dev-workflows:implement BOOK-2-01-02` from repository `bookstore`: fix [SEC#1] (CWE-79) at `web/src/app/ratings/rating-list/rating-list.component.ts:26`, starting from `security/bookstore/scans/20261016T152258Z-d5dab21/patches/F1.patch` — raised by /security-workflows:scan",
+        "patch": "security/bookstore/scans/20261016T152258Z-d5dab21/patches/F1.patch"
+      },
+      "not_reported_by": [],
+      "origin": "85731200-96ab-407b-96f7-20110698a66a:v3:5c22a9c9a3b17b5601c480e5d881088d139ab93bc58080ec7c6bd0e09812a6af",
+      "other_cwes": [],
+      "owner": null,
+      "path": "web/src/app/ratings/rating-list/rating-list.component.ts",
+      "plugin_id": "v3:5c22a9c9a3b17b5601c480e5d881088d139ab93bc58080ec7c6bd0e09812a6af",
+      "plugin_id_version": "v3",
+      "reported_by": [
+        "85731200-96ab-407b-96f7-20110698a66a"
+      ],
+      "review_by": null,
+      "severity": "MEDIUM",
+      "status": "fixing",
+      "title": "Stored XSS: buyer-supplied rating comment rendered via innerHTML after bypassSecurityTrustHtml",
+      "units": [
+        "BOOK-2-01-02"
+      ]
+    },
+    {
+      "confidence": "high",
+      "confirmed": false,
+      "cwe": "CWE-79",
+      "first_seen": {
+        "base": "6942a2434ee05dd72c202744c760dc593a0e58c1",
+        "blob": "e0400723b7e3d4159df274d8f68cfbc20a1c0329",
+        "commit": "d5dab21555523d1ef0754aaab543ef4b25d6295c",
+        "date": "2026-10-16T14:19:58+00:00",
+        "scan": "85731200-96ab-407b-96f7-20110698a66a"
+      },
+      "history": [
+        {
+          "at": "2026-10-16T15:41:48Z",
+          "by": "Ivan Gudak",
+          "evidence": "web/src/app/ratings/update-rating/update-rating.component.ts:70 — returnUrl is only ever set by our own routerLinks; the gateway strips it from external requests",
+          "links": {},
+          "reason": "returnUrl is only ever set by our own routerLinks; the gateway strips it from external requests",
+          "role": "dev",
+          "run": 2,
+          "status": "false-positive"
+        }
+      ],
+      "id": 2,
+      "last_seen": {
+        "base": "6942a2434ee05dd72c202744c760dc593a0e58c1",
+        "blob": "e0400723b7e3d4159df274d8f68cfbc20a1c0329",
+        "commit": "d5dab21555523d1ef0754aaab543ef4b25d6295c",
+        "date": "2026-10-16T14:19:58+00:00",
+        "scan": "85731200-96ab-407b-96f7-20110698a66a"
+      },
+      "line": 71,
+      "links": {},
+      "not_reported_by": [],
+      "origin": "85731200-96ab-407b-96f7-20110698a66a:v3:65fcfb6e055f29156ea60fdf3f38ff6c3824976bbcfe406baf522f840892c802",
+      "other_cwes": [],
+      "owner": null,
+      "path": "web/src/app/ratings/update-rating/update-rating.component.ts",
+      "plugin_id": "v3:65fcfb6e055f29156ea60fdf3f38ff6c3824976bbcfe406baf522f840892c802",
+      "plugin_id_version": "v3",
+      "reported_by": [
+        "85731200-96ab-407b-96f7-20110698a66a"
+      ],
+      "review_by": null,
+      "severity": "MEDIUM",
+      "status": "false-positive",
+      "title": "DOM XSS / open redirect: returnUrl query parameter assigned to window.location.href without scheme check",
+      "units": [
+        "BOOK-2-01-02"
+      ]
+    }
+  ],
   "format": 1,
-  "last_at": "2026-10-16T13:48:31Z",
-  "next_id": 1,
-  "next_seq": 2,
+  "last_at": "2026-10-16T15:41:48Z",
+  "next_id": 3,
+  "next_seq": 3,
   "renumbered": [],
   "repo": "bookstore",
   "scans": [
@@ -22,6 +141,23 @@
       "mode": "changes",
       "scope": [],
       "seq": 1,
+      "verified": true
+    },
+    {
+      "base": "6942a2434ee05dd72c202744c760dc593a0e58c1",
+      "commit": "d5dab21555523d1ef0754aaab543ef4b25d6295c",
+      "complete": false,
+      "counted": false,
+      "covering": false,
+      "date": "2026-10-16T14:19:58+00:00",
+      "dirty": false,
+      "effort": "high",
+      "folder": "20261016T152258Z-d5dab21",
+      "id": "85731200-96ab-407b-96f7-20110698a66a",
+      "id_version": "v3",
+      "mode": "changes",
+      "scope": [],
+      "seq": 2,
       "verified": true
     }
   ]

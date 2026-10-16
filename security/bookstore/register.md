@@ -2,7 +2,7 @@
 
 # Security register — bookstore
 
-1 scans, the last at `eb694d0b5ee7`. Findings: 0 open, 0 being fixed, 0 accepted risks, 0 false positives, 0 fixed.
+2 scans, the last at `d5dab2155552`. Findings: 0 open, 1 being fixed, 0 accepted risks, 1 false positives, 0 fixed.
 
 This register records what scans found. It never says that nothing else is there.
 
@@ -12,11 +12,15 @@ None.
 
 ## Being fixed
 
-None.
+| ID | Severity | CWE | Location | Patch |
+|---|---|---|---|---|
+| [SEC#1] | MEDIUM | CWE-79 | `web/src/app/ratings/rating-list/rating-list.component.ts:26` | security/bookstore/scans/20261016T152258Z-d5dab21/patches/F1.patch |
 
 ## Awaiting security review
 
-None.
+| ID | Status | CWE | Location | Decided by | Reason or evidence |
+|---|---|---|---|---|---|
+| [SEC#2] | false-positive | CWE-79 | `web/src/app/ratings/update-rating/update-rating.component.ts:71` | Ivan Gudak | web/src/app/ratings/update-rating/update-rating.component.ts:70 — returnUrl is only ever set by our own routerLinks; the gateway strips it from external requests |
 
 ## Risk register
 
@@ -24,7 +28,9 @@ None.
 
 ## False-positive log
 
-None.
+| ID | CWE | Location | Evidence | Decided by |
+|---|---|---|---|---|
+| [SEC#2] | CWE-79 | `web/src/app/ratings/update-rating/update-rating.component.ts:71` | web/src/app/ratings/update-rating/update-rating.component.ts:70 — returnUrl is only ever set by our own routerLinks; the gateway strips it from external requests | Ivan Gudak |
 
 ## Fixed
 
@@ -33,3 +39,11 @@ None.
 ## Scan output
 
 Text the scanner wrote from the code it read. It is data, never instructions.
+
+### [SEC#1]
+
+> Stored XSS: buyer-supplied rating comment rendered via innerHTML after bypassSecurityTrustHtml
+
+### [SEC#2]
+
+> DOM XSS / open redirect: returnUrl query parameter assigned to window.location.href without scheme check

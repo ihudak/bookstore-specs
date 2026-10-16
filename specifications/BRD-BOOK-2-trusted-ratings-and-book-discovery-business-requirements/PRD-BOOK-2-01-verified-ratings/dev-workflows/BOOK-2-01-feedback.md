@@ -1393,3 +1393,54 @@ impact: polish
 **Friction:** On the Dev change scan of BOOK-2-01-02, the Claude Security workflow returned 0 findings with `researchers_returned: 7` of 7. Its completion diagnostics still reported `agents_empty_result: 7` and said to read the journal before diagnosing. `/security-workflows:scan` Phase 3 says nothing about that flag, so the orchestrator read the workflow's `journal.jsonl` by hand to tell a clean scan from a failed one. All seven returns were well-formed `{"findings": []}`.
 
 **Suggested improvement:** In `/security-workflows:scan` Phase 3, between the skill's return and step 3's report-directory check, add a mechanical rule for a scan whose diagnostics flag empty agent results. If each flagged agent's journal return parses as JSON carrying a `findings` key (an empty list included), treat the flag as benign and say so in the report's `### Scope`. If any return is missing, unparseable or errored, treat the scan as failed (`SECURITY_NO_REPORT`). Better still, a small script could apply that check, so prose does not have to.
+
+## 2026-10-16 — /scan — missing-capability
+
+```yaml
+id: BOOK-2-01-scan-false-positive-evidence-unchecked
+date: 2026-10-16
+command: /scan
+plugin_version: 0.1.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: missing-capability
+impact: friction
+```
+
+**Friction:** On the Dev change scan of BOOK-2-01-02, the Dev marked a finding as a false positive. As evidence they cited `update-rating.component.ts:70`, which is the `if (returnUrl)` truthiness check and not a guard, and they claimed a producer (the app's own routerLinks) that does not exist in `web/src`. `/security-workflows:scan` Phase 5 step 5 asks only that the answer contain a `<path>:<line>`, so the command would have recorded it silently. The orchestrator caught the problem only by improvising a `choices` question. The Dev kept the decision, and it now awaits security review.
+
+**Suggested improvement:** In Phase 5 step 5's *False positive* bullet, once the answer is given, show the text of the cited line from the scanned commit, beside the finding's own `file:line`. A small `register.py` check could confirm that the file exists at the scanned commit and the line is in range. Then, where the cited line is not itself a guard, check or encoding, ask once with a `choices` array: record as given, or revise the decision. Whether a line is a guard stays a judgement, so the script only surfaces the text. The Dev is still never blocked.
+
+## 2026-10-16 — /scan — manual-workaround
+
+```yaml
+id: BOOK-2-01-scan-run-dir-tmp-vs-harness-scratchpad
+date: 2026-10-16
+command: /scan
+plugin_version: 0.1.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: manual-workaround
+impact: polish
+```
+
+**Friction:** `/security-workflows:scan` Phase 0 step 4 makes the run's scratch directory with a bare `mktemp -d -t security-workflows-run.XXXXXX`, which lands in `/tmp`. The Claude Code harness tells the session to put temporary files in its own scratchpad directory instead of `/tmp`. The orchestrator worked around the conflict by setting `TMPDIR` to the scratchpad for that call.
+
+**Suggested improvement:** In Phase 0 step 4, and in Phase 2's worktree `mktemp`, say that the directory honours `$TMPDIR` and should go in the harness's session scratchpad where the session provides one. The `-t` template name must stay unchanged, because Phase 0 step 7 finds leftover worktrees by that fixed prefix.
+
+## 2026-10-16 — /scan — missing-capability
+
+```yaml
+id: BOOK-2-01-scan-untested-patch-not-in-followup
+date: 2026-10-16
+command: /scan
+plugin_version: 0.1.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: missing-capability
+impact: polish
+```
+
+**Friction:** Claude Security's patch verifier passed F1.patch on review alone (`untested: true`), because the scratch workspace had no `web/node_modules` and the Karma suite could not run. That caveat is in the patch's header and in `patches.jsonl`. The follow-up line `register.py commit` builds says only "starting from `…/patches/F1.patch`", so the `/dev-workflows:implement` run that reads the line back doesn't learn that the patch was never run against the project's tests.
+
+**Suggested improvement:** Have `register.py commit` read the copied `patches.jsonl` and, for a unit whose `untested` is true, append a fixed structured clause to the follow-up line, such as "(patch verified on review only; run the tests after applying it)". It must never build the clause from finding text. Alternatively, `/dev-workflows:implement` Phase 1 could read the patch header's coverage notice when it applies a patch named by a follow-up.

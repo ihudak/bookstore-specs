@@ -1,0 +1,76 @@
+{
+  "generated_at": "2026-10-16T15:22:58+00:00",
+  "duration_s": 649,
+  "scan_id": "85731200-96ab-407b-96f7-20110698a66a",
+  "mode": "changes",
+  "scan_prefix": "",
+  "scope": [],
+  "revision": {
+    "versioned": true,
+    "commit": "d5dab21555523d1ef0754aaab543ef4b25d6295c",
+    "branch": "feat/BOOK-2-01-02-storefront-ratings",
+    "dirty": false,
+    "base": "origin/master",
+    "merge_base": "6942a2434ee05dd72c202744c760dc593a0e58c1"
+  },
+  "revision_source": "self-reported",
+  "model": null,
+  "effort": "high",
+  "run_shape": {
+    "requested_effort": "high",
+    "collapsed": null,
+    "source": "coverage.json",
+    "diff_files": 31,
+    "diff_lines": 3456,
+    "pre_existing": 0,
+    "scope_files": null,
+    "empty_diff": false,
+    "empty_scope": false,
+    "researchers_dispatched": 7,
+    "verification_runs": 1,
+    "skipped_components": [],
+    "pruned_buckets": [
+      {
+        "group": "change 1 of 2",
+        "lens": "memory-and-unsafe"
+      },
+      {
+        "group": "change 2 of 2 (web/src/app/ratings)",
+        "lens": "memory-and-unsafe"
+      },
+      {
+        "group": "change boundary",
+        "lens": "memory-and-unsafe"
+      }
+    ],
+    "completeness_check_outcome": "not-applicable",
+    "unaccounted_top_level_dirs": [],
+    "inventory_fallback": null,
+    "top_level_dir_count": null,
+    "target_files": null,
+    "component_cap": 24,
+    "research_coverage": null
+  },
+  "findings": {
+    "total": 2,
+    "critical": 0,
+    "high": 0,
+    "medium": 2,
+    "low": 0
+  },
+  "verification": {
+    "status": "verified",
+    "candidates": 10,
+    "candidates_deduped": 3,
+    "panel_votes": 9,
+    "panel_reviewed_findings": 2,
+    "panel_quorum_findings": 2,
+    "unreviewed_candidate_sites": 0,
+    "incomplete_panel_candidates": 0,
+    "attested_findings": 0,
+    "reason": null,
+    "reason_kind": null,
+    "researchers_dispatched": 7,
+    "researchers_returned": 7
+  }
+}

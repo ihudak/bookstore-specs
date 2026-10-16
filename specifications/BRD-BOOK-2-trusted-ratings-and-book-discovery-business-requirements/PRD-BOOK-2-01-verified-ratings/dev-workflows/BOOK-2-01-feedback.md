@@ -1359,3 +1359,20 @@ impact: polish
 **Friction:** The tracer's 88-section output came back only in the agent's reply, so the orchestrator had to extract it from the agent transcript with a script to render the `## Satisfied` list. It also built the tracer's YAML input with a one-off script. The tracer's satisfied evidence used approximate line ranges, which weakens the evidence a PRD run's drift check and later readers rely on.
 
 **Suggested improvement:** Add an `output_path` field to `references/handoff/conformance-tracer.md`'s input and have the tracer write its sections there. Require `file:line` evidence to be exact, or a tight range. Consider shipping a helper script that builds the tracer handoff from the requirement documents and renders `## Satisfied` from the verdicts.
+
+## 2026-10-16 — /conformance — missing-capability
+
+```yaml
+id: BOOK-2-01-conformance-push-refused-after-commit
+date: 2026-10-16
+command: /conformance
+plugin_version: 4.28.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: missing-capability
+impact: polish
+```
+
+**Friction:** On the Epic run of BOOK-2-01-02, the operator picked "Branch + commit + push + open PR to main" at Phase 6. `handoff-to-main` cut `conformance/BOOK-2-01-02-storefront-ratings` and committed the record, then the push was refused: "ERROR: Permission to <owner>/<repo>.git denied to <account>." The container's SSH identity could fetch and `ls-remote` the specs repo but not push to it, while `gh` was authenticated as the repo owner. The write-permission mismatch was only discovered after the commit was made, and the run could only report "Push failed — NOT handed off", leaving a local commit for the operator to push by hand.
+
+**Suggested improvement:** In `phase-handoff` §2.5/§4.1 (as used by `/dev-workflows:conformance` Phase 6), after a push refused for permissions, name the local branch and commit left behind and offer a consented next step: retry once credentials are fixed, or push through the credentials `gh` is authenticated with, if the operator approves. Optionally probe write access (for example `git push --dry-run`) before presenting the consent array, but only if this recurs, since a dry run can be slow or unsupported on some remotes.

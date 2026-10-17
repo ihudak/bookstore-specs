@@ -1546,3 +1546,20 @@ impact: polish
 **Friction:** In verify mode, `./gradlew test` reported every task up to date and executed nothing, so `test-baseliner` re-ran with `./gradlew cleanTest test`. Verify's command then differed from the one the capture recorded. Separately, Karma's progress reporter names no passing tests, so both reports carried a `CAVEAT:` that Karma regressions are visible only as new failing names or count changes.
 
 **Suggested improvement:** Document in `test-baseliner` that a Gradle suite is run with `cleanTest test`, or `--rerun-tasks` for `test`, in both capture and verify, so the two commands match and the capture is never a cached no-op. For Karma, note the option to add a per-test reporter through a command hint, so passing tests are named.
+
+## 2026-10-17 — /scan — ambiguous-prompt
+
+```yaml
+id: BOOK-2-01-scan-import-existing-scan-folder-unspecified
+date: 2026-10-17
+command: /scan
+plugin_version: 0.1.0
+origin: auto
+author: ivan.gudak@dynatrace.com
+category: ambiguous-prompt
+impact: polish
+```
+
+**Friction:** `/security-workflows:scan BOOK-2-01-02 --import <report dir>` re-imported a report that run 0002 had already recorded. Phase 4 step 2 says to copy the four report files into `security/<repo-slug>/scans/<folder>/`, "creating it", and that the copy is "unchanged and never rewritten". It does not say what to do when `<folder>` already exists, which is the usual case for a re-import, because the folder name derives from the stamp. The orchestrator compared the files, found them byte-identical, skipped the copy, and `register.py plan` then returned `already_recorded` / `recorded_on: this register`. A folder that exists with different content is left entirely unspecified.
+
+**Suggested improvement:** In Phase 4 step 2, add one sentence for an existing `<folder>`. Where its four files are byte-identical to the report's, copy nothing and go on to the plan. Where any differs, stop with `SECURITY_USAGE` naming the differing files and overwrite nothing. Leave Phase 4's `already_recorded` handling as it is, and keep the folder in the `this register` case.
